@@ -1,0 +1,7 @@
+{
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "[vue]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "cSpell.language": "fr,en"
+}

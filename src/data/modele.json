@@ -1,0 +1,3939 @@
+{
+  "_meta": {
+    "nom": "Instrument de diagnostic de maturité IA pour PME de l'Arc jurassien",
+    "version": "1.2-structure",
+    "date": "2026-07-30",
+    "auteur": "Saverio Martini",
+    "construit": "Maturité de l'adoption de l'IA, 8 dimensions héritées d'Ozkaya et al. (2026) CMU-SEI AIMM v1.0, augmentées d'une 9e dimension construite par l'auteur.",
+    "sources": {
+      "referentiel_de_base": "Ozkaya et al. (2026), AI Adoption Maturity Model v1.0, CMU-SEI",
+      "couche_presentation": "Elia et al. (2024), Digital Transformation Canvas — vocabulaire et libellés uniquement, non conteneur",
+      "methode_enonces": "Jeanneret Medina et al. (2024) — 5 énoncés descriptifs par unité de mesure",
+      "filtre_applicabilite": "Bettoni et al. (2021) ; Corti et al. (2025)",
+      "dimension_ajoutee": "Hansen et al. (2024) pour C-30 ; Bettoni et al. (2021) pour C-28 ; Sawang & Sornlertlamvanich (2026) pour C-31 ; Sharma (2026) en corroboration"
+    },
+    "avertissements": [
+      "Ce fichier contient la STRUCTURE et les emplacements d'énoncés. Il ne reproduit pas le texte des goals, practices et example artifacts d'Ozkaya : les lire dans la source au moment de dériver chaque énoncé.",
+      "RELECTURE AUTEUR OBLIGATOIRE : la grille rubrique_niveau est une synthèse française de l'auteur d'après les pages 82-83 de la source. Chaque énoncé générique doit être certifié contre l'original. Planning niveau 5 est incomplet.",
+      "Le rattachement des critères consolidés aux capability areas est une décision de conception de l'auteur, pas une donnée de la source."
+    ]
+  },
+  "echelle": {
+    "origine": "Ozkaya et al. (2026), reprise sans modification",
+    "niveaux": [
+      {
+        "rang": 1,
+        "libelle_en": "Exploratory AI",
+        "libelle_fr": "IA exploratoire"
+      },
+      {
+        "rang": 2,
+        "libelle_en": "Implemented AI",
+        "libelle_fr": "IA implémentée"
+      },
+      {
+        "rang": 3,
+        "libelle_en": "Aligned AI",
+        "libelle_fr": "IA alignée"
+      },
+      {
+        "rang": 4,
+        "libelle_en": "Scaled AI",
+        "libelle_fr": "IA à l’échelle"
+      },
+      {
+        "rang": 5,
+        "libelle_en": "Future Ready AI",
+        "libelle_fr": "IA pérenne"
+      }
+    ],
+    "proprietes_normatives": [
+      "Le niveau 1 décrit une réalité existante et légitime, jamais une carence.",
+      "Le niveau 2 est le seuil des pratiques de base de maîtrise des risques.",
+      "La progression est monotone : chaque niveau contient et dépasse le précédent, sans chevauchement ni saut.",
+      "Les niveaux ne constituent pas une échelle de conformité : une unité peut délibérément viser un niveau bas là où l'investissement n'apporterait pas de valeur (Ozkaya et al., 2026)."
+    ]
+  },
+  "rubrique_niveau": [
+    {
+      "indicateur": "Accountability",
+      "niveau": 1,
+      "enonce_generique_fr": "La responsabilité du domaine de capacité n’est pas assignée de manière cohérente.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Accountability",
+      "niveau": 2,
+      "enonce_generique_fr": "Des rôles responsables de l’atteinte des goals du domaine sont assignés de manière cohérente.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Accountability",
+      "niveau": 3,
+      "enonce_generique_fr": "Des objectifs et des métriques associées sont établis pour le domaine et remontés au management supérieur.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Accountability",
+      "niveau": 4,
+      "enonce_generique_fr": "Les processus du domaine sont mesurés et pilotés de manière cohérente entre les sous-ensembles de l’unité.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Accountability",
+      "niveau": 5,
+      "enonce_generique_fr": "Les opportunités d’amélioration des processus standard sont évaluées et pilotées selon la stratégie de long terme.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Planning",
+      "niveau": 1,
+      "enonce_generique_fr": "La planification du domaine de capacité n’est pas réalisée de manière cohérente.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Planning",
+      "niveau": 2,
+      "enonce_generique_fr": "Un plan d’atteinte des goals du domaine existe et identifie les parties prenantes concernées.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Planning",
+      "niveau": 3,
+      "enonce_generique_fr": "Les plans sont mis à jour périodiquement d’après la performance du domaine au regard des objectifs et métriques.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Planning",
+      "niveau": 4,
+      "enonce_generique_fr": "Plans et politiques comportent des définitions de processus cohérentes, adaptables par les sous-ensembles de l’unité.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Planning",
+      "niveau": 5,
+      "enonce_generique_fr": "[À COMPLÉTER DEPUIS LA SOURCE] La planification intègre les évolutions ou scénarios futurs possibles (réglementaires, sociétaux, technologiques).",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Resourcing",
+      "niveau": 1,
+      "enonce_generique_fr": "Les ressources du domaine de capacité ne sont pas allouées de manière cohérente.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Resourcing",
+      "niveau": 2,
+      "enonce_generique_fr": "Des ressources adéquates sont allouées au domaine par le processus budgétaire établi.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Resourcing",
+      "niveau": 3,
+      "enonce_generique_fr": "Les ressources sont allouées d’après la performance mesurée du domaine.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Resourcing",
+      "niveau": 4,
+      "enonce_generique_fr": "Les ressources sont allouées et pilotées de manière cohérente entre les sous-ensembles de l’unité.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    },
+    {
+      "indicateur": "Resourcing",
+      "niveau": 5,
+      "enonce_generique_fr": "Les ressources sont allouées pour mettre en œuvre la stratégie de long terme et maximiser l’utilité face à plusieurs futurs possibles.",
+      "certifie_auteur": false,
+      "source": "Ozkaya et al. (2026), §4.13, p. 82-83"
+    }
+  ],
+  "agregation": {
+    "intra_dimension": "min",
+    "justification_intra": "Maillon faible : le niveau d'une dimension est celui de sa capability area la plus basse.",
+    "inter_dimension": null,
+    "score_global": false,
+    "justification_globale": "Aucun score global n'est produit. Ozkaya ne restitue jamais un nombre unique (figures 5 et 13) et un minimum inter-dimension transformerait un choix stratégique assumé en verdict d'échec.",
+    "biais_declare": "Sous la règle du minimum, une dimension riche en capability areas est mécaniquement plus difficile à faire monter qu'une dimension pauvre. Correctif retenu : afficher le nombre de CAs de chaque axe dans la restitution.",
+    "affichage_nb_ca_par_axe": true
+  },
+  "niveau_cible": {
+    "produit_par": "S0",
+    "statut": "X — extrapolation de l’auteur",
+    "principe": "Le référentiel prescrit que l'organisation détermine délibérément son niveau cible, sans fournir d'instrument d'élicitation. La traduction des réponses de contexte en niveau cible est une contribution de l'auteur.",
+    "entrees": [
+      "objectif principal de l’adoption",
+      "appétence au risque",
+      "horizon d’investissement"
+    ],
+    "usage": "L'écart se lit entre niveau observé et niveau cible, jamais entre niveau observé et niveau 5."
+  },
+  "socles": [
+    {
+      "id": "S0",
+      "nom": "Profil et intention",
+      "etiquette_elia": "Enterprise ID",
+      "dimensions": [],
+      "navigable": false,
+      "cible_poc_04_08": false
+    },
+    {
+      "id": "S1",
+      "nom": "Finalité",
+      "etiquette_elia": "Purpose",
+      "dimensions": [
+        "D9",
+        "D1"
+      ],
+      "navigable": true,
+      "cible_poc_04_08": true
+    },
+    {
+      "id": "S2",
+      "nom": "Conformité et éthique",
+      "etiquette_elia": "Protection · Privacy",
+      "dimensions": [
+        "D4"
+      ],
+      "navigable": true,
+      "cible_poc_04_08": true
+    },
+    {
+      "id": "S3",
+      "nom": "Personnes",
+      "etiquette_elia": "People",
+      "dimensions": [
+        "D2"
+      ],
+      "navigable": true,
+      "cible_poc_04_08": false
+    },
+    {
+      "id": "S4",
+      "nom": "Processus",
+      "etiquette_elia": "Process",
+      "dimensions": [
+        "D3"
+      ],
+      "navigable": true,
+      "cible_poc_04_08": false
+    },
+    {
+      "id": "S5",
+      "nom": "Plateforme",
+      "etiquette_elia": "Platform",
+      "dimensions": [
+        "D5",
+        "D6",
+        "D8"
+      ],
+      "navigable": true,
+      "cible_poc_04_08": false
+    },
+    {
+      "id": "S6",
+      "nom": "Exploitation",
+      "etiquette_elia": "Platform 2",
+      "dimensions": [
+        "D7"
+      ],
+      "navigable": true,
+      "cible_poc_04_08": false
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "D1",
+      "nom_fr": "Alignement stratégique et structure de l’organisation",
+      "nom_en": "Organizational Strategy",
+      "ref_ozkaya": "4.4",
+      "origine": "heritee",
+      "socle": "S1",
+      "nb_ca": 4,
+      "capability_areas": [
+        {
+          "id": "O-01",
+          "nom_en": "AI Strategy Development",
+          "nom_fr": "Élaboration de la stratégie IA",
+          "ref_source": "§4.4.1, p. 33",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-01-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.4.1, p. 33"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-01",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 2,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-02",
+          "nom_en": "AI Partnership Development",
+          "nom_fr": "Développement de partenariats IA",
+          "ref_source": "§4.4.2, p. 34",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": "Partner",
+          "goals": [
+            {
+              "id": "O-02-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.4.2, p. 34"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-02",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 2,
+                "M5 Sawang 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-03",
+          "nom_en": "Organizational Structure Calibration",
+          "nom_fr": "Calibration de la structure organisationnelle",
+          "ref_source": "§4.4.3, p. 36",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-03-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.4.3, p. 36"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-03",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 2,
+                "M4 Hansen 2025": 1,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-04",
+          "nom_en": "Future Ready Planning",
+          "nom_fr": "Planification orientée futur",
+          "ref_source": "§4.4.4, p. 37",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-04-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.4.4, p. 37"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-04",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "nom_fr": "Compétences de la main-d’œuvre et culture",
+      "nom_en": "Workforce and Culture",
+      "ref_ozkaya": "4.5",
+      "origine": "heritee",
+      "socle": "S3",
+      "nb_ca": 2,
+      "capability_areas": [
+        {
+          "id": "O-05",
+          "nom_en": "AI-Literate Workforce Development",
+          "nom_fr": "Développement d'une main-d'œuvre compétente en IA",
+          "ref_source": "§4.5.1, p. 41",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-05-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.5.1, p. 41"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-05",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 2,
+                "M3 Kudryavtsev 2025": 2,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-06",
+          "nom_en": "Organizational Culture Evolution",
+          "nom_fr": "Évolution de la culture organisationnelle",
+          "ref_source": "§4.5.2, p. 42",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-06-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.5.2, p. 42"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-06",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 2,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "nom_fr": "Innovation, mesure et analyse",
+      "nom_en": "Workflow Re-Engineering",
+      "ref_ozkaya": "4.6",
+      "origine": "heritee",
+      "socle": "S4",
+      "nb_ca": 4,
+      "capability_areas": [
+        {
+          "id": "O-07",
+          "nom_en": "Experimentation",
+          "nom_fr": "Expérimentation",
+          "ref_source": "§4.6.1, p. 45",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-07-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.6.1, p. 45"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-07",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 1,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 1
+              }
+            },
+            {
+              "critere": "C-29",
+              "role": "S",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 1,
+                "M3 Kudryavtsev 2025": 2,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 1
+              },
+              "note": "Critère où Ozkaya est approximatif : enrichit la formulation des énoncés de cette CA."
+            }
+          ]
+        },
+        {
+          "id": "O-08",
+          "nom_en": "Business Workflow Innovation",
+          "nom_fr": "Innovation des processus métier",
+          "ref_source": "§4.6.2, p. 46",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-08-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.6.2, p. 46"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-08",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 1,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-09",
+          "nom_en": "Human-in-the-Lead Automation",
+          "nom_fr": "Automatisation pilotée par l'humain",
+          "ref_source": "§4.6.3, p. 48",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-09-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.6.3, p. 48"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-09",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 1,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-10",
+          "nom_en": "Measurement and Analysis",
+          "nom_fr": "Mesure et analyse",
+          "ref_source": "§4.6.4, p. 49",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-10-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.6.4, p. 49"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-10",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M4 Hansen 2025": 1,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D4",
+      "nom_fr": "Éthique et gestion du risque",
+      "nom_en": "Risk and Governance",
+      "ref_ozkaya": "4.7",
+      "origine": "heritee",
+      "socle": "S2",
+      "nb_ca": 3,
+      "capability_areas": [
+        {
+          "id": "O-11",
+          "nom_en": "Risk Management",
+          "nom_fr": "Gestion des risques",
+          "ref_source": "§4.7.1, p. 52",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-11-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.7.1, p. 52"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-11",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 1,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-12",
+          "nom_en": "Policy and Compliance",
+          "nom_fr": "Politiques et conformité",
+          "ref_source": "§4.7.2, p. 54",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-12-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.7.2, p. 54"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-12",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 1,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-13",
+          "nom_en": "Responsible AI",
+          "nom_fr": "IA responsable",
+          "ref_source": "§4.7.3, p. 55",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-13-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.7.3, p. 55"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-13",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 1,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D5",
+      "nom_fr": "Gouvernance des données",
+      "nom_en": "Data",
+      "ref_ozkaya": "4.8",
+      "origine": "heritee",
+      "socle": "S5",
+      "nb_ca": 2,
+      "capability_areas": [
+        {
+          "id": "O-14",
+          "nom_en": "Data Lifecycle Management",
+          "nom_fr": "Gestion du cycle de vie des données",
+          "ref_source": "§4.8.1, p. 58",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-14-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.8.1, p. 58"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-14",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 1,
+                "M3 Kudryavtsev 2025": 2,
+                "M4 Hansen 2025": 1,
+                "M6 Sharma 2026": 1
+              }
+            },
+            {
+              "critere": "C-16",
+              "role": "S",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 1,
+                "M2 Bettoni 2021": 2,
+                "M3 Kudryavtsev 2025": 2,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 2
+              },
+              "note": "Critère où Ozkaya est approximatif : enrichit la formulation des énoncés de cette CA."
+            },
+            {
+              "critere": "C-17",
+              "role": "S",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 1,
+                "M2 Bettoni 2021": 2,
+                "M3 Kudryavtsev 2025": 1,
+                "M6 Sharma 2026": 2
+              },
+              "note": "Critère où Ozkaya est approximatif : enrichit la formulation des énoncés de cette CA."
+            }
+          ]
+        },
+        {
+          "id": "O-15",
+          "nom_en": "Data Quality Assurance",
+          "nom_fr": "Assurance qualité des données",
+          "ref_source": "§4.8.2, p. 60",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-15-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.8.2, p. 60"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-15",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 1,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D6",
+      "nom_fr": "Architecture et intégration des technologies IA",
+      "nom_en": "Engineering",
+      "ref_ozkaya": "4.9",
+      "origine": "heritee",
+      "socle": "S5",
+      "nb_ca": 4,
+      "capability_areas": [
+        {
+          "id": "O-16",
+          "nom_en": "AI Architecting",
+          "nom_fr": "Architecture IA",
+          "ref_source": "§4.9.1, p. 63",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-16-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.9.1, p. 63"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-18",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-17",
+          "nom_en": "Test and Evaluation",
+          "nom_fr": "Test et évaluation",
+          "ref_source": "§4.9.2, p. 64",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-17-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.9.2, p. 64"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-19",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-18",
+          "nom_en": "Legacy Integration",
+          "nom_fr": "Intégration aux systèmes existants (legacy)",
+          "ref_source": "§4.9.3, p. 66",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-18-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.9.3, p. 66"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-20",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 2,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-19",
+          "nom_en": "Transparency and Explainability",
+          "nom_fr": "Transparence et explicabilité",
+          "ref_source": "§4.9.4, p. 67",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-19-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.9.4, p. 67"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-21",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 2,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D7",
+      "nom_fr": "Production et gestion de modèles (MLOps)",
+      "nom_en": "Operations",
+      "ref_ozkaya": "4.10",
+      "origine": "heritee",
+      "socle": "S6",
+      "nb_ca": 3,
+      "capability_areas": [
+        {
+          "id": "O-20",
+          "nom_en": "AI Model Management",
+          "nom_fr": "Gestion des modèles IA",
+          "ref_source": "§4.10.1, p. 70",
+          "regime": "placeholder",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-20-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.10.1, p. 70"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-22",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 2,
+                "M4 Hansen 2025": 1,
+                "M5 Sawang 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-21",
+          "nom_en": "AI Model and Agent Security",
+          "nom_fr": "Sécurité des modèles et agents IA",
+          "ref_source": "§4.10.2, p. 71",
+          "regime": "placeholder",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-21-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.10.2, p. 71"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-23",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-22",
+          "nom_en": "Monitoring",
+          "nom_fr": "Surveillance (monitoring)",
+          "ref_source": "§4.10.3, p. 72",
+          "regime": "placeholder",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-22-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.10.3, p. 72"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-24",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 1,
+                "M4 Hansen 2025": 1,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D8",
+      "nom_fr": "Infrastructure technologique ICT",
+      "nom_en": "Technology Ecosystem",
+      "ref_ozkaya": "4.11",
+      "origine": "heritee",
+      "socle": "S5",
+      "nb_ca": 3,
+      "capability_areas": [
+        {
+          "id": "O-23",
+          "nom_en": "Technology Infrastructure",
+          "nom_fr": "Infrastructure technologique",
+          "ref_source": "§4.11.1, p. 75",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-23-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.11.1, p. 75"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-25",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M2 Bettoni 2021": 2,
+                "M3 Kudryavtsev 2025": 2,
+                "M4 Hansen 2025": 2,
+                "M5 Sawang 2026": 2,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-24",
+          "nom_en": "Supply Chain Management",
+          "nom_fr": "Gestion de la chaîne d'approvisionnement",
+          "ref_source": "§4.11.2, p. 76",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": "Partner",
+          "goals": [
+            {
+              "id": "O-24-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.11.2, p. 76"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-26",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M6 Sharma 2026": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "O-25",
+          "nom_en": "Deployment at Scale",
+          "nom_fr": "Déploiement à l'échelle",
+          "ref_source": "§4.11.3, p. 77",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": null,
+          "goals": [
+            {
+              "id": "O-25-G?",
+              "intitule": "[À LIRE DANS LA SOURCE]",
+              "source": "§4.11.3, p. 77"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-27",
+              "role": "P",
+              "degres_par_modele": {
+                "M1 Ozkaya 2026": 2,
+                "M3 Kudryavtsev 2025": 1,
+                "M4 Hansen 2025": 1,
+                "M6 Sharma 2026": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "D9",
+      "nom_fr": "Motivations et justification de l’adoption",
+      "nom_en": null,
+      "ref_ozkaya": null,
+      "origine": "ajoutee",
+      "socle": "S1",
+      "nb_ca": 1,
+      "capability_areas": [
+        {
+          "id": "X-01",
+          "nom_en": "AI Adoption Rationale and Justification",
+          "nom_fr": "Motivations et justification de l’adoption",
+          "ref_source": "construite par l’auteur — hors Ozkaya",
+          "regime": "mesure_grain_plein",
+          "etiquette_elia_secondaire": "Purpose",
+          "goals": [
+            {
+              "id": "X-01-G1",
+              "intitule": "L’entreprise justifie économiquement ses investissements IA et en pilote le budget.",
+              "source": "C-28 — Bettoni et al. (2021)"
+            },
+            {
+              "id": "X-01-G2",
+              "intitule": "L’entreprise identifie et qualifie les pressions et motivations externes qui la poussent vers l’IA.",
+              "source": "C-30 — Hansen et al. (2024)"
+            },
+            {
+              "id": "X-01-G3",
+              "intitule": "L’entreprise dimensionne ses solutions IA proportionnellement au problème traité.",
+              "source": "C-31 — Sawang & Sornlertlamvanich (2026)"
+            }
+          ],
+          "rattachements": [
+            {
+              "critere": "C-28",
+              "role": "P",
+              "degres_par_modele": {
+                "M2 Bettoni 2021": 2,
+                "M4 Hansen 2025": 1,
+                "M5 Sawang 2026": 1,
+                "M6 Sharma 2026": 2
+              }
+            },
+            {
+              "critere": "C-30",
+              "role": "P",
+              "degres_par_modele": {
+                "M4 Hansen 2025": 2,
+                "M6 Sharma 2026": 2
+              }
+            },
+            {
+              "critere": "C-31",
+              "role": "P",
+              "degres_par_modele": {
+                "M5 Sawang 2026": 2
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "criteres_consolides": [
+    {
+      "id": "C-01",
+      "libelle_fr": "Élaboration de la stratégie IA",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 2,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-02",
+      "libelle_fr": "Partenariats et co-création avec l'écosystème",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 2,
+        "M5 Sawang 2026": 1
+      }
+    },
+    {
+      "id": "C-03",
+      "libelle_fr": "Calibration de la structure organisationnelle",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 2,
+        "M4 Hansen 2025": 1,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-04",
+      "libelle_fr": "Planification orientée futur",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-05",
+      "libelle_fr": "Compétences et développement de la main-d'œuvre",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 2,
+        "M3 Kudryavtsev 2025": 2,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-06",
+      "libelle_fr": "Culture organisationnelle",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 2,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-07",
+      "libelle_fr": "Expérimentation",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 1,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-08",
+      "libelle_fr": "Innovation des processus métier",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 1,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-09",
+      "libelle_fr": "Automatisation pilotée par l'humain",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 1,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-10",
+      "libelle_fr": "Mesure et analyse",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M4 Hansen 2025": 1,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-29",
+      "libelle_fr": "Cas d'usage IA",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 1,
+        "M3 Kudryavtsev 2025": 2,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-11",
+      "libelle_fr": "Gestion des risques",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 1,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-12",
+      "libelle_fr": "Politiques et conformité réglementaire",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 1,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-13",
+      "libelle_fr": "IA responsable et éthique",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 1,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-28",
+      "libelle_fr": "Gestion du budget et des investissements IA",
+      "degres_par_modele": {
+        "M2 Bettoni 2021": 2,
+        "M4 Hansen 2025": 1,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-30",
+      "libelle_fr": "Pressions et motivations externes",
+      "degres_par_modele": {
+        "M4 Hansen 2025": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-31",
+      "libelle_fr": "Adequation et proportionnalite de la solution (right-sizing)",
+      "degres_par_modele": {
+        "M5 Sawang 2026": 2
+      }
+    },
+    {
+      "id": "C-14",
+      "libelle_fr": "Gestion du cycle de vie des données",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 1,
+        "M3 Kudryavtsev 2025": 2,
+        "M4 Hansen 2025": 1,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-15",
+      "libelle_fr": "Assurance qualité des données",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 1,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-16",
+      "libelle_fr": "Ressources de données (disponibilité, accès)",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 1,
+        "M2 Bettoni 2021": 2,
+        "M3 Kudryavtsev 2025": 2,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-17",
+      "libelle_fr": "Gouvernance des données",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 1,
+        "M2 Bettoni 2021": 2,
+        "M3 Kudryavtsev 2025": 1,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-18",
+      "libelle_fr": "Architecture IA",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-19",
+      "libelle_fr": "Test et évaluation",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-20",
+      "libelle_fr": "Intégration aux systèmes et produits existants",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 2,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-21",
+      "libelle_fr": "Transparence et explicabilité",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 2,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-22",
+      "libelle_fr": "Gestion, développement et maintenance des modèles IA",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 2,
+        "M4 Hansen 2025": 1,
+        "M5 Sawang 2026": 1
+      }
+    },
+    {
+      "id": "C-23",
+      "libelle_fr": "Sécurité des modèles et agents IA",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-24",
+      "libelle_fr": "Surveillance (monitoring)",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 1,
+        "M4 Hansen 2025": 1,
+        "M5 Sawang 2026": 1,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-25",
+      "libelle_fr": "Infrastructure technologique",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M2 Bettoni 2021": 2,
+        "M3 Kudryavtsev 2025": 2,
+        "M4 Hansen 2025": 2,
+        "M5 Sawang 2026": 2,
+        "M6 Sharma 2026": 1
+      }
+    },
+    {
+      "id": "C-26",
+      "libelle_fr": "Gestion de la chaîne d'approvisionnement IA",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M6 Sharma 2026": 2
+      }
+    },
+    {
+      "id": "C-27",
+      "libelle_fr": "Déploiement à l'échelle",
+      "degres_par_modele": {
+        "M1 Ozkaya 2026": 2,
+        "M3 Kudryavtsev 2025": 1,
+        "M4 Hansen 2025": 1,
+        "M6 Sharma 2026": 1
+      }
+    }
+  ],
+  "modeles_sources": [
+    {
+      "id": "M1 Ozkaya 2026",
+      "statut": "référentiel de base — rapport institutionnel CMU-SEI"
+    },
+    {
+      "id": "M2 Bettoni 2021",
+      "statut": "article IFAC, comité de lecture"
+    },
+    {
+      "id": "M3 Kudryavtsev 2025",
+      "statut": "article, comité de lecture — niveau 2 partiellement publié (statut A)"
+    },
+    {
+      "id": "M4 Hansen 2025",
+      "statut": "article AICMM, comité de lecture — critères extrapolés (statut X)"
+    },
+    {
+      "id": "M5 Sawang 2026",
+      "statut": "preprint arXiv, cadre conceptuel non opérationnalisé"
+    },
+    {
+      "id": "M6 Sharma 2026",
+      "statut": "working paper SSRN, auteur unique affilié éditeur, validation Delphi proposée non exécutée, usage substantiel de LLM déclaré — précédent de conception uniquement, ne fonde aucun construit"
+    }
+  ],
+  "enonces": [
+    {
+      "id": "O-01-N1",
+      "capability_area": "O-01",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-01-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-01-N2",
+      "capability_area": "O-01",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-01-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-01-N3",
+      "capability_area": "O-01",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-01-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-01-N4",
+      "capability_area": "O-01",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-01-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-01-N5",
+      "capability_area": "O-01",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-01-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-02-N1",
+      "capability_area": "O-02",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-02-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-02-N2",
+      "capability_area": "O-02",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-02-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-02-N3",
+      "capability_area": "O-02",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-02-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-02-N4",
+      "capability_area": "O-02",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-02-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-02-N5",
+      "capability_area": "O-02",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-02-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-03-N1",
+      "capability_area": "O-03",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-03-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-03-N2",
+      "capability_area": "O-03",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-03-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-03-N3",
+      "capability_area": "O-03",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-03-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-03-N4",
+      "capability_area": "O-03",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-03-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-03-N5",
+      "capability_area": "O-03",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-03-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-04-N1",
+      "capability_area": "O-04",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-04-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-04-N2",
+      "capability_area": "O-04",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-04-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-04-N3",
+      "capability_area": "O-04",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-04-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-04-N4",
+      "capability_area": "O-04",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-04-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-04-N5",
+      "capability_area": "O-04",
+      "dimension": "D1",
+      "socle": "S1",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-04-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-05-N1",
+      "capability_area": "O-05",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-05-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-05-N2",
+      "capability_area": "O-05",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-05-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-05-N3",
+      "capability_area": "O-05",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-05-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-05-N4",
+      "capability_area": "O-05",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-05-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-05-N5",
+      "capability_area": "O-05",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-05-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-06-N1",
+      "capability_area": "O-06",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-06-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-06-N2",
+      "capability_area": "O-06",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-06-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-06-N3",
+      "capability_area": "O-06",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-06-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-06-N4",
+      "capability_area": "O-06",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-06-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-06-N5",
+      "capability_area": "O-06",
+      "dimension": "D2",
+      "socle": "S3",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-06-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-07-N1",
+      "capability_area": "O-07",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-07-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-07-N2",
+      "capability_area": "O-07",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-07-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-07-N3",
+      "capability_area": "O-07",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-07-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-07-N4",
+      "capability_area": "O-07",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-07-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-07-N5",
+      "capability_area": "O-07",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-07-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-08-N1",
+      "capability_area": "O-08",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-08-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-08-N2",
+      "capability_area": "O-08",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-08-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-08-N3",
+      "capability_area": "O-08",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-08-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-08-N4",
+      "capability_area": "O-08",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-08-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-08-N5",
+      "capability_area": "O-08",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-08-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-09-N1",
+      "capability_area": "O-09",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-09-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-09-N2",
+      "capability_area": "O-09",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-09-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-09-N3",
+      "capability_area": "O-09",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-09-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-09-N4",
+      "capability_area": "O-09",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-09-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-09-N5",
+      "capability_area": "O-09",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-09-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-10-N1",
+      "capability_area": "O-10",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-10-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-10-N2",
+      "capability_area": "O-10",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-10-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-10-N3",
+      "capability_area": "O-10",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-10-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-10-N4",
+      "capability_area": "O-10",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-10-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-10-N5",
+      "capability_area": "O-10",
+      "dimension": "D3",
+      "socle": "S4",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-10-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-11-N1",
+      "capability_area": "O-11",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-11-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-11-N2",
+      "capability_area": "O-11",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-11-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-11-N3",
+      "capability_area": "O-11",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-11-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-11-N4",
+      "capability_area": "O-11",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-11-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-11-N5",
+      "capability_area": "O-11",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-11-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-12-N1",
+      "capability_area": "O-12",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-12-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-12-N2",
+      "capability_area": "O-12",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-12-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-12-N3",
+      "capability_area": "O-12",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-12-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-12-N4",
+      "capability_area": "O-12",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-12-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-12-N5",
+      "capability_area": "O-12",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-12-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-13-N1",
+      "capability_area": "O-13",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-13-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-13-N2",
+      "capability_area": "O-13",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-13-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-13-N3",
+      "capability_area": "O-13",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-13-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-13-N4",
+      "capability_area": "O-13",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-13-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-13-N5",
+      "capability_area": "O-13",
+      "dimension": "D4",
+      "socle": "S2",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-13-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-14-N1",
+      "capability_area": "O-14",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-14-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-14-N2",
+      "capability_area": "O-14",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-14-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-14-N3",
+      "capability_area": "O-14",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-14-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-14-N4",
+      "capability_area": "O-14",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-14-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-14-N5",
+      "capability_area": "O-14",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-14-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-15-N1",
+      "capability_area": "O-15",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-15-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-15-N2",
+      "capability_area": "O-15",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-15-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-15-N3",
+      "capability_area": "O-15",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-15-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-15-N4",
+      "capability_area": "O-15",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-15-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-15-N5",
+      "capability_area": "O-15",
+      "dimension": "D5",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-15-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-16-N1",
+      "capability_area": "O-16",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-16-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-16-N2",
+      "capability_area": "O-16",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-16-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-16-N3",
+      "capability_area": "O-16",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-16-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-16-N4",
+      "capability_area": "O-16",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-16-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-16-N5",
+      "capability_area": "O-16",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-16-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-17-N1",
+      "capability_area": "O-17",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-17-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-17-N2",
+      "capability_area": "O-17",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-17-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-17-N3",
+      "capability_area": "O-17",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-17-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-17-N4",
+      "capability_area": "O-17",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-17-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-17-N5",
+      "capability_area": "O-17",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-17-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-18-N1",
+      "capability_area": "O-18",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-18-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-18-N2",
+      "capability_area": "O-18",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-18-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-18-N3",
+      "capability_area": "O-18",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-18-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-18-N4",
+      "capability_area": "O-18",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-18-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-18-N5",
+      "capability_area": "O-18",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-18-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-19-N1",
+      "capability_area": "O-19",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-19-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-19-N2",
+      "capability_area": "O-19",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-19-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-19-N3",
+      "capability_area": "O-19",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-19-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-19-N4",
+      "capability_area": "O-19",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-19-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-19-N5",
+      "capability_area": "O-19",
+      "dimension": "D6",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-19-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-20-N1",
+      "capability_area": "O-20",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-20-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-20-N2",
+      "capability_area": "O-20",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-20-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-20-N3",
+      "capability_area": "O-20",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-20-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-20-N4",
+      "capability_area": "O-20",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-20-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-20-N5",
+      "capability_area": "O-20",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-20-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-21-N1",
+      "capability_area": "O-21",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-21-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-21-N2",
+      "capability_area": "O-21",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-21-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-21-N3",
+      "capability_area": "O-21",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-21-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-21-N4",
+      "capability_area": "O-21",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-21-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-21-N5",
+      "capability_area": "O-21",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-21-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-22-N1",
+      "capability_area": "O-22",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-22-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-22-N2",
+      "capability_area": "O-22",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-22-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-22-N3",
+      "capability_area": "O-22",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-22-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-22-N4",
+      "capability_area": "O-22",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-22-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-22-N5",
+      "capability_area": "O-22",
+      "dimension": "D7",
+      "socle": "S6",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "hors_perimetre_tb",
+      "derive_de": {
+        "goals": [
+          "O-22-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-23-N1",
+      "capability_area": "O-23",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-23-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-23-N2",
+      "capability_area": "O-23",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-23-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-23-N3",
+      "capability_area": "O-23",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-23-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-23-N4",
+      "capability_area": "O-23",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-23-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-23-N5",
+      "capability_area": "O-23",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-23-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-24-N1",
+      "capability_area": "O-24",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-24-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-24-N2",
+      "capability_area": "O-24",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-24-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-24-N3",
+      "capability_area": "O-24",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-24-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-24-N4",
+      "capability_area": "O-24",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-24-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-24-N5",
+      "capability_area": "O-24",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-24-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "O-25-N1",
+      "capability_area": "O-25",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-25-G?"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "O-25-N2",
+      "capability_area": "O-25",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-25-G?"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "O-25-N3",
+      "capability_area": "O-25",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-25-G?"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "O-25-N4",
+      "capability_area": "O-25",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-25-G?"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "O-25-N5",
+      "capability_area": "O-25",
+      "dimension": "D8",
+      "socle": "S5",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "O-25-G?"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    },
+    {
+      "id": "X-01-N1",
+      "capability_area": "X-01",
+      "dimension": "D9",
+      "socle": "S1",
+      "niveau": 1,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "X-01-G1",
+          "X-01-G2",
+          "X-01-G3"
+        ],
+        "rubrique": [
+          "Accountability-N1",
+          "Planning-N1",
+          "Resourcing-N1"
+        ]
+      }
+    },
+    {
+      "id": "X-01-N2",
+      "capability_area": "X-01",
+      "dimension": "D9",
+      "socle": "S1",
+      "niveau": 2,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "X-01-G1",
+          "X-01-G2",
+          "X-01-G3"
+        ],
+        "rubrique": [
+          "Accountability-N2",
+          "Planning-N2",
+          "Resourcing-N2"
+        ]
+      }
+    },
+    {
+      "id": "X-01-N3",
+      "capability_area": "X-01",
+      "dimension": "D9",
+      "socle": "S1",
+      "niveau": 3,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "X-01-G1",
+          "X-01-G2",
+          "X-01-G3"
+        ],
+        "rubrique": [
+          "Accountability-N3",
+          "Planning-N3",
+          "Resourcing-N3"
+        ]
+      }
+    },
+    {
+      "id": "X-01-N4",
+      "capability_area": "X-01",
+      "dimension": "D9",
+      "socle": "S1",
+      "niveau": 4,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "X-01-G1",
+          "X-01-G2",
+          "X-01-G3"
+        ],
+        "rubrique": [
+          "Accountability-N4",
+          "Planning-N4",
+          "Resourcing-N4"
+        ]
+      }
+    },
+    {
+      "id": "X-01-N5",
+      "capability_area": "X-01",
+      "dimension": "D9",
+      "socle": "S1",
+      "niveau": 5,
+      "texte_fr": "",
+      "statut_redaction": "a_rediger",
+      "derive_de": {
+        "goals": [
+          "X-01-G1",
+          "X-01-G2",
+          "X-01-G3"
+        ],
+        "rubrique": [
+          "Accountability-N5",
+          "Planning-N5",
+          "Resourcing-N5"
+        ]
+      }
+    }
+  ]
+}
