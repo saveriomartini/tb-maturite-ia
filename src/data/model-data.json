@@ -1,0 +1,911 @@
+{
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "Strategy",
+      "dimensions": [
+        {
+          "id": "D11",
+          "name": "Alignement stratégique et Structure de l'organisation",
+          "areas": [
+            {
+              "id": "A1",
+              "name": "AI Strategy Development",
+              "level": 2,
+              "desc": "The ability of the organizational unit to define how AI will support desired business outcomes through a realistic, evolvable, and executable AI strategy",
+              "goals": [
+                {
+                  "goal": "An AI adoption scope which is consistent with the organization’s mission, vision, and business objectives is clearly defined for the organizational unit. Processes and practices are in place to",
+                  "practices": [
+                    "Identify and involve stakeholders relevant to the possible scope for AI adoption.",
+                    "Identify the business goals and requirements that are relevant to AI adoption.",
+                    "Articulate AI adoption goals clearly with objective and quantifiable outcomes.",
+                    "Align adoption with overall business objectives, values, and principles, including safety, human-centered implementation, and responsible use."
+                  ]
+                },
+                {
+                  "goal": "A strategy for adopting AI within the relevant scope is established. Processes and practices are in place to",
+                  "practices": [
+                    "Identify key goals, evaluation criteria, and milestones for the AI strategy.",
+                    "Document the AI strategy.",
+                    "Communicate the strategy for AI adoption, key milestones, and success criteria to impacted stakeholders.",
+                    "Monitor performance and progress against the strategy (e.g., as part of existing governance activities)."
+                  ]
+                },
+                {
+                  "goal": "AI adoption progress is regularly assessed against business goals, values, and principles in line with the AI strategy. Processes and practices are in place to",
+                  "practices": [
+                    "Establish a process to assess and share AI adoption progress against values, goals, and principles.",
+                    "Periodically review the AI strategy to ensure that it is current, relevant, and adjusted based on positive or negative outcomes.",
+                    "Use the outcomes of the analysis to correct alignment of AI initiative and strategy with organizational business goals, values, and principles, as needed.",
+                    "Evolve AI strategy by establishing follow-on actions as AI initiatives demonstrate positive or negative outcomes."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A2",
+              "name": "AI Partnership Development",
+              "level": 3,
+              "desc": "The ability to select and continuously evaluate partners for alignment with the organizational and AI strategy",
+              "goals": [
+                {
+                  "goal": "Awareness of the evolving AI industry and related ecosystems is maintained. Processes and practices are in place to",
+                  "practices": [
+                    "Establish AI-specific requirements for partners and third parties that align to organizational culture and risk appetite.",
+                    "Regularly assess AI market trends, new versions, and new technologies to inform decisions.",
+                    "Regularly assess the evolution of other technologies that support AI in the technology stack for relevance.",
+                    "Identify potential partners and their capabilities in the organization’s industry or community of interest.",
+                    "Review and communicate the state of the industry and potential partners to internal stakeholders."
+                  ]
+                },
+                {
+                  "goal": "Potential external partners, including vendors, whose AI capabilities are consistent with AI adoption goals, are engaged. Processes and practices are in place to",
+                  "practices": [
+                    "Identify the acquisition approach for AI data, models, and solutions (e.g., buy off-the-shelf, fine-tune existing solutions, or build in-house).",
+                    "Identify key external technology enablers whose capabilities complement rather than replicate existing AI capabilities.",
+                    "Evaluate prospective AI vendor capabilities (e.g., regarding data sharing, security, responsible AI, human-centeredness, suitability, and evolution approaches against fitness to AI strategy and risk appetite).",
+                    "Define licensing requirements and other costs as they relate to AI solutions.",
+                    "Select third-party vendors and services based on their ability to meet scaling objectives and other requirements."
+                  ]
+                },
+                {
+                  "goal": "Contracts and mechanisms to form relationships are reviewed to ensure consistency with AI adoption goals. Processes and practices are in place to",
+                  "practices": [
+                    "Form contracts and partnerships that preserve flexibility and control (e.g., avoiding undesirable vendor lock-in).",
+                    "Define ownership of data, models, overall systems, system artifacts, and so on in contracts.",
+                    "Define performance expectations, quality and acceptance criteria, and measurements in the contract for partners and externally developed AI solutions.",
+                    "Include vendor non-performance or failure of performance expectations as applicable in contract language concerning breach and remediation."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A3",
+              "name": "Organizational Structure Calibration",
+              "level": 3,
+              "desc": "The ability for the organizational unit to examine their current organizational processes and structures and align them to support AI adoption",
+              "goals": [
+                {
+                  "goal": "Organizational processes are assessed to identify necessary changes or to define new processes required to effectively to manage AI adoption and AI initiatives. Processes and practices are in place to",
+                  "practices": [
+                    "Identify the organizational and technology processes that are relevant to AI adoption.",
+                    "Review organizational processes and AI strategy alignment regularly to identify changing business needs.",
+                    "Add or change organizational processes based on the review.",
+                    "Evaluate and update as needed change management processes to manage the impacts of AI technology, solutions, and initiatives."
+                  ]
+                },
+                {
+                  "goal": "The organizational structure is proactively assessed to ensure support for AI adoption, including—as relevant—design, development, implementation, monitoring, and operationalization of AI solutions. Processes and practices are in place to",
+                  "practices": [
+                    "Determine personnel, partners, and workflows associated with the organization’s AI initiatives.",
+                    "Map ownership and responsibility for personnel, partners, and workflows to the organizational structure.",
+                    "Review the effectiveness of the organizational structure in executing AI initiatives and achieving AI-relevant business goals and ROI.",
+                    "Revise the organizational structure to improve progress on AI adoption."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A4",
+              "name": "Future Ready Planning",
+              "level": 5,
+              "desc": "The ability to prepare for possible futures by using analytic models (e.g., causal, statistical, and simulation) and maintaining a program of outreach and collaboration to construct strategic roadmaps for AI‑related capabilities (e.g., skills, processes, and technologies)",
+              "goals": [
+                {
+                  "goal": "Analytic methods for planning, monitoring, developing, testing, and deploying AI-related capabilities are established and maintained. Processes and practices are in place to",
+                  "practices": [
+                    "Establish and maintain analytic methods (e.g., causal, statistical, simulation) to measure the effectiveness of the organizational unit’s AI-related capabilities in achieving business objectives.",
+                    "Use analytic methods and models to monitor the business-as-usual use of the organizational unit’s AI-related technology and predict (estimate) outcomes and failure rates.",
+                    "Use analytic methods to determine where the organizational unit’s AI-related capabilities should be improved and evaluate proposed changes for impact on achieving business objectives.",
+                    "Use analytic methods in root cause analysis, to identify how to prevent failures.",
+                    "Periodically validate the accuracy and performance of analytic models (e.g., by comparing predicted results to actual results over time). Organizational Strategy Organizational Strategy"
+                  ]
+                },
+                {
+                  "goal": "The AI strategy is periodically updated to position the organization across multiple futures and time horizons. Processes and practices are in place to",
+                  "practices": [
+                    "Establish and maintain a set of possible futures (or scenarios) for the business environment, operational and organizational risks, and AI-related capabilities.",
+                    "Elicit ideas for improving the organization’s AI-related capabilities from internal sources (e.g., organizational brainstorming sessions, proposals volunteered by staff) and external sources (e.g., those engaged in technology scouting, outreach efforts, external collaborator discussions, and benchmarking visits).",
+                    "Develop possible organizational roadmaps based on inputs.",
+                    "Use analytic models to evaluate alternative roadmaps, including an evaluation of estimated time and cost to implement.",
+                    "Select roadmaps that provide resilience to unexpected events (changes to business environment, threat sources, and underlying technologies), and document as part of an updated AI Strategy."
+                  ]
+                },
+                {
+                  "goal": "AI related community outreach and collaborations are established to shape the relevant communities and support the organization’s long-term vision. Processes and practices are in place to",
+                  "practices": [
+                    "Develop collaborations with thought leader organizations (academia, industry, authorities).",
+                    "Share best practices and experiences to improve and influence the community.",
+                    "Identify developments and future directions for possible selection and inclusion in the organization’s AI strategy and capabilities."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#ff6464"
+        },
+        {
+          "id": "D12",
+          "name": "Motivations et Justification de l'adoption",
+          "areas": [
+            {
+              "id": "A5",
+              "name": "Gestion du budget et des investissements IA",
+              "pending": true,
+              "level": 2,
+              "desc": "Area issue de la consolidation des modèles (Matrice N2) — objectifs et pratiques à définir.",
+              "goals": []
+            },
+            {
+              "id": "A6",
+              "name": "Pressions et motivations externes",
+              "pending": true,
+              "level": 1,
+              "desc": "Area issue de la consolidation des modèles (Matrice N2) — objectifs et pratiques à définir.",
+              "goals": []
+            },
+            {
+              "id": "A7",
+              "name": "Adéquation et proportionnalité de la solution (right-sizing)",
+              "pending": true,
+              "level": 2,
+              "desc": "Area issue de la consolidation des modèles (Matrice N2) — objectifs et pratiques à définir.",
+              "goals": []
+            }
+          ],
+          "color": "#cbe1c0"
+        }
+      ]
+    },
+    {
+      "id": "B2",
+      "name": "Stakeholders",
+      "dimensions": [
+        {
+          "id": "D21",
+          "name": "Compétences de la main-d'œuvre et Culture",
+          "areas": [
+            {
+              "id": "A8",
+              "name": "AI-Literate Workforce Development",
+              "level": 1,
+              "desc": "The ability to select and develop qualified staff with the skills and knowledge needed to effectively use AI within their work",
+              "goals": [
+                {
+                  "goal": "Roles and competencies (knowledge, skills, and abilities) that support AI adoption are identified and documented. Processes and practices are in place to",
+                  "practices": [
+                    "Identify the roles, competencies, and skills needed to support AI adoption within the organizational unit.",
+                    "Include completion of training and AI-related competencies in the organization’s workforce management process and career progression ladder.",
+                    "Benchmark staff skills to industry or community peers (informally or formally, such as through discussions with other entities or through a consulting engagement)."
+                  ]
+                },
+                {
+                  "goal": "Training is delivered to develop and maintain AI-related competencies. Processes and practices are in place to",
+                  "practices": [
+                    "Establish training requirements and processes for AI-related roles.",
+                    "Create or acquire AI-related training.",
+                    "Deliver training.",
+                    "Enforce compliance with training requirements."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A9",
+              "name": "Organizational Culture Evolution",
+              "level": 3,
+              "desc": "The ability to establish a proactive, AI‑native culture within the organizational unit through human resource processes and communication to change the mindset of how the organization operates",
+              "goals": [
+                {
+                  "goal": "A culture that is open, participative, collaborative, and engaged in learning is established. Processes and practices are in place to",
+                  "practices": [
+                    "Establish and sustain an open, collaborative, and participatory work environment, where AI strategy is developed collaboratively and individuals are encouraged to experiment with AI.",
+                    "Communicate business values and principles to teams and individuals and reinforce AI adoption key messages regularly.",
+                    "Collect and analyze internal and external stakeholders’ understanding and perceptions of AI initiatives, including those who will be affected by the outputs, actions, or decisions of AI solutions."
+                  ]
+                },
+                {
+                  "goal": "Staff aligned with the organizational unit’s AI culture are acquired and developed. Processes and practices are in place to",
+                  "practices": [
+                    "Recruit, hire, and transition new staff (including from within the organization) capable of taking on key roles in current and near-future AI-related work.",
+                    "Recognize and reward individuals and teams that make contributions to the organizational unit’s AI adoption goals and AI-native culture.",
+                    "Enable staff to rapidly acquire the skills they need when they take on new AI-related roles.",
+                    "Assess adoption strategy and performance to identify legacy or traditional jobs, competencies, or skill levels that may be deprecated or become less critical in the future.",
+                    "Re-skill staff as necessary, to support AI adoption."
+                  ]
+                },
+                {
+                  "goal": "Workforce preparation for AI adoption is monitored and managed. Processes and practices are in place to",
+                  "practices": [
+                    "Track work performance on AI-related projects so that teams can identify relevant near-term skills development activities that should be pursued.",
+                    "Include performance against and support for AI adoption in staff goals and objectives.",
+                    "Revise or establish career tracks in particular areas of AI that are key to the organization’s future work activities."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#fe9f4d"
+        },
+        {
+          "id": "D22",
+          "name": "Éthique et Gestion du Risque",
+          "areas": [
+            {
+              "id": "A10",
+              "name": "Risk Management",
+              "level": 2,
+              "desc": "The ability of the organization to identify, understand, and disposition AI‑related risks in accordance with the organizational unit’s culture, requirements, and risk tolerance",
+              "goals": [
+                {
+                  "goal": "Risks due to the organizational unit’s AI adoption are identified, evaluated, and communicated. Processes and practices are in place to",
+                  "practices": [
+                    "Identify types or categories of risks that will be impacted by the organizational unit’s AI adoption (e.g., operational, compliance, reputational, third-party, information security, and privacy risks).",
+                    "Evaluate existing risks which may become more significant or potentially constrain AI adoption efforts.",
+                    "Adjust the organization’s risk tolerance and appetite in impacted domains, if appropriate.",
+                    "Define and communicate to stakeholders the organization’s risk appetite or acceptable level of risk for each type or category, including risks inherent to AI adoption.",
+                    "Make appropriate changes to the management of risks in the impacted domains."
+                  ]
+                },
+                {
+                  "goal": "An AI risk management process is established. Processes and practices are in place to",
+                  "practices": [
+                    "Integrate management of AI risks into existing risk processes and systems (e.g., existing risk frameworks and enterprise governance, risk, and compliance [EGRC] solutions).",
+                    "Define and communicate expected controls for AI-specific areas, based on inherent risks (e.g., explainability, human-in-the-lead automation, prompt filtering, bias, or identity).",
+                    "Identify AI-related risks as part of routine operational activities.",
+                    "Assess AI related risks and findings.",
+                    "Disposition AI risks (e.g., mitigate, accept, transfer, monitor)."
+                  ]
+                },
+                {
+                  "goal": "Independently test the effectiveness of expected controls relevant to AI adoption. Processes and practices are in place to",
+                  "practices": [
+                    "Identify the expected controls to mitigate risks related to AI adoption, in accordance with the organizational unit’s tolerance or risk management guidance.",
+                    "Adjust the organization’s risk tolerance and appetite in impacted domains, if appropriate.",
+                    "Test the design and effectiveness of expected controls.",
+                    "Use testing results to identify risks, correct control deficiencies, or identify new controls, as needed."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A11",
+              "name": "Policy and Compliance",
+              "level": 2,
+              "desc": "The ability of the organizational unit to establish and follow relevant policies, adopt AI‑related standards relevant to its domain and risk appetite, and adhere to compliance obligations",
+              "goals": [
+                {
+                  "goal": "The organizational unit’s policies are aligned to AI adoption. Processes and practices are in place to",
+                  "practices": [
+                    "Identify existing organizational policies across domains (e.g., technology, human resources [HR], third-party risk or vendor management) that are relevant to AI adoption.",
+                    "Evaluate relevant policies for needed changes based on AI adoption priorities or strategies.",
+                    "Implement changes and establish new policies as indicated by the evaluation.",
+                    "Establish evaluation of AI risks and priorities as part of formal, periodic policy review activities."
+                  ]
+                },
+                {
+                  "goal": "Compliance to relevant industry standards, regulatory requirements, and contractual obligations is managed. Processes and practices are in place to",
+                  "practices": [
+                    "Identify the impact of the organization’s AI adoption plans on compliance with existing regulatory requirements and industry standards.",
+                    "Identify new regulatory requirements or applicable industry standards relating to AI adoption.",
+                    "Update existing processes, practices, and controls to address regulatory requirements and standards related to AI adoption.",
+                    "Monitor and manage AI-related compliance."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A12",
+              "name": "Responsible AI",
+              "level": 2,
+              "desc": "The ability to define and enforce the responsible development and use of AI consistently with the organizational unit’s mission, dependence on technology, stakeholders, and risk appetite",
+              "goals": [
+                {
+                  "goal": "Stakeholders that will be impacted by the adoption of AI are identified. Processes and practices are in place to",
+                  "practices": [
+                    "Identify the populations of users, stakeholders, citizens, and systems that may be affected by the organizational unit’s adoption of AI.",
+                    "Identify any requirements specific to affected populations (e.g., based on legal jurisdiction or the impact to historically vulnerable populations).",
+                    "Consider potential impacts to resource utilization (e.g., energy use and sustainability) that may result from AI adoption.",
+                    "Evaluate the relevant societal or legal norms, mores, and rules that should be considered."
+                  ]
+                },
+                {
+                  "goal": "The organizational unit’s approach to responsible AI is defined. Processes and practices are in place to",
+                  "practices": [
+                    "Identify the services and products that are relevant to stakeholders and that will be impacted by AI adoption.",
+                    "Identify the risks to stakeholders that are inherent to the products and services.",
+                    "Establish the principles or elements of responsible AI that will be the focus of AI adoption for the assessed organizational unit (e.g., privacy, transparency, bias, fair treatment) for the identified user, stakeholder, citizen groups, and systems. Risk and Governance Risk and Governance"
+                  ]
+                },
+                {
+                  "goal": "The organizational unit’s approach to responsible AI is implemented. Processes and practices are in place to",
+                  "practices": [
+                    "Communicate the responsible AI approach to relevant internal and external stakeholders.",
+                    "Identify the policies, processes, and controls relevant to enforcing the organizational unit’s responsible AI approach.",
+                    "Change or establish relevant policies, processes, and controls across the development and operation of AI solutions.",
+                    "As technology and its use cases evolve, review the responsible AI approach to maintain and communicate alignment with evolving needs and risks. All goals and applicable practices of the Risk Management capability area need to be accomplished for this dimension to be at Implemented AI Level Maturity (Level 2)."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#fff6b6"
+        }
+      ]
+    },
+    {
+      "id": "B3",
+      "name": "Business",
+      "dimensions": [
+        {
+          "id": "D31",
+          "name": "Innovation, Mesure et Analyse",
+          "areas": [
+            {
+              "id": "A13",
+              "name": "Experimentation",
+              "level": 1,
+              "desc": "The ability of an organizational unit to experiment with use cases and the application of AI to support the design, execution, and evaluation of AI‑powered workflows",
+              "goals": [
+                {
+                  "goal": "Proofs of concept are created to confirm expectations, engage stakeholders, and identify risks. Processes and practices are in place to",
+                  "practices": [
+                    "Identify business and workflow objectives and opportunities.",
+                    "Identify use cases and proofs of concept.",
+                    "Define the minimal viable AI functionality in an iterative process.",
+                    "Compare the organization’s compliance and other enterprise requirements against proofs of concept to ensure alignment.",
+                    "Define deployment readiness criteria, including performance, risk controls, and user readiness."
+                  ]
+                },
+                {
+                  "goal": "Operational experimentation is conducted to validate proofs of concept, the underlying use cases, and their technical and business risks. Processes and practices are in place to",
+                  "practices": [
+                    "Plan and communicate experiment design, including the people who will participate (end users), the tasks they will be asked to attempt, and success criteria.",
+                    "Provide a representative sandbox area or environment to support the lifecycle of experiments, including testing and data collection.",
+                    "Collect qualitative and quantitative data about performance to refine and improve the proof of concept and use case.",
+                    "Analyze experimentation findings to provide prioritized recommendations for operational deployment and scaling."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A14",
+              "name": "Business Workflow Innovation",
+              "level": 3,
+              "desc": "The ability of the organizational unit to rethink and redesign existing business processes and workflows to leverage AI with improved value‑based outcomes and ROI",
+              "goals": [
+                {
+                  "goal": "Business processes and workflows that can be supported by AI to create efficiencies and improvements are identified and prioritized. Processes and practices are in place to",
+                  "practices": [
+                    "Identify and document workflows and business processes that align to the intended scope for AI adoption.",
+                    "Analyze candidate business processes for efficiency (e.g., identify steps that do not add value, quantify drivers and inputs to cost, and review existing key performance indicators [KPIs] and historical performance).",
+                    "Evaluate whether workflow performance objectives can be feasibly achieved through a non-AI process optimization before investing in AI-enabled solutions.",
+                    "Prioritize candidate business processes and workflows for AI adoption according to estimated improvements and ROI against business goals."
+                  ]
+                },
+                {
+                  "goal": "Prioritized business workflows are assessed to identify risk and ensure the appropriateness of applying AI.",
+                  "practices": [
+                    "Identify the requirements and key performance indicators for prioritized business processes.",
+                    "Identify the use cases and application instances of AI that support prioritized workflows.",
+                    "Conduct technical reviews to evaluate the applicability and appropriateness of applying AI solutions to workflows, including assessing data volume, velocity, variety, veracity, value, and risks."
+                  ]
+                },
+                {
+                  "goal": "AI-enabled workflows are validated for operational scaling. Processes and practices are in place to",
+                  "practices": [
+                    "Define operational ownership and support responsibilities for AI-enabled workflows.",
+                    "Validate integration with upstream and downstream systems with fallback, exception handling, and escalation mechanisms for AI failures.",
+                    "For agentic AI workflows, clarify the handoffs and workflows involving agents and humans and the possible implications for organizational structure and staff responsibilities.",
+                    "Ensure that periodically or based on changes, requirements and controls for AI solutions are updated based on the requirements and inherent risks of the workflows."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A15",
+              "name": "Human-in-the-Lead Automation",
+              "level": 3,
+              "desc": "The ability to design AI systems that ensure appropriate human accountability, oversight, and judgment in decisions made by or informed by the system’s outputs—particularly when those decisions affect individual or community health, safety, quality of life, reputation, or autonomy",
+              "goals": [
+                {
+                  "goal": "Systems and workflows are designed to empower humans by providing assistance, augmentation, or autonomy, as appropriate, through understandable interfaces and interactions. Processes and practices are in place to",
+                  "practices": [
+                    "Design workflows and interfaces that are human-centered, empowering humans with appropriate decision oversight and accountability throughout the process.",
+                    "Clearly communicate the human and AI responsibility for outcomes and enforce ethical, equitable, and responsible development and use of AI.",
+                    "Regularly collect and integrate into the system feedback from users regarding system usability, trustworthiness, correctness, and derived value regularly collected.",
+                    "Conduct regular reviews of AI system performance and audit automated actions to identify issues that negatively affect human-in-the-lead automation."
+                  ]
+                },
+                {
+                  "goal": "Oversight for critical decisions is implemented. Processes and practices are in place to",
+                  "practices": [
+                    "Define critical and irreversible decision points or processes that, based on risk, criticality, or anticipated AI performance, require enhanced, continuous, and/or specific human oversight. (Examples include outcomes affecting individual and community health, individual autonomy, safety, quality of life, or reputation.)",
+                    "Define how an AI failure would impact the process or outcomes of critical and irreversible decisions.",
+                    "Establish oversight and control mechanisms for workflows requiring human actions, at critical and irreversible decision points."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A16",
+              "name": "Measurement and Analysis",
+              "level": 3,
+              "desc": "The ability to measure and analyze AI‑enabled workflows and initiatives’ effectiveness and performance",
+              "goals": [
+                {
+                  "goal": "Measurement objectives, success criteria, and activities for AI-enabled workflows and business goals are identified. Processes and practices are in place to",
+                  "practices": [
+                    "Establish and maintain measurement objectives derived from the workflow goals and organizational unit objectives.",
+                    "Specify activities to measure the AI-native workflows against organizational unit objectives.",
+                    "Obtain and store measurement data."
+                  ]
+                },
+                {
+                  "goal": "Measurement results for AI-enabled workflows are provided. Processes and practices are in place to",
+                  "practices": [
+                    "Analyze and interpret collected measurement data.",
+                    "Determine the appropriate method of communicating results.",
+                    "Establish measurement dashboards to address project-specific and division needs and for the appropriate management levels.",
+                    "Define the frequency and methodology for future measurements."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#f8d3af"
+        },
+        {
+          "id": "D32",
+          "name": "Gouvernance des données",
+          "areas": [
+            {
+              "id": "A17",
+              "name": "Data Lifecycle Management",
+              "level": 2,
+              "desc": "The ability to acquire data that are fit for the intended purpose and relevant to the use cases and workflows",
+              "goals": [
+                {
+                  "goal": "Relevant data are acquired and the provenance of all data are maintained. Processes and practices are in place to",
+                  "practices": [
+                    "Identify, collect, acquire, and/or create data that support development, operation, and testing of AI solutions that support business workflows.",
+                    "Identify and document the sources and categories of data (e.g., type of product, business line) that may be ingested as part of AI initiatives.",
+                    "Document and track datasets and the AI solutions connected to them across all AI initiatives to maintain contextual provenance for structured and unstructured data.",
+                    "Maintain dataset versioning and document all data transformations, processing, retention, and disposal steps.",
+                    "Engage subject matter experts to evaluate data sources and to confirm data relevancy and appropriateness for the intended use case.",
+                    "Develop, maintain, and provide access to up-to-date dataset descriptions, data cards, data dictionaries, metadata, and ontologies as appropriate."
+                  ]
+                },
+                {
+                  "goal": "Data stewardship is assigned to formalize the responsibility for the data and its lifecycle. Processes and practices are in place to",
+                  "practices": [
+                    "Document and mark all systems and data sources that provide authoritative records of data.",
+                    "Assign owners and subject matter experts to the sources or categories of data.",
+                    "Specify responsibilities for data owners and subject matter experts."
+                  ]
+                },
+                {
+                  "goal": "Data privacy and security are maintained throughout the data lifecycle. Processes and practices are in place to",
+                  "practices": [
+                    "Identify and classify data, including information about people or groups of people, personally identifiable information (PII), personal health information, sensitive company data, and other sensitive data according to applicable regulations and norms.",
+                    "Restrict access to data based on sensitivity, need-to-know, and least privilege principles.",
+                    "Update and maintain incident response and mitigation plans for data leaks from AI models, agentic systems, or workflows.",
+                    "Protect data with controls that are commensurate to the organization’s threats and AI architectures (e.g., increased reliance on application programming interfaces [APIs] or specific vendors).",
+                    "Maintain controls to ensure compliance to data subject rights according to applicable law (e.g., rights to restrict use, right to erasure).",
+                    "Identify and control privacy risks related to data aggregation and analysis by AI solutions."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A18",
+              "name": "Data Quality Assurance",
+              "level": 2,
+              "desc": "The ability to ensure that data supporting all AI related activities within the organizational unit are (and remain) fit for the intended purpose, organized, reliable, and usable throughout the entire lifecycle of AI initiatives including ML model development and generative and agentic AI solutions",
+              "goals": [
+                {
+                  "goal": "Requirements for data quality are identified. Processes and practices are in place to",
+                  "practices": [
+                    "Engage all relevant stakeholders to define data quality needs and set expectations for data content.",
+                    "Evaluate data for issues that may result in unwanted outcomes or potential harms.",
+                    "Evaluate data for inherent bias and document any significant considerations that relate to the intended use case(s).",
+                    "Identify the potential harms that may result from misuse of the data, combinations of data, and misuse of the resulting AI system (e.g., to humans, environments, technology) and determine a disposition as appropriate."
+                  ]
+                },
+                {
+                  "goal": "Structured and unstructured data in AI systems are prepared for appropriate use. Processes and practices are in place to",
+                  "practices": [
+                    "Confirm data relevancy and appropriateness for the intended use case.",
+                    "Key contextual data is provided to the operational system (e.g., prompts, RAG lookup, agentic applications).",
+                    "Normalize structured data using common practices and formats and select and store novel data points for future analysis.",
+                    "Split data into training, testing, and/or validation sets while retaining variation of data across all sets for traditional ML solutions.",
+                    "Make unstructured data (e.g., text, images, audio, and other non-tabular data) reliable, usable, and governable for downstream use by using standardized formats, clear labels, and metadata."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#c6dcff"
+        }
+      ]
+    },
+    {
+      "id": "B4",
+      "name": "Technology",
+      "dimensions": [
+        {
+          "id": "D41",
+          "name": "Architecture et Intégration des technologies IA",
+          "areas": [
+            {
+              "id": "A19",
+              "name": "AI Architecting",
+              "level": 2,
+              "desc": "The ability to develop and integrate AI components and AI‑enabled systems to support the business requirements of organizations, ensuring that the resulting product possesses the required quality attributes",
+              "goals": [
+                {
+                  "goal": "Maintainable AI-enabled system architectures which meet stakeholder requirements are developed. Processes and practices are in place to",
+                  "practices": [
+                    "Elicit and document stakeholder requirements for system architectures to support the short- and long-term needs of AI solutions.",
+                    "Define the reference architecture of the technology stack to govern the implementation of AI systems and interactions across the technology ecosystems, including those provided by external partners and information systems.",
+                    "Use clearly defined standards and APIs to connect new AI systems to existing ones, using industry-wide standards when possible."
+                  ]
+                },
+                {
+                  "goal": "Security and operational risks are addressed in systems architecture. Processes and practices are in place to",
+                  "practices": [
+                    "Maintain information about expected data flows involving AI-powered systems and agents.",
+                    "Include AI-related security specifications in architectural designs (e.g., monitoring, control of data flows, and short-lived or time-bound credentials).",
+                    "Define and integrate the approach to AI agent identity, access management, authentication, and authorization to control operational risks.",
+                    "Segment access and apply principles of the separation of duties to AI agents based on their role and identity."
+                  ]
+                },
+                {
+                  "goal": "The scalability needs of an AI solution are considered in system design. Processes and practices are in place to",
+                  "practices": [
+                    "Define how resources will be vertically or horizontally scaled to support users and AI-related workloads to satisfy scalability expectations.",
+                    "Determine how resource demand and requirements to support the intended scale of the AI activity will be assessed, supported, and communicated (i.e., sufficient resources to handle data storage, model inference needs, and networking needs)."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A20",
+              "name": "Test and Evaluation",
+              "level": 2,
+              "desc": "The ability to perform verification and validation to provide evidence that the AI solutions meet their technical requirements and support business goals",
+              "goals": [
+                {
+                  "goal": "AI solution-relevant testing in addition to routine software testing is performed for AI-specific functionalities of systems. Processes and practices are in place to",
+                  "practices": [
+                    "Identify AI-specific functionalities that should be tested.",
+                    "As needed, test AI functionalities in an appropriately isolated environment.",
+                    "Conduct user usability and user acceptance testing (UAT) of AI solutions or make any needed changes to existing UAT.",
+                    "Use regression and integration testing focused on AI capabilities to ensure safe interactions with legacy systems.",
+                    "Ensure that specialized tests are defined to catch AI-specific issues (e.g., data drift and hallucinations)."
+                  ]
+                },
+                {
+                  "goal": "The ability of the AI solution to perform to the expected quality levels is properly tracked and documented. Processes and practices are in place to",
+                  "practices": [
+                    "Define an appropriate method to baseline and validate outputs of AI functionalities that do not always produce the same result.",
+                    "Ensure system and process owners are aware of test results and their level of repeatability.",
+                    "Ensure that AI-functionality testing can be automated (including the testing of generative AI results).",
+                    "Properly track changes in response to testing outcomes over time and retest as appropriate."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A21",
+              "name": "Legacy Integration",
+              "level": 3,
+              "desc": "The ability to assemble AI‑enabled products and workflows that enhance the capabilities of legacy systems and interact with existing tools, data, and infrastructure",
+              "goals": [
+                {
+                  "goal": "The legacy system integration of AI components is achieved following sound architecture approaches and interoperability. Processes and practices are in place to",
+                  "practices": [
+                    "Elicit system-level needs and different quality attributes from all relevant stakeholders when integrating with legacy systems.",
+                    "Evaluate AI-components for integrability with legacy systems, including the applicability of autonomous AI solutions (i.e., agentic AI).",
+                    "Identify legacy system integration points for AI-components being developed or onboarded for integration, to support implementation.",
+                    "Assess gaps against requirements in the technology stack and equipment, including hardware and infrastructure, access to AI-components, and so on.",
+                    "Design data processing systems to allow gathering of production data for analysis, test, and training."
+                  ]
+                },
+                {
+                  "goal": "The legacy system lifecycle is managed on an ongoing basis to enable the seamless integration with AI systems and components. Processes and practices are in place to",
+                  "practices": [
+                    "Update existing reference architectures to include AI components.",
+                    "Update legacy infrastructure libraries and APIs regularly to stay in sync with the most recent capabilities and security updates.",
+                    "Retire applications, systems, and infrastructure to optimize technology investments, support AI adoption, and minimize end-of-life (EOL) and end-of-support (EOS) risks."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A22",
+              "name": "Transparency and Explainability",
+              "level": 3,
+              "desc": "The ability to ensure that the AI systems deliver understandable, use case appropriate explanations of their behavior and outputs to provide an effective trustworthy experience and traceability to understand agentic solution behaviors",
+              "goals": [
+                {
+                  "goal": "Requirements for transparency and explainability are identified for the AI solutions. Processes and practices are in place to",
+                  "practices": [
+                    "Elicit, document, and collect from relevant stakeholders (including the engineering teams) explainability and traceability requirements that support operational, compliance, and enterprise goals.",
+                    "Elicit, collect, and document explainability and understandability requirements from end users to support the development of trustworthy systems."
+                  ]
+                },
+                {
+                  "goal": "Requirements for transparency, explainability and understandability are explicitly addressed in the AI solutions’ designs. Processes and practices are in place to",
+                  "practices": [
+                    "Follow clearly defined protocols on AI-components to expose the traceability and explainability of AI-specific decisions.",
+                    "Establish mechanisms to track and log explainability-related attributes.",
+                    "Design component interactions to expose transparency and explainability attributes. Engineering Engineering"
+                  ]
+                },
+                {
+                  "goal": "Explanations provided by AI solutions are relevant and effective for end users of the systems. Processes and practices are in place to",
+                  "practices": [
+                    "Identify content, interactions, and outputs that may be confusing and determine when, where, and how to provide useful explanations of AI system outputs to users.",
+                    "Use appropriate interaction design practices and elicit feedback from end users to validate that explanations of the system’s outputs are understandable and useful."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#b0d2f6"
+        },
+        {
+          "id": "D42",
+          "name": "Production et Gestion de modèles (MLOPS)",
+          "areas": [
+            {
+              "id": "A23",
+              "name": "AI Model Management",
+              "level": 2,
+              "desc": "The ability to manage the lifecycle of AI models, including their decommissioning",
+              "goals": [
+                {
+                  "goal": "The version of models used for inference is tracked and controllable at the operation’s end point. Processes and practices are in place to",
+                  "practices": [
+                    "Use version control for the model, related AI, software components, and datasets and track the lineage of data and trained models.",
+                    "Archive and make available previous model versions through an API.",
+                    "Use a model serving framework that can swap models with minimal to no unintended consequences."
+                  ]
+                },
+                {
+                  "goal": "Changes to model availability are documented and communicated clearly to relevant stakeholders. Processes and practices are in place to",
+                  "practices": [
+                    "Have a stable retraining processes that can be run by authorized users.",
+                    "Define specific conditions to automatically retrigger retraining based on monitored values.",
+                    "Archive generative AI model artifacts and metadata (e.g., version, release date, configuration parameters, temperature, seeds, prompts) to ensure consistent performance when generative AI models evolve."
+                  ]
+                },
+                {
+                  "goal": "Gated evaluation conditions are met before models are made available for AI initiatives or are used as part of AI solutions. Processes and practices are in place to",
+                  "practices": [
+                    "Run an AI initiative defined model test suite as part of the model release process.",
+                    "Define and implement AI solution tests to detect changes to AI solutions.",
+                    "Assess and disposition any risks of the AI model deployment or change."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A24",
+              "name": "AI Model and Agent Security",
+              "level": 2,
+              "desc": "The ability to secure AI solutions, agents, and supporting data to mitigate operational risks, prevent compromises to the integrity of AI solutions and data, and control the actions of AI agents",
+              "goals": [
+                {
+                  "goal": "AI models and agents are protected to prevent compromises or impacts to the integrity of code, AI models, or data. Processes and practices are in place to",
+                  "practices": [
+                    "Implement integrity controls (e.g., code signing, code provenance) in AI solution pipelines.",
+                    "Apply heightened scrutiny for access to models and data (for example applying privileged identity management, multifactor authentication, and appropriate access control models [e.g., attribute and role-based access controls] to entitlements affecting pipelines and production environments).",
+                    "Ensure the integrity and security controls for the technology used to support AI solutions, including applicable cybersecurity practices. Operations Operations"
+                  ]
+                },
+                {
+                  "goal": "Actions by AI models and agents are monitored and controlled. Processes and practices are in place to",
+                  "practices": [
+                    "Identify and define the allowable entitlements for AI models, agents, and systems.",
+                    "Apply identity and access management principles and practices to non-human entities (e.g., system and service accounts, AI agents).",
+                    "Define and implement monitoring and appropriate analytics for the actions of agents as part of AI-solution monitoring."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A25",
+              "name": "Monitoring",
+              "level": 3,
+              "desc": "The ability to observe the AI‑specific behavior of deployed systems and to collect data about their performance and execution",
+              "goals": [
+                {
+                  "goal": "Actionable information is collected and used concerning solutions in operation. Processes and practices are in place to",
+                  "practices": [
+                    "Establish monitoring requirements for AI solutions (e.g., performance, drift detection, degradation, and usage).",
+                    "Capture user feedback on product performance and model functionality.",
+                    "Collect and store monitoring output for system and human review.",
+                    "Use monitoring results to improve AI solutions.",
+                    "Implement continuous monitoring for agentic and autonomous solutions."
+                  ]
+                },
+                {
+                  "goal": "Failures in AI solutions are detected and dispositioned. Processes and practices are in place to",
+                  "practices": [
+                    "Establish an incident response plan providing guidelines for detection, correlation, escalation, and response to AI solution events, failures, and incidents.",
+                    "Generate automatic failure alerts for recurring data pipelines (automated pipelines running at regular, scheduled intervals).",
+                    "Document roles, responsibilities, and communication channels for responses to AI-related failures."
+                  ]
+                },
+                {
+                  "goal": "Operational data for legal, compliance, accounting, and auditing uses is collected. Processes and practices are in place to",
+                  "practices": [
+                    "Monitor the use of AI systems to detect and identify inappropriate use.",
+                    "Collect evidence of compliance with regulation.",
+                    "Collect cost and revenue data along with model outputs to support ROI analysis."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#659df2"
+        },
+        {
+          "id": "D43",
+          "name": "Infrastructure technologique ICT",
+          "areas": [
+            {
+              "id": "A26",
+              "name": "Technology Infrastructure",
+              "level": 2,
+              "desc": "The ability to provide technology infrastructure supporting the long‑ term success of AI initiatives",
+              "goals": [
+                {
+                  "goal": "Technology infrastructure requirements to support AI initiatives are defined. Processes and practices are in place to",
+                  "practices": [
+                    "Elicit and document infrastructure requirements and computing needs to support AI adoption (e.g., fast storage, high bandwidth, and accelerators).",
+                    "Assess infrastructure components for trade-offs related to key AI-relevant service level concerns (e.g., resource overload, availability, security, intent traceability, data control).",
+                    "Periodically reassess and update infrastructure requirements as AI solutions and AI-relevant technologies evolve."
+                  ]
+                },
+                {
+                  "goal": "Technology infrastructure for AI initiatives is provided. Processes and practices are in place to",
+                  "practices": [
+                    "Plan and allocate technology infrastructure.",
+                    "Make infrastructure resources available for teams to test and implement AI solutions.",
+                    "Measure and report infrastructure performance and related costs analysis, including usage, maintenance, service, token limits, and so on."
+                  ]
+                },
+                {
+                  "goal": "A proactive technology refresh strategy is established. Processes and practices are in place to",
+                  "practices": [
+                    "Collect and analyze data on AI technologies and supporting infrastructure to inform technology lifecycle management and refresh decisions.",
+                    "Define clear timelines to proactively update AI solutions and AI-relevant technologies.",
+                    "Upgrade technology, including libraries, AI solutions, APIs, infrastructure, and software, including resolving vulnerabilities and other cybersecurity risks."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A27",
+              "name": "Supply Chain Management",
+              "level": 3,
+              "desc": "The ability to identify, analyze, and manage existing supply chain and third‑party dependencies related to AI systems and products",
+              "goals": [
+                {
+                  "goal": "An inventory of third-party vendors and dependencies is maintained that includes AI-related third parties. Processes and practices are in place to",
+                  "practices": [
+                    "Maintain an inventory of third parties providing AI-relevant data, models, solutions, and tooling, whether on-boarded to the organization’s technology environment or hosted externally.",
+                    "Prioritize third parties by their criticality and impact on AI adoption goals and risk appetite.",
+                    "Track information relevant to AI solutions as part of the inventory (e.g., vendor’s use of foundation models, data practices, data hosting location, and fourth or nth parties).",
+                    "Periodically update the list of third parties and dependencies."
+                  ]
+                },
+                {
+                  "goal": "Assess third parties and suppliers to ensure compliance with organizational requirements and risk appetite for AI solutions. Processes and practices are in place to",
+                  "practices": [
+                    "Identify and track requirements for third parties (e.g., data sharing, security, responsible AI, human-centeredness, or model fitness).",
+                    "Monitor or assess third-party performance against the organization’s requirements and contracts based on prioritization.",
+                    "Establish workarounds and termination plans in the event of third-party failures based on a risk and criticality prioritization."
+                  ]
+                },
+                {
+                  "goal": "External data dependencies are managed. Processes and practices are in place to",
+                  "practices": [
+                    "Identify and track data used as part of AI solutions that originates outside of internal data management practices, including external entities and non-traditional data sources.",
+                    "Integrate external data sources into the organization’s management of third parties.",
+                    "Track and apply data management practices to data collected as a part of using third-party services."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "A28",
+              "name": "Deployment at Scale",
+              "level": 4,
+              "desc": "The ability to deploy and scale technology and AI solutions across the organizational unit to support strategy and AI‑native workflows, while maximizing ROI and minimizing technology change risks",
+              "goals": [
+                {
+                  "goal": "Scaling AI solutions to support the organization is planned and properly documented. Processes and practices are in place to",
+                  "practices": [
+                    "Identify AI solutions that add value across the organization and plan for scaled deployments. Technology Ecosystem Technology Ecosystem",
+                    "Identify and manage the risks of organizational and technology changes due to scaling, including costs and performance.",
+                    "Inventory the existing solutions to support de-duplication through rationalization, transition, and decommissioning of the duplicative solutions to support scaled deployment.",
+                    "Identify the required technology changes needed to satisfy the solutions planned to scale.",
+                    "Evaluate the progress of current AI solution deployments, including operations and maintenance in scaling."
+                  ]
+                },
+                {
+                  "goal": "Performance and reliability targets for AI solutions are established and met. Processes and practices are in place to",
+                  "practices": [
+                    "Establish SLAs and service-level objectives (SLOs) for AI solutions.",
+                    "Ensure capacity is managed in accordance with the criticality of scaled solutions.",
+                    "Use processes and practices that enable AI solutions to provide continued service under different conditions.",
+                    "Use proactive notifications to inform stakeholders of system outages.",
+                    "Update and maintain business continuity plans, project and program deployment, and dependencies to guide seamless operations of scaled solutions. All goals and applicable practices of Deployment at Scale capability area need to be accomplished for this dimension to be at Scaled AI Level Maturity (Level 4)."
+                  ]
+                }
+              ]
+            }
+          ],
+          "color": "#8f7fee"
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "n": 1,
+      "name": "Exploratory AI",
+      "tag": "Exploration is the start of transformation.",
+      "desc": "At this level, the organizational unit is learning about AI capabilities with regard to the identified scope, risks, and adoption. The goal at this level is to ground AI adoption in the organizational unit’s context, culture, and objectives. Exploration is the start of transformation, with a limited set of use cases to establish minimal standard practices. AI-enabled systems and workflows may exist in both sandbox and non-reported production environments."
+    },
+    {
+      "n": 2,
+      "name": "Implemented AI",
+      "tag": "Your organization is on the path.",
+      "desc": "The organizational unit is implementing AI-enabled systems and workflows, resulting in some AI-enabled systems and workflows in production with potential ROI and value. At this level, priorities include making sure baseline delivery, data, and security-related practices are in place to manage risks. The organizational unit is on the path for successful AI adoption, demonstrating the realization of some use cases."
+    },
+    {
+      "n": 3,
+      "name": "Aligned AI",
+      "tag": "AI workflows are being managed consistently.",
+      "desc": "At this level the organizational unit has accomplished the process of AI integration with potential positive impacts on core business services and ROI. Appropriate workflows are identified and managed consistently with AI applications. It is clear how the organizational unit can utilize AI and how AI maps to business goals."
+    },
+    {
+      "n": 4,
+      "name": "Scaled AI",
+      "tag": "AI is used successfully at scale with trustworthy results.",
+      "desc": "At this level, AI has been integrated into operations, with reliable performance. The organizational unit and the organization can implement AI initiatives at scale, apply AI to new use cases and scopes with ease, and ensure reliable implementations and trustworthy outcomes."
+    },
+    {
+      "n": 5,
+      "name": "Future Ready AI",
+      "tag": "Your organization has a record of success powered by AI.",
+      "desc": "The organizational unit has a track record of success powered by AI. The organizational unit can consistently deploy and scale AI solutions, and returning to previous ways of working would pose an existential risk."
+    }
+  ]
+}

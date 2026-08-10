@@ -1,18 +1,30 @@
 <template>
-  <div class="bandeau">
-    MAQUETTE BASSE FIDELITE — Travail de Bachelor, HEG-Arc. Aucune donnee ne quitte ce navigateur.
-    Les enonces descriptifs ne sont pas encore rediges : le parcours est navigable, l'instrument ne mesure rien.
-  </div>
-  <div class="enveloppe">
-    <router-view />
-    <p class="pied">
-      Modele v{{ modele._meta.version }} — 9 dimensions, 26 capability areas.
-      Referentiel de base : Ozkaya et al. (2026), AI Adoption Maturity Model v1.0, CMU-SEI.
-      Vocabulaire du parcours : Elia et al. (2024).
-    </p>
+  <div style="min-height:100vh;background:var(--color-bg);padding:0 0 64px">
+    <div style="border-bottom:2px solid var(--color-text);background:var(--color-bg);position:sticky;top:0;z-index:5">
+      <div style="max-width:1440px;margin:0 auto;padding:14px 40px 0;display:flex;align-items:baseline;gap:16px">
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:15px;letter-spacing:-0.01em">AI Adoption Maturity — Outil d'évaluation</div>
+        <div style="font-size:11px;color:var(--color-neutral-700)">modèle v1.0 · CMU SEI / Accenture · consolidation Matrice N2</div>
+        <div style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">{{ vm.sessionLabel }}</div>
+      </div>
+      <div style="max-width:1440px;margin:0 auto;padding:10px 40px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:0">
+        <div v-for="p in vm.phases" :key="p.n" :style="p.tabStyle">
+          <div style="display:flex;align-items:baseline;gap:10px" :style="{ cursor: p.cursor }" @click="p.onClick">
+            <div :style="p.numStyle">{{ p.n }}</div>
+            <div :style="p.nameStyle">{{ p.name }}</div>
+            <div :style="p.flagStyle">{{ p.flag }}</div>
+          </div>
+          <div :style="p.descStyle">{{ p.l1 }}</div>
+        </div>
+      </div>
+    </div>
+
+    <MaturityTool :state="state" :vm="vm" />
   </div>
 </template>
 
 <script setup>
-import { modele } from './store.js'
+import { useMaturityTool } from './composables/useMaturityTool.js'
+import MaturityTool from './components/MaturityTool.vue'
+
+const { state, vm } = useMaturityTool()
 </script>
