@@ -255,10 +255,18 @@ export function useMaturityTool() {
       const top = bi === 0 ? 14 : 5
       const bottom = bi === lastBlock ? 14 : 5
       const lastDim = b.dimensions.length - 1
+      const nDims = b.dimensions.length
+      // bande de gauche du bloc : un segment par dimension, même largeur que celle des areas
+      const dimStops = b.dimensions
+        .map((d, di) => d.color + ' ' + (di / nDims * 100) + '% ' + ((di + 1) / nDims * 100) + '%')
+        .join(',')
       return {
         name: b.name,
         cellStyle: 'grid-column:1;grid-row:span ' + b.dimensions.length + ';border-right:2px solid var(--color-text);display:flex;padding:' + top + 'px 14px ' + bottom + 'px',
-        chipStyle: 'flex:1;display:flex;align-items:center;border:1px solid var(--color-text);background:transparent;color:var(--color-text);padding:12px 12px;font-family:var(--font-heading);font-weight:800;font-size:13px',
+        chipStyle: 'flex:1;display:flex;align-items:center;border:1px solid var(--color-text);border-left:4px solid transparent' +
+          ';background-image:linear-gradient(to bottom,' + dimStops + ')' +
+          ';background-origin:border-box;background-repeat:no-repeat;background-size:4px 100%;background-position:left top' +
+          ';color:var(--color-text);padding:12px 12px;font-family:var(--font-heading);font-weight:800;font-size:13px',
         dims: b.dimensions.map((d, di) => {
           const pad = (di === 0 ? top : 3) + 'px 14px ' + (di === lastDim ? bottom : 3) + 'px'
           return {

@@ -29,7 +29,8 @@
       "Bash(sed -i \"s#'./src/composables/useMaturityTool.js'#'./src/composables/__probe.mjs'#\" scratch-test.mjs)",
       "Bash(node scratch-test.mjs)",
       "Bash(rm -f src/composables/__probe.mjs scratch-test.mjs)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(node -e \"const d=require\\('./src/data/model-data.json'\\); d.blocks.forEach\\(b=>{console.log\\('BLOCK:', b.name, JSON.stringify\\(Object.keys\\(b\\)\\)\\); b.dimensions.forEach\\(x=>console.log\\('   DIM:', x.name, '|', x.color, '| areas:', x.areas.length\\)\\)}\\)\")"
     ]
   }
 }
