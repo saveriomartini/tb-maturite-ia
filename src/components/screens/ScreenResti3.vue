@@ -1,40 +1,156 @@
 <template>
-  <div style="max-width:1440px;margin:0 auto;padding:32px 40px 0">
-    <div style="display:flex;gap:36px;font-size:12px;flex-wrap:wrap">
-      <div><span style="font-weight:700">Niveau Cible (Recommandé) : </span>{{ vm.targetLabel }}</div>
-      <div style="color:var(--color-text)"><span style="font-weight:700">Niveau Acquis : </span>{{ vm.acquiredLabel }}</div>
-    </div>
-    <div style="margin-top:20px;font-family:var(--font-heading);font-weight:800;font-size:22px">Liste des Pratiques manquantes (Gap)</div>
-    <div style="margin-top:6px;font-size:12px;color:var(--color-neutral-700)">{{ vm.gapSummary }}</div>
-    <div style="margin-top:18px;display:flex;flex-direction:column;gap:22px">
-      <div v-for="(b, bi) in vm.gapBlocks" :key="bi" style="border:2px solid var(--color-text)">
-        <div style="padding:9px 14px;background:var(--color-text);color:#fff;font-family:var(--font-heading);font-weight:800;font-size:13px">{{ b.name }}</div>
-        <div v-for="(g, gi) in b.groups" :key="gi" :style="g.wrapStyle">
-          <div style="display:grid;grid-template-columns:220px 220px 1fr;gap:16px;align-items:start">
-            <div :style="g.dimStyle">{{ g.dim }}</div>
-            <div style="font-size:12.5px;font-family:var(--font-heading);font-weight:800;line-height:1.25">{{ g.area }}</div>
-            <div style="display:flex;flex-direction:column;gap:10px">
-              <div v-for="(o, oi) in g.objs" :key="oi">
-                <div style="font-size:10.5px;font-weight:800;color:var(--color-text);letter-spacing:0.04em">{{ o.label }}</div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:6px">
-                  <div v-for="(p, pi) in o.practices" :key="pi" style="border:1px solid var(--color-text);background:var(--color-neutral-200);padding:8px 10px;font-size:11px;line-height:1.35">{{ p.t }}</div>
-                </div>
+  <AppScreen>
+    <LevelSummary :target-label="vm.targetLabel" :acquired-label="vm.acquiredLabel" />
+
+    <h1 class="title">Liste des Pratiques manquantes (Gap)</h1>
+    <p class="summary">{{ vm.gapSummary }}</p>
+
+    <div class="blocks">
+      <section v-for="block in vm.blocks" :key="block.id" class="block">
+        <h2 class="block__name heading">{{ block.name }}</h2>
+
+        <article
+          v-for="group in block.groups"
+          :key="group.id"
+          class="group"
+          :style="{ '--dimension-color': group.dimColor }"
+        >
+          <p class="group__dimension">{{ group.dim }}</p>
+          <h3 class="group__area heading">{{ group.area }}</h3>
+          <div class="objectives">
+            <div v-for="objective in group.objectives" :key="objective.label">
+              <p class="objective__label">{{ objective.label }}</p>
+              <div class="practices">
+                <p v-for="practice in objective.practices" :key="practice" class="practice">{{ practice }}</p>
               </div>
             </div>
           </div>
+        </article>
+      </section>
+    </div>
+
+    <AppScreenNav @back="emit('back')">
+      <template #actions>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary actions__export" @click="emit('export')">Export</button>
+          <button type="button" class="btn btn-primary actions__finish" @click="emit('finish')">Fin</button>
         </div>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:24px">
-      <button class="btn btn-ghost" @click="vm.onBack">Retour</button>
-      <div style="display:flex;gap:12px">
-        <button class="btn btn-secondary" style="min-width:140px" @click="vm.onExport">Export</button>
-        <button class="btn btn-primary" style="min-width:120px" @click="vm.onFinish">Fin</button>
-      </div>
-    </div>
-  </div>
+      </template>
+    </AppScreenNav>
+  </AppScreen>
 </template>
 
 <script setup>
-defineProps(['vm'])
+import AppScreen from '../AppScreen.vue'
+import AppScreenNav from '../AppScreenNav.vue'
+import LevelSummary from '../LevelSummary.vue'
+
+defineProps({
+  vm: { type: Object, required: true }
+})
+
+const emit = defineEmits(['export', 'finish', 'back'])
 </script>
+
+<style scoped>
+.title {
+  margin: 20px 0 0;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: normal;
+}
+
+.summary {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 18px;
+}
+
+.block {
+  border: 2px solid var(--color-text);
+}
+
+.block__name {
+  margin: 0;
+  padding: 9px 14px;
+  background: var(--color-text);
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: normal;
+}
+
+.group {
+  display: grid;
+  grid-template-columns: 220px 220px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-divider);
+  border-left: 6px solid var(--dimension-color);
+}
+
+.group__dimension {
+  margin: 0;
+  padding: 6px 8px;
+  background: var(--dimension-color);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.group__area {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.25;
+  letter-spacing: normal;
+}
+
+.objectives {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.objective__label {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.practices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.practice {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--color-text);
+  background: var(--color-neutral-200);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions__export {
+  min-width: 140px;
+}
+
+.actions__finish {
+  min-width: 120px;
+}
+</style>

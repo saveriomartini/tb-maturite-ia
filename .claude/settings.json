@@ -30,7 +30,21 @@
       "Bash(node scratch-test.mjs)",
       "Bash(rm -f src/composables/__probe.mjs scratch-test.mjs)",
       "Bash(npx vite *)",
-      "Bash(node -e \"const d=require\\('./src/data/model-data.json'\\); d.blocks.forEach\\(b=>{console.log\\('BLOCK:', b.name, JSON.stringify\\(Object.keys\\(b\\)\\)\\); b.dimensions.forEach\\(x=>console.log\\('   DIM:', x.name, '|', x.color, '| areas:', x.areas.length\\)\\)}\\)\")"
+      "Bash(node -e \"const d=require\\('./src/data/model-data.json'\\); d.blocks.forEach\\(b=>{console.log\\('BLOCK:', b.name, JSON.stringify\\(Object.keys\\(b\\)\\)\\); b.dimensions.forEach\\(x=>console.log\\('   DIM:', x.name, '|', x.color, '| areas:', x.areas.length\\)\\)}\\)\")",
+      "PowerShell(node \"C:\\\\Users\\\\penni\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Hearc-Code-TB-tb-maturite-ia\\\\b356107f-cf7b-4507-b82d-c6563193779f\\\\scratchpad\\\\smoke.mjs\" 2>&1)",
+      "Bash(git worktree *)",
+      "Bash(cp textdump.mjs \"C:/Users/penni/AppData/Local/Temp/tb-old/textdump.mjs\")",
+      "Bash(cmd //c mklink //J \"C:\\\\\\\\Users\\\\\\\\penni\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tb-old\\\\\\\\node_modules\" \"c:\\\\\\\\Hearc\\\\\\\\Code\\\\\\\\TB\\\\\\\\tb-maturite-ia\\\\\\\\node_modules\")",
+      "Bash(cmd //c rmdir \"C:\\\\\\\\Users\\\\\\\\penni\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tb-old\\\\\\\\node_modules\")",
+      "PowerShell(npm install -D eslint @eslint/js eslint-plugin-vue globals 2>&1)",
+      "PowerShell(npx eslint --version; npm ls eslint eslint-plugin-vue --depth=0 2>&1 | Select-Object -First 6; npm audit --json 2>$null | ConvertFrom-Json | ForEach-Object { $_.vulnerabilities.PSObject.Properties | Where-Object { $_.Value.severity -eq 'high' } | ForEach-Object { \"$\\($_.Name\\): $\\($_.Value.severity\\) via $\\($_.Value.via -join ','\\)\" } })",
+      "PowerShell(npx eslint . 2>&1)",
+      "PowerShell(npx eslint . -f json 2>$null | ConvertFrom-Json | ForEach-Object { $_.messages } | Group-Object ruleId | Sort-Object Count -Descending | Select-Object Count, Name | Format-Table -AutoSize)",
+      "PowerShell(npx eslint . --fix 2>&1)",
+      "PowerShell(npm run lint 2>&1)",
+      "Bash(cp \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/b356107f-cf7b-4507-b82d-c6563193779f/scratchpad/smoke.mjs\" smoke.mjs)",
+      "Bash(node smoke.mjs)",
+      "PowerShell(npm ls nanoid 2>&1)"
     ]
   }
 }

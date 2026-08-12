@@ -1,53 +1,219 @@
 <template>
-  <div style="max-width:1440px;margin:0 auto;padding:32px 40px 0">
-    <div style="display:flex;gap:44px;align-items:flex-start;flex-wrap:wrap">
+  <AppScreen>
+    <div class="headline">
       <div>
-        <div style="font-size:11px;font-weight:700;color:var(--color-neutral-700)">Niveau Cible (Recommandé) :</div>
-        <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;margin-top:4px">{{ vm.targetLabel }}</div>
+        <p class="headline__label">Niveau Cible (Recommandé) :</p>
+        <p class="headline__value heading">{{ vm.targetLabel }}</p>
       </div>
-      <div style="border-left:2px solid var(--color-text);padding-left:28px">
-        <div style="font-size:11px;font-weight:700;color:var(--color-text)">Niveau Acquis :</div>
-        <div style="font-family:var(--font-heading);font-weight:800;font-size:22px;margin-top:4px;color:var(--color-text)">{{ vm.acquiredLabel }}</div>
-      </div>
-    </div>
-    <div style="margin-top:26px;display:grid;grid-template-columns:340px 1fr;gap:0;border:2px solid var(--color-text)">
-      <div style="border-right:2px solid var(--color-text)">
-        <div v-for="(l, li) in vm.levelLadder" :key="li" :style="l.rowStyle">
-          <div style="font-family:var(--font-heading);font-weight:800;font-size:13px">{{ l.label }}</div>
-          <div :style="l.tagStyle">{{ l.badge }}</div>
-        </div>
-      </div>
-      <div style="padding:20px 24px;background:var(--color-neutral-100)">
-        <div style="font-size:14px;line-height:1.5;max-width:760px;text-wrap:pretty">{{ vm.acquiredDesc }}</div>
+      <div class="headline__acquired">
+        <p class="headline__label headline__label--strong">Niveau Acquis :</p>
+        <p class="headline__value heading">{{ vm.acquiredLabel }}</p>
       </div>
     </div>
-    <div style="margin-top:26px;font-size:11px;font-weight:700">Détails :</div>
-    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(4,1fr);border:2px solid var(--color-text)">
-      <div v-for="(b, bi) in vm.blockScores" :key="bi" :style="b.colStyle">
-        <div style="font-family:var(--font-heading);font-weight:800;font-size:15px">{{ b.name }}</div>
-        <div style="font-size:11px;color:var(--color-neutral-700);margin-top:4px">{{ b.levelLabel }}</div>
-        <div style="display:flex;gap:24px;margin-top:16px">
+
+    <div class="ladder">
+      <ol class="ladder__levels">
+        <li
+          v-for="level in vm.ladder"
+          :key="level.n"
+          class="ladder__level"
+          :class="{ 'is-reached': level.reached, 'is-beyond': level.beyondTarget }"
+        >
+          <span class="ladder__label heading">{{ level.label }}</span>
+          <span v-if="level.acquired" class="tag tag--solid ladder__tag">acquis</span>
+          <span v-else-if="level.isTarget" class="tag ladder__tag">cible</span>
+        </li>
+      </ol>
+      <p class="ladder__desc">{{ vm.acquiredDesc }}</p>
+    </div>
+
+    <p class="section-title">Détails :</p>
+
+    <div class="blocks">
+      <section v-for="block in vm.blocks" :key="block.id" class="block">
+        <h2 class="block__name heading">{{ block.name }}</h2>
+        <p class="block__level">{{ block.levelLabel }}</p>
+        <div class="block__stats">
           <div>
-            <div style="font-size:10.5px;color:var(--color-neutral-700)">Objectifs :</div>
-            <div style="font-family:var(--font-heading);font-weight:800;font-size:24px">{{ b.obj }}</div>
+            <p class="stat__label">Objectifs :</p>
+            <p class="stat__value heading">{{ block.goals }}</p>
           </div>
           <div>
-            <div style="font-size:10.5px;color:var(--color-neutral-700)">Pratiques :</div>
-            <div style="font-family:var(--font-heading);font-weight:800;font-size:24px">{{ b.prat }}</div>
+            <p class="stat__label">Pratiques :</p>
+            <p class="stat__value heading">{{ block.practices }}</p>
           </div>
         </div>
-        <div style="height:6px;background:var(--color-neutral-300);margin-top:14px">
-          <div :style="b.barStyle"></div>
+        <div
+          class="block__track"
+          role="progressbar"
+          :aria-valuenow="block.percent"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          :aria-label="`Pratiques validées — ${block.name}`"
+        >
+          <div class="block__bar" :style="{ width: `${block.percent}%` }" />
         </div>
-      </div>
+      </section>
     </div>
-    <div style="display:flex;justify-content:space-between;margin-top:24px">
-      <button class="btn btn-ghost" @click="vm.onBack">Retour</button>
-      <button class="btn btn-primary" style="min-width:160px" @click="vm.onNextScreen">Suivant</button>
-    </div>
-  </div>
+
+    <AppScreenNav @back="emit('back')" @next="emit('next')" />
+  </AppScreen>
 </template>
 
 <script setup>
-defineProps(['vm'])
+import AppScreen from '../AppScreen.vue'
+import AppScreenNav from '../AppScreenNav.vue'
+
+defineProps({
+  vm: { type: Object, required: true }
+})
+
+const emit = defineEmits(['back', 'next'])
 </script>
+
+<style scoped>
+.headline {
+  display: flex;
+  gap: 44px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.headline__acquired {
+  padding-left: 28px;
+  border-left: 2px solid var(--color-text);
+}
+
+.headline__label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-neutral-700);
+}
+
+.headline__label--strong {
+  color: var(--color-text);
+}
+
+.headline__value {
+  margin: 4px 0 0;
+  font-size: 22px;
+  letter-spacing: normal;
+}
+
+.ladder {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  margin-top: 26px;
+  border: 2px solid var(--color-text);
+}
+
+.ladder__levels {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-right: 2px solid var(--color-text);
+}
+
+.ladder__level {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+}
+
+.ladder__level:not(:last-child) {
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.ladder__level.is-reached {
+  background: var(--color-neutral-200);
+}
+
+.ladder__level.is-beyond {
+  opacity: 0.45;
+}
+
+.ladder__label {
+  font-size: 13px;
+}
+
+.ladder__tag {
+  margin-left: auto;
+  padding: 2px 6px;
+  border-color: var(--color-text);
+}
+
+.ladder__desc {
+  max-width: 760px;
+  margin: 0;
+  padding: 20px 24px;
+  background: var(--color-neutral-100);
+  font-size: 14px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.section-title {
+  margin: 26px 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.blocks {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 2px solid var(--color-text);
+}
+
+.block {
+  padding: 16px 18px 18px;
+  border-right: 2px solid var(--color-text);
+  background: var(--color-neutral-100);
+}
+
+.block:last-child {
+  border-right: 0;
+}
+
+.block__name {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: normal;
+}
+
+.block__level {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--color-neutral-700);
+}
+
+.block__stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.stat__label {
+  margin: 0;
+  font-size: 10.5px;
+  color: var(--color-neutral-700);
+}
+
+.stat__value {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: normal;
+}
+
+.block__track {
+  height: 6px;
+  margin-top: 14px;
+  background: var(--color-neutral-300);
+}
+
+.block__bar {
+  height: 100%;
+  background: var(--color-text);
+}
+</style>

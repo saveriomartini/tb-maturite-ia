@@ -23,7 +23,7 @@ function storage() {
   try {
     if (typeof window === 'undefined' || !window.localStorage) return null
     return window.localStorage
-  } catch (e) {
+  } catch {
     // Accès refusé (navigation privée, cookies bloqués) : on tourne sans persistance.
     return null
   }
@@ -83,14 +83,14 @@ export function loadSession(screens) {
   let raw
   try {
     raw = store.getItem(STORAGE_KEY)
-  } catch (e) {
+  } catch {
     return null
   }
   if (!raw) return null
   let payload
   try {
     payload = JSON.parse(raw)
-  } catch (e) {
+  } catch {
     // Contenu illisible : on repart d'une session vierge plutôt que de planter.
     clearSession()
     return null
@@ -107,7 +107,7 @@ export function clearSession() {
   if (!store) return
   try {
     store.removeItem(STORAGE_KEY)
-  } catch (e) {
+  } catch {
     /* rien à faire : la session restera en mémoire uniquement */
   }
 }
@@ -125,7 +125,7 @@ export function persistSession(state) {
     if (disabled) return
     try {
       store.setItem(STORAGE_KEY, JSON.stringify({ v: SCHEMA_VERSION, state: snapshot(state) }))
-    } catch (e) {
+    } catch {
       // Quota atteint ou stockage indisponible : on cesse d'essayer.
       disabled = true
     }

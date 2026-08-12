@@ -82,9 +82,15 @@ est en ligne à `https://<votre-compte>.github.io/tb-maturite-ia/`.
 ### 2.6 Vérifier avant de montrer
 
 ```sh
+npm run lint
 npm run build
 npm run preview
 ```
+
+`lint` applique le [Style Guide officiel de Vue](https://vuejs.org/style-guide/) via
+`eslint-plugin-vue` (voir `eslint.config.js`) ; `npm run lint:fix` corrige ce qui est corrigeable
+automatiquement. La même commande tourne dans le workflow de publication : un push qui ne passe pas
+le lint ne se déploie pas.
 
 `preview` sert le contenu réellement publié, sur le port 4173. C'est le seul test fiable des
 chemins d'assets et du routage.
@@ -99,24 +105,51 @@ tb-maturite-ia/
 ├── .vscode/                       extensions recommandées et réglages d'éditeur
 ├── docs/
 │   ├── DECISIONS.md               journal des décisions structurelles (à tenir à jour)
+│   ├── NIVEAU-CIBLE.md            calcul du niveau cible recommandé
 │   └── PERIMETRE.md               ce qui est dans le TB et ce qui n'y est pas
 ├── src/
-│   ├── data/
+│   ├── data/                      CONTENU, aucune logique
 │   │   ├── model-data.json        SOURCE DE VÉRITÉ du modèle (blocs, dimensions, areas, niveaux)
-│   │   └── model-data.js          export ES module de model-data.json
-│   ├── composables/
-│   │   └── useMaturityTool.js     état de session, logique de scoring, machine à écrans
-│   ├── assets/tokens.css          jetons visuels (design system Modernist)
-│   ├── App.vue                    en-tête sticky, onglets de phase, gabarit
-│   ├── components/
+│   │   ├── model-data.js          export ES module de model-data.json
+│   │   ├── context-attributes.js  attributs de contexte, plafonds, exigences du Level 5
+│   │   └── journey.js             texte du parcours en quatre phases
+│   ├── domain/                    RÈGLES MÉTIER, fonctions pures, aucune dépendance à Vue
+│   │   ├── model.js               vues dérivées du modèle (areas à plat, libellés de niveau)
+│   │   ├── scoring.js             area acquise, niveau d'un bloc, niveau acquis, gap
+│   │   ├── recommendation.js      niveau cible recommandé (ambition × capacité, plafonds)
+│   │   └── navigation.js          ordre des écrans, phases, enchaînement
+│   ├── composables/               ÉTAT réactif
+│   │   ├── useMaturityTool.js     session, actions, un view-model par écran
+│   │   └── useSessionStorage.js   persistance locale validée et versionnée
+│   ├── assets/tokens.css          jetons visuels + primitives partagées (.panel, .chip, .tag)
+│   ├── App.vue                    gabarit de page
+│   ├── components/                PRÉSENTATION
+│   │   ├── AppHeader.vue          en-tête sticky et onglets de phase
+│   │   ├── AppScreen.vue          gabarit d'écran (largeur de lecture, gouttières)
+│   │   ├── AppScreenNav.vue       pied de page Retour / Suivant
 │   │   ├── MaturityTool.vue       aiguillage vers l'écran courant
+│   │   ├── *.vue                  blocs réutilisés (FrameworkTable, ScopeMap, GoalChecklist,
+│   │   │                          MaturityLevelList, ContextAttributeForm, ContextField,
+│   │   │                          TargetRecommendationPanel, LevelSummary)
 │   │   └── screens/               un composant par écran (Home, Cadrage1-3, DiagStart,
 │   │                              Diag, Resti1-3, Export)
 │   └── main.js
-├── index.html
+├── index.html                     charge la police Archivo (preconnect) et monte l'application
+├── eslint.config.js               règles de code = Style Guide officiel de Vue
 ├── package.json
 └── vite.config.js
 ```
+
+### Comment lire le code
+
+Quatre couches, dans cet ordre de dépendance : `data/` (contenu) → `domain/` (règles) →
+`composables/` (état) → `components/` (affichage). Une couche ne connaît jamais la suivante.
+
+Concrètement : `domain/scoring.js` ne sait pas qu'une interface existe et se teste sans navigateur ;
+`useMaturityTool.js` ne produit que des données (libellés, drapeaux, listes) et jamais de style ;
+chaque composant décide de son apparence dans son propre `<style scoped>`, les quelques motifs
+partagés vivant dans `assets/tokens.css`. Un écran reçoit son view-model en `prop` et remonte les
+intentions de l'utilisateur en `emit` — il ne mute jamais l'état directement.
 
 ---
 
@@ -131,9 +164,9 @@ Rien de la structure du modèle n'est codé en dur dans les composants. Le fichi
 | `blocks[].dimensions[].areas` | 28 areas de compétence, avec `level` (1-5), `desc`, `goals`, `practices` |
 | `levels` | les 5 niveaux de maturité et leurs propriétés (nom, tag, description, détail) |
 
-Toute la logique de scoring (aires en périmètre selon le niveau cible, niveau acquis par bloc,
-calcul du gap) vit dans `src/composables/useMaturityTool.js`, pas dans les composants d'écran —
-ceux-ci ne font que lire le view-model exposé par le composable.
+Toute la logique de scoring (areas en périmètre selon le niveau cible, niveau acquis par bloc,
+calcul du gap) vit dans `src/domain/`, sous forme de fonctions pures, pas dans les composants
+d'écran — ceux-ci ne font que lire le view-model exposé par `useMaturityTool.js`.
 
 ### Traduction des objectifs, pratiques et niveaux
 

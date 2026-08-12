@@ -1,6 +1,10 @@
 /* Modernist design-system tokens, transcribed from the Claude Design source
-   (_ds/modernist.../styles.css) plus the AI Maturity Tool page-level overrides. */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap');
+   (_ds/modernist.../styles.css) plus the AI Maturity Tool page-level overrides.
+
+   La police Archivo est chargée depuis index.html (preconnect + <link>) et non
+   par un @import : un @import n'est découvert qu'après le téléchargement et
+   l'analyse de cette feuille, ce qui retarde d'autant l'affichage du texte.
+   Hors ligne, la pile de repli `system-ui, sans-serif` s'applique seule. */
 
 :root {
   --color-bg: #f3f2f2;
@@ -109,3 +113,60 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hr { height: 2px; border: 0; margin: var(--space-4) 0; background: var(--color-divider); }
+
+/* — primitives partagées —
+   Tout ce qui apparaît dans plus d'un écran vit ici ; le reste est en
+   <style scoped> dans le composant qui l'utilise. */
+
+.panel { border: 2px solid var(--color-text); background: var(--color-neutral-100); }
+.panel-head {
+  padding: 8px 14px; border-bottom: 2px solid var(--color-text);
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800;
+}
+
+.heading { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.01em; }
+.eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
+.meta { font-size: 11px; color: var(--color-neutral-700); }
+
+/* petite étiquette encadrée : « désactivé », « recommandé », « acquis » */
+.tag {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800;
+  padding: 1px 5px; border: 1px solid currentColor; white-space: nowrap;
+}
+.tag--muted { color: var(--color-neutral-600); border-color: var(--color-neutral-500); }
+.tag--solid { background: var(--color-text); color: #fff; border-color: var(--color-text); }
+
+/* — chip : pastille de sélection, teintée par la dimension ou neutre —
+   Taille et espacement se règlent par --chip-font-size / --chip-padding, la
+   couleur de dimension par --chip-color. */
+.chip {
+  display: inline-flex; align-items: center; text-align: left;
+  font-family: inherit; font-size: var(--chip-font-size, 10.5px); font-weight: 500;
+  line-height: 1.3; padding: var(--chip-padding, 7px 9px);
+  border: 1px solid var(--color-divider); border-radius: 0;
+  background: var(--color-neutral-100); color: var(--color-text);
+}
+.chip--tinted { background: var(--chip-color, var(--color-neutral-100)); }
+.chip--nowrap { white-space: nowrap; flex: none; }
+.chip.is-active { border-color: var(--color-text); background: var(--color-text); color: #fff; font-weight: 700; }
+.chip--tinted.is-active {
+  border-width: 2px; background: var(--chip-color); color: var(--color-text); font-weight: 800;
+}
+.chip.is-muted { color: var(--color-neutral-600); }
+.chip--tinted.is-muted { color: var(--color-text); opacity: 0.45; }
+button.chip { cursor: pointer; }
+button.chip:disabled { cursor: not-allowed; }
+
+/* niveau courant, affiché en pavé plein (écrans Diagnostic) */
+.level-badge {
+  font-family: var(--font-heading); font-weight: 800; font-size: 13px;
+  background: var(--color-text); color: #fff; padding: 6px 12px;
+}
+
+/* réinitialisation des boutons qui ne doivent pas *ressembler* à des boutons
+   (onglets de phase, cartes cliquables) sans cesser d'en être */
+.button-reset {
+  font: inherit; color: inherit; text-align: left;
+  background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
+}
+.button-reset:disabled { cursor: not-allowed; }

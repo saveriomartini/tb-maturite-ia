@@ -1,40 +1,114 @@
 <template>
-  <div style="max-width:1440px;margin:0 auto;padding:32px 40px 0">
-    <div style="display:flex;gap:36px;font-size:12px;flex-wrap:wrap">
-      <div><span style="font-weight:700">Niveau Cible (Recommandé) : </span>{{ vm.targetLabel }}</div>
-      <div style="color:var(--color-text)"><span style="font-weight:700">Niveau Acquis : </span>{{ vm.acquiredLabel }}</div>
-    </div>
-    <div style="margin-top:18px;font-size:11px;font-weight:700">Détails :</div>
-    <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
-      <div v-for="(b, bi) in vm.detailBlocks" :key="bi" style="border:2px solid var(--color-text)">
-        <div style="padding:10px 14px;border-bottom:2px solid var(--color-text);font-family:var(--font-heading);font-weight:800;font-size:14px">{{ b.name }}</div>
-        <table class="table" style="width:100%">
+  <AppScreen>
+    <LevelSummary :target-label="vm.targetLabel" :acquired-label="vm.acquiredLabel" />
+
+    <p class="section-title">Détails :</p>
+
+    <div class="blocks">
+      <section v-for="block in vm.blocks" :key="block.id" class="block">
+        <h2 class="block__name heading">{{ block.name }}</h2>
+        <table class="table">
           <thead>
             <tr>
-              <th style="width:33%">Dimension</th>
+              <th class="col-dimension">Dimension</th>
               <th>Area</th>
-              <th style="width:78px">Objectifs</th>
-              <th style="width:78px">Pratiques</th>
+              <th class="col-score">Objectifs</th>
+              <th class="col-score">Pratiques</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(r, ri) in b.rows" :key="ri">
-              <td :style="r.dimStyle">{{ r.dim }}</td>
-              <td :style="r.areaStyle">{{ r.area }}</td>
-              <td :style="r.objStyle">{{ r.obj }}</td>
-              <td :style="r.pratStyle">{{ r.prat }}</td>
+            <tr v-for="row in block.rows" :key="row.id">
+              <td
+                class="cell-dimension"
+                :class="{ 'is-first': row.firstOfDimension }"
+                :style="{ '--dimension-color': row.color }"
+              >
+                {{ row.dim }}
+              </td>
+              <td class="cell-area">{{ row.area }}</td>
+              <td class="cell-goals">{{ row.goals }}</td>
+              <td class="cell-practices">{{ row.practices }}</td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </section>
     </div>
-    <div style="display:flex;justify-content:space-between;margin-top:24px">
-      <button class="btn btn-ghost" @click="vm.onBack">Retour</button>
-      <button class="btn btn-primary" style="min-width:160px" @click="vm.onNextScreen">Suivant</button>
-    </div>
-  </div>
+
+    <AppScreenNav @back="emit('back')" @next="emit('next')" />
+  </AppScreen>
 </template>
 
 <script setup>
-defineProps(['vm'])
+import AppScreen from '../AppScreen.vue'
+import AppScreenNav from '../AppScreenNav.vue'
+import LevelSummary from '../LevelSummary.vue'
+
+defineProps({
+  vm: { type: Object, required: true }
+})
+
+const emit = defineEmits(['back', 'next'])
 </script>
+
+<style scoped>
+.section-title {
+  margin: 18px 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.blocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.block {
+  border: 2px solid var(--color-text);
+}
+
+.block__name {
+  margin: 0;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--color-text);
+  font-size: 14px;
+  letter-spacing: normal;
+}
+
+.col-dimension {
+  width: 33%;
+}
+
+.col-score {
+  width: 78px;
+}
+
+/* la première ligne d'une dimension porte son nom et sa couleur pleine ;
+   les suivantes n'en gardent que le liseré */
+.cell-dimension {
+  border-left: 5px solid var(--dimension-color);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  vertical-align: top;
+}
+
+.cell-dimension.is-first {
+  background: var(--dimension-color);
+}
+
+.cell-area {
+  font-size: 11px;
+  vertical-align: top;
+}
+
+.cell-goals {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cell-practices {
+  font-size: 11px;
+}
+</style>
