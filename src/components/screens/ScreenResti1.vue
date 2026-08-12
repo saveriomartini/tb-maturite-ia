@@ -2,7 +2,7 @@
   <AppScreen>
     <div class="headline">
       <div>
-        <p class="headline__label">Niveau Cible (Recommandé) :</p>
+        <p class="headline__label">Niveau Cible :</p>
         <p class="headline__value heading">{{ vm.targetLabel }}</p>
       </div>
       <div class="headline__acquired">
@@ -32,7 +32,6 @@
     <div class="blocks">
       <section v-for="block in vm.blocks" :key="block.id" class="block">
         <h2 class="block__name heading">{{ block.name }}</h2>
-        <p class="block__level">{{ block.levelLabel }}</p>
         <div class="block__stats">
           <div>
             <p class="stat__label">Objectifs :</p>
@@ -180,12 +179,6 @@ const emit = defineEmits(['back', 'next'])
   margin: 0;
   font-size: 15px;
   letter-spacing: normal;
-}
-
-.block__level {
-  margin: 4px 0 0;
-  font-size: 11px;
-  color: var(--color-neutral-700);
 }
 
 .block__stats {

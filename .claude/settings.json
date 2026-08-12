@@ -44,7 +44,11 @@
       "PowerShell(npm run lint 2>&1)",
       "Bash(cp \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/b356107f-cf7b-4507-b82d-c6563193779f/scratchpad/smoke.mjs\" smoke.mjs)",
       "Bash(node smoke.mjs)",
-      "PowerShell(npm ls nanoid 2>&1)"
+      "PowerShell(npm ls nanoid 2>&1)",
+      "Bash(node \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/check-vacuity.mjs\")",
+      "Bash(node --experimental-json-modules \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/check-vacuity.mjs\")",
+      "Bash(node \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/run.mjs\")",
+      "Bash(node \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/equiv.mjs\")"
     ]
   }
 }

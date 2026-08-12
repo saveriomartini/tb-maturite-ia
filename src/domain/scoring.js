@@ -1,10 +1,9 @@
 // Règles de calcul de la maturité. Fonctions pures : elles reçoivent les
 // pratiques validées (`checked`) et rendent un résultat, sans lire ni écrire
 // d'état applicatif. C'est ici que vit la règle d'agrégation défendue dans le
-// rapport — le niveau d'un bloc est le plus haut niveau dont *toutes* les areas
-// sont acquises, et le niveau global est le minimum des blocs.
-
-import { BLOCKS } from './model.js'
+// rapport — un niveau est acquis lorsque *toutes* les areas attendues jusqu'à
+// ce niveau le sont. Le bloc n'intervient pas dans la mesure : ce n'est qu'un
+// regroupement de restitution, emprunté au vocabulaire d'Elia.
 
 // Identifiant d'une pratique dans la table des cases cochées.
 // Une seule définition : la clé est écrite à la validation et relue au calcul.
@@ -37,25 +36,22 @@ export function areaStats(area, checked) {
   }
 }
 
-// Niveau atteint par un bloc : on monte niveau par niveau et on s'arrête au
-// premier palier incomplet — pas de compensation entre niveaux.
-export function blockLevel(scoped, checked, blockId, target) {
+// Niveau acquis : on monte palier par palier sur les areas en périmètre et on
+// s'arrête au premier niveau dont une area attendue n'est pas acquise — pas de
+// compensation entre niveaux, un seul objectif inachevé retient l'ensemble.
+// Un palier sans aucune area attendue n'est pas créditable : sans cette garde,
+// `[].every()` vaut true et le niveau serait acquis sans qu'une seule pratique
+// soit validée. Il n'interrompt pas la montée pour autant, faute de quoi un
+// périmètre dont les areas commencent plus haut resterait bloqué à 0.
+export function acquiredLevel(scoped, checked, target) {
   let reached = 0
   for (let level = 1; level <= target; level++) {
-    const areas = scoped.filter(area => area.blockId === blockId && area.level <= level)
+    const areas = scoped.filter(area => area.level <= level)
+    if (!areas.length) continue
     if (!areas.every(area => areaStats(area, checked).acquired)) break
     reached = level
   }
   return reached
-}
-
-// Niveau acquis par l'organisation : le minimum des blocs qui ont au moins une
-// area en périmètre.
-export function acquiredLevel(scoped, checked, target) {
-  const levels = BLOCKS
-    .filter(block => scoped.some(area => area.blockId === block.id))
-    .map(block => blockLevel(scoped, checked, block.id, target))
-  return levels.length ? Math.min(...levels) : 0
 }
 
 export function blockTotals(scoped, checked, blockId) {

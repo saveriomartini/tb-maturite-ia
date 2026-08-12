@@ -1,6 +1,6 @@
 <template>
   <div class="summary">
-    <p class="summary__item"><span class="summary__key">Niveau Cible (Recommandé) : </span>{{ targetLabel }}</p>
+    <p class="summary__item"><span class="summary__key">Niveau Cible : </span>{{ targetLabel }}</p>
     <p class="summary__item"><span class="summary__key">Niveau Acquis : </span>{{ acquiredLabel }}</p>
   </div>
 </template>

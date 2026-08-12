@@ -12,7 +12,7 @@ import { AREAS, BLOCKS, DIMENSION_COUNT, LEVELS, levelDescription, levelLabel, s
 import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, previousScreen } from '../domain/navigation.js'
 import { buildRecommendation } from '../domain/recommendation.js'
 import {
-  acquiredLevel, areaStats, blockLevel, blockTotals, gapGroups, missingPracticeCount, practiceKey
+  acquiredLevel, areaStats, blockTotals, gapGroups, missingPracticeCount, practiceKey
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
@@ -24,8 +24,10 @@ const RESET_CONFIRMATION =
   'Réinitialiser la session ? Les attributs de contexte, le niveau cible et les pratiques validées seront effacés.'
 
 const NO_LEVEL_DESCRIPTION =
-  'Aucun niveau n’est encore acquis : au moins une area du niveau 1 reste incomplète. ' +
-  'Chaque bloc prend le niveau le plus bas de ses areas.'
+  'Aucun niveau n’est encore acquis : au moins une des areas attendues au Level 1 ' +
+  'n’a pas tous ses objectifs atteints. Un niveau est acquis lorsque toutes les areas ' +
+  'attendues jusqu’à ce niveau le sont, sans exception — un seul objectif inachevé ' +
+  'suffit à retenir l’ensemble. Le détail des pratiques restantes figure à l’écran suivant.'
 
 function defaultState() {
   return {
@@ -73,7 +75,10 @@ export function useMaturityTool() {
   })
 
   const targetLabel = computed(() => levelLabel(state.target))
-  const acquiredLabel = computed(() => (acquired.value ? levelLabel(acquired.value) : 'Non atteint'))
+  // « Aucun » plutôt que « Non atteint » : le libellé qualifie le niveau acquis,
+  // et voisine le niveau cible — « non atteint » se lisait comme un constat sur
+  // la cible, pas sur l'acquis.
+  const acquiredLabel = computed(() => (acquired.value ? levelLabel(acquired.value) : 'Aucun'))
 
   const answeredCount = computed(() => Object.keys(state.form).filter(id => state.form[id] != null).length)
   const hasProgress = computed(() =>
@@ -371,13 +376,13 @@ export function useMaturityTool() {
       reached: level.n <= acquired.value,
       beyondTarget: level.n > state.target
     })),
+    // Le bloc ne porte pas de niveau : il regroupe des areas pour la lecture,
+    // l'escalier se joue sur le périmètre entier.
     blocks: BLOCKS.map(block => {
-      const level = blockLevel(scoped.value, state.checked, block.id, state.target)
       const totals = blockTotals(scoped.value, state.checked, block.id)
       return {
         id: block.id,
         name: block.name,
-        levelLabel: `niveau du bloc : ${level ? levelLabel(level) : 'non atteint'}`,
         goals: `${totals.goalsDone}/${totals.goalsTotal}`,
         practices: `${totals.practicesDone}/${totals.practicesTotal}`,
         percent: totals.practicesTotal ? Math.round(totals.practicesDone / totals.practicesTotal * 100) : 0
