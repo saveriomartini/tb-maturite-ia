@@ -3,30 +3,30 @@
     <div style="max-width:860px;font-size:14px;line-height:1.5;text-wrap:pretty">Le modèle est proposé en 4 blocs-thématiques où ses 9 dimensions sont organisées ; à l'intérieur de chaque dimension on retrouve des areas de compétence, pour un total de 28 areas. Pour considérer une area de compétence acquise, il faut avoir accompli tous les objectifs correspondants. Le parcours d'évaluation est guidé par des pratiques à valider si mises en place par l'organisation.</div>
     <div class="hr" style="margin:24px 0"></div>
     <div style="display:grid;grid-template-columns:200px 260px 1fr;gap:0;border:2px solid var(--color-text);background:var(--color-neutral-100)">
-      <div style="border-right:2px solid var(--color-text)">
-        <div style="padding:8px 14px;border-bottom:2px solid var(--color-text);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;font-weight:800">blocs</div>
-        <div style="padding:14px;display:flex;flex-direction:column;gap:10px">
-          <div v-for="(b, bi) in vm.blockChips" :key="bi" :style="b.style">{{ b.name }}</div>
-        </div>
-      </div>
-      <div style="border-right:2px solid var(--color-text)">
-        <div style="padding:8px 14px;border-bottom:2px solid var(--color-text);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;font-weight:800">dimensions</div>
-        <div style="padding:14px;display:flex;flex-direction:column;gap:6px">
-          <div v-for="(d, di) in vm.dimChips" :key="di" :style="d.style">{{ d.name }}</div>
-        </div>
-      </div>
-      <div>
-        <div style="padding:8px 14px;border-bottom:2px solid var(--color-text);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;font-weight:800">areas</div>
-        <div style="padding:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-          <div v-for="(a, ai) in vm.areaChips" :key="ai" :style="a.style">{{ a.name }}</div>
-        </div>
-      </div>
+      <div style="grid-column:1;padding:8px 14px;border-right:2px solid var(--color-text);border-bottom:2px solid var(--color-text);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;font-weight:800">blocs</div>
+      <div style="grid-column:2;padding:8px 14px;border-right:2px solid var(--color-text);border-bottom:2px solid var(--color-text);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;font-weight:800">dimensions</div>
+      <div style="grid-column:3;padding:8px 14px;border-bottom:2px solid var(--color-text);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;font-weight:800">areas</div>
+      <template v-for="(b, bi) in vm.frameworkRows" :key="bi">
+        <div :style="b.cellStyle"><div :style="b.chipStyle">{{ b.name }}</div></div>
+        <template v-for="(d, di) in b.dims" :key="bi + '-' + di">
+          <div :style="d.cellStyle"><div :style="d.chipStyle">{{ d.name }}</div></div>
+          <div :style="d.areasCellStyle">
+            <div v-for="(a, ai) in d.areas" :key="ai" :style="a.style">{{ a.name }}</div>
+          </div>
+        </template>
+      </template>
     </div>
     <div style="margin-top:28px;font-size:14px;line-height:1.5">Ainsi que 5 niveaux de maturité qui seront attribués à l'organisation :</div>
     <div style="margin-top:14px;border:2px solid var(--color-text)">
-      <div v-for="(l, li) in vm.levelRows" :key="li" :style="l.rowStyle">
-        <div style="font-family:var(--font-heading);font-weight:800;font-size:13px;width:210px;flex:none">{{ l.label }}</div>
-        <div style="font-size:12px;color:var(--color-neutral-800);line-height:1.4">{{ l.tag }}</div>
+      <div v-for="(l, li) in vm.levelRows" :key="li" :style="l.wrapStyle">
+        <div :style="l.rowStyle" @click="l.onToggle">
+          <div :style="l.labelStyle">{{ l.label }}</div>
+          <div :style="l.tagStyle">{{ l.tag }}</div>
+          <div :style="l.toggleStyle">{{ l.toggleLabel }}</div>
+        </div>
+        <div :style="l.detailStyle">
+          <p v-for="(p, pi) in l.detail" :key="pi" :style="l.paraStyle">{{ p }}</p>
+        </div>
       </div>
     </div>
     <div style="margin-top:12px;font-size:12px;color:var(--color-neutral-700)">Le niveau de maturité par bloc peut être calculé séparément dans cet outil.</div>

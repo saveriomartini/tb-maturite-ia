@@ -129,11 +129,40 @@ Rien de la structure du modèle n'est codé en dur dans les composants. Le fichi
 | `blocks` | 4 blocs thématiques (Strategy, Stakeholders, Business, Technology) |
 | `blocks[].dimensions` | 9 dimensions au total, chacune avec une couleur d'identification |
 | `blocks[].dimensions[].areas` | 28 areas de compétence, avec `level` (1-5), `desc`, `goals`, `practices` |
-| `levels` | les 5 niveaux de maturité et leurs propriétés (nom, tag, description) |
+| `levels` | les 5 niveaux de maturité et leurs propriétés (nom, tag, description, détail) |
 
 Toute la logique de scoring (aires en périmètre selon le niveau cible, niveau acquis par bloc,
 calcul du gap) vit dans `src/composables/useMaturityTool.js`, pas dans les composants d'écran —
 ceux-ci ne font que lire le view-model exposé par le composable.
+
+### Traduction des objectifs, pratiques et niveaux
+
+Les noms, descriptions, objectifs et pratiques des 25 areas issues d'Ozkaya et al. (2026) ont été
+traduits de l'anglais vers le français. Le sens reste au plus près de la source ; le registre est
+calibré sur celui de [France Num](https://www.francenum.gouv.fr/guides-et-conseils/intelligence-artificielle)
+(dispositif du ministère de l'Économie dédié à la transformation numérique et IA des TPE/PME) :
+français professionnel accessible à un CoDir, anglicismes d'usage conservés (ROI, KPI, SLA/SLO, POC,
+sandbox, roadmap le cas échéant) plutôt que systématiquement francisés. Les trois areas de la Matrice
+N2 (A5-A7, marquées `pending`) étaient déjà rédigées en français par l'auteur et n'ont pas été
+retouchées. Les noms des 4 blocs (Strategy, Stakeholders, Business, Technology) sont volontairement
+laissés en anglais : ce sont des étiquettes de la taxonomie source, pas du texte à lire.
+
+Les cinq niveaux de maturité (`levels`) suivent la même règle. Leur formule courte (`tag`) et leur
+énoncé long (`desc`) sont traduits ; leur nom (`name` : Exploratory, Implemented, Aligned, Scaled,
+Future Ready AI) reste en anglais, au même titre que les noms de blocs, pour honorer la
+nomenclature du modèle source et rendre la correspondance vérifiable. Le vocabulaire est aligné sur
+celui des areas : `organizational unit` est rendu par « l'entreprise » (le modèle source distingue
+l'unité organisationnelle de l'organisation entière, distinction sans objet dans une PME où les deux
+coïncident), `AI-enabled systems and workflows` par « systèmes et workflows soutenus par l'IA », et
+ROI, sandbox et workflow sont conservés.
+
+Chaque niveau porte en outre un `detail` : un exposé long, découpé en paragraphes, traduit des
+sections 3.1 à 3.5 du document source (`docs/The_AI_Adoption_Maturity_Model_v1.0.pdf`), une section
+par niveau. Il est affiché en repli/dépli depuis le tableau des niveaux de l'écran Cadrage 1, pour
+que le lecteur qui le souhaite puisse aller au-delà de la formule courte. Les noms des areas de
+compétence cités dans ces textes reprennent leur traduction française telle qu'elle figure dans
+`blocks[].dimensions[].areas[].name`, afin que le renvoi d'un paragraphe vers une area reste
+vérifiable dans l'outil.
 
 ---
 

@@ -51,6 +51,7 @@ export function useMaturityTool() {
     screen: 'home',
     diagIdx: 0,
     checked: {},
+    openLevels: {},
     target: 2,
     form: {},
     session: 'a634d43'
@@ -170,17 +171,46 @@ export function useMaturityTool() {
       }
     })
 
-    const blockChips = data.blocks.map(b => ({ name: b.name, style: 'border:1px solid var(--color-text);background:var(--color-text);color:#fff;padding:12px 12px;font-family:var(--font-heading);font-weight:800;font-size:13px' }))
-    const dimChips = []
-    const areaChips = []
-    data.blocks.forEach(b => b.dimensions.forEach(d => {
-      dimChips.push({ name: d.name, style: chip(false, { fs: '10.5px', dimColor: d.color }) })
-      d.areas.forEach(a => areaChips.push({ name: a.name, style: chip(false, { fs: '9.5px', pad: '6px 7px', mute: a.pending }) + ';border-left:4px solid ' + d.color + (a.pending ? ';border-style:dashed;border-left-style:solid' : '') }))
-    }))
-    const levelRows = data.levels.map((l, i) => ({
-      label: 'Level ' + l.n + ' - ' + l.name, tag: l.tag,
-      rowStyle: 'display:flex;gap:20px;align-items:baseline;padding:11px 16px;border-bottom:' + (i < 4 ? '1px solid var(--color-divider)' : '0') + ';background:' + (i % 2 ? 'var(--color-neutral-100)' : 'transparent')
-    }))
+    const lastBlock = data.blocks.length - 1
+    const frameworkRows = data.blocks.map((b, bi) => {
+      const top = bi === 0 ? 14 : 5
+      const bottom = bi === lastBlock ? 14 : 5
+      const lastDim = b.dimensions.length - 1
+      return {
+        name: b.name,
+        cellStyle: 'grid-column:1;grid-row:span ' + b.dimensions.length + ';border-right:2px solid var(--color-text);display:flex;padding:' + top + 'px 14px ' + bottom + 'px',
+        chipStyle: 'flex:1;display:flex;align-items:center;border:1px solid var(--color-text);background:transparent;color:var(--color-text);padding:12px 12px;font-family:var(--font-heading);font-weight:800;font-size:13px',
+        dims: b.dimensions.map((d, di) => {
+          const pad = (di === 0 ? top : 3) + 'px 14px ' + (di === lastDim ? bottom : 3) + 'px'
+          return {
+            name: d.name,
+            cellStyle: 'grid-column:2;border-right:2px solid var(--color-text);display:flex;padding:' + pad,
+            chipStyle: chip(false, { fs: '10.5px', dimColor: d.color }) + ';flex:1;display:flex;align-items:center',
+            areasCellStyle: 'grid-column:3;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:' + pad,
+            areas: d.areas.map(a => ({
+              name: a.name,
+              style: chip(false, { fs: '9.5px', pad: '6px 7px', mute: a.pending }) + ';border-left:4px solid ' + d.color + (a.pending ? ';border-style:dashed;border-left-style:solid' : '')
+            }))
+          }
+        })
+      }
+    })
+    const levelRows = data.levels.map((l, i) => {
+      const open = !!st.openLevels[l.n]
+      return {
+        label: 'Level ' + l.n + ' - ' + l.name, tag: l.tag, open,
+        wrapStyle: 'border-bottom:' + (i < 4 ? '1px solid var(--color-divider)' : '0') + ';background:' + (i % 2 ? 'var(--color-neutral-100)' : 'transparent'),
+        rowStyle: 'display:flex;gap:20px;align-items:baseline;padding:11px 16px;cursor:pointer',
+        labelStyle: 'font-family:var(--font-heading);font-weight:800;font-size:13px;width:210px;flex:none',
+        tagStyle: 'font-size:12px;color:var(--color-neutral-800);line-height:1.4;flex:1',
+        toggleLabel: open ? '− replier' : '+ détail',
+        toggleStyle: 'flex:none;font-size:9.5px;text-transform:uppercase;letter-spacing:0.08em;font-weight:800;padding:4px 8px;white-space:nowrap;border:1px solid var(--color-text)' + (open ? ';background:var(--color-text);color:#fff' : ''),
+        detail: l.detail || [],
+        detailStyle: 'padding:0 16px 14px 246px' + (open ? '' : ';display:none'),
+        paraStyle: 'font-size:12px;line-height:1.55;color:var(--color-neutral-800);margin:0 0 10px;max-width:780px;text-wrap:pretty',
+        onToggle: function () { state.openLevels[l.n] = !open }
+      }
+    })
 
     const rec = recommended.value
     const formFields = formSpec().map(f => ({
@@ -321,7 +351,7 @@ export function useMaturityTool() {
 
     return {
       sessionLabel: 'session ' + st.session + ' · ' + levelLabel(target) + ' (cible)',
-      phases, journey, blockChips, dimChips, areaChips, levelRows,
+      phases, journey, frameworkRows, levelRows,
       isHome: s === 'home', isCadrage1: s === 'cadrage1', isCadrage2: s === 'cadrage2', isCadrage3: s === 'cadrage3',
       isDiagStart: s === 'diagStart', isDiag: s === 'diag', isResti1: s === 'resti1', isResti2: s === 'resti2', isResti3: s === 'resti3', isExport: s === 'export',
       onStart: function () { go('cadrage1') },

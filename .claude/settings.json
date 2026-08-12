@@ -1,7 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "WebSearch",
+      "Bash(python3 -c \"import fitz\")",
+      "Bash(python3 -c \"import pypdf\")",
+      "Bash(pdftotext -layout \"docs/The_AI_Adoption_Maturity_Model_v1.0.pdf\" \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/734d611b-fc55-4cbb-9d1d-e97e6e866215/scratchpad/model.txt\")",
+      "Bash(node drive_fr.mjs)",
+      "Bash(node drive_fr2.mjs)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 5173 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue })",
+      "Bash(python -c ' *)",
+      "Bash(grep -o -iE \"\\(systèmes|solutions\\) \\(soutenus|nativement|outillés|à base|fondés|reposant\\)[^,.\\\\\"]{0,30}\" src/data/model-data.json)",
+      "Bash(node -e \"const d=require\\('./src/data/model-data.json'\\); d.levels.forEach\\(l=>console.log\\(l.n, '|', l.name, '|', l.tag\\)\\); console.log\\('areas:', d.blocks.flatMap\\(b=>b.dimensions\\).flatMap\\(x=>x.areas\\).length\\)\")",
+      "Bash(node -e \"const d=require\\('./src/data/model-data.json'\\); d.blocks.forEach\\(b=>{console.log\\(b.name\\); b.dimensions.forEach\\(dm=>console.log\\('   -',dm.name,'| areas:',dm.areas.length\\)\\)}\\)\")",
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(\\(Get-Command python -ErrorAction SilentlyContinue\\).Source; \\(Get-Command py -ErrorAction SilentlyContinue\\).Source; node -e \"console.log\\(process.version\\)\"; Get-ChildItem \"c:\\\\Hearc\\\\Code\\\\TB\\\\tb-maturite-ia\\\\docs\" | Select-Object Name,Length)",
+      "PowerShell(python -c \"import fitz; print\\('pymupdf ok'\\)\" 2>&1)",
+      "PowerShell(python -c \"import pdfplumber; print\\('pdfplumber ok'\\)\" 2>&1)",
+      "PowerShell(python -c \"import pypdf; print\\('pypdf ok'\\)\" 2>&1)",
+      "Bash(node -e \"const d=require\\('./src/data/model-data.json'\\); console.log\\(JSON.stringify\\(d.levels,null,2\\)\\); console.log\\(Object.keys\\(d\\)\\)\")",
+      "Bash(node -e \"const d=require\\('./src/data/model-data.json'\\); d.blocks.forEach\\(b=>b.dimensions.forEach\\(dm=>dm.areas.forEach\\(a=>console.log\\(a.id, '| L'+a.level, '|', a.name, '|', dm.name\\)\\)\\)\\)\")",
+      "Bash(node \"C:\\\\Users\\\\penni\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Hearc-Code-TB-tb-maturite-ia\\\\42c9d339-fbc1-4183-b06d-95a7dd85aac2\\\\scratchpad\\\\add-detail.js\")"
     ]
   }
 }
