@@ -17,7 +17,7 @@
           :aria-pressed="practice.checked"
           @click="emit('toggle', practice.key)"
         >
-          <span class="practice__mark">{{ practice.checked ? 'oui' : 'non' }}</span>
+          <span class="practice__mark" aria-hidden="true" />
           <span class="practice__text">{{ practice.text }}</span>
         </button>
       </div>
@@ -106,6 +106,7 @@ const emit = defineEmits(['toggle'])
 
 /* validée : la bordure épaissit et le rembourrage compense, la carte ne bouge pas */
 .practice {
+  position: relative;
   display: block;
   padding: 12px 13px;
   border: 1px solid var(--color-neutral-400);
@@ -129,22 +130,29 @@ const emit = defineEmits(['toggle'])
   font-weight: 600;
 }
 
+/* même carré que la colonne de marquage de la restitution 2 :
+   vide = pratique à valider, plein = pratique validée.
+   Ancré dans le coin haut-droit de la carte : les décalages compensent l'épaisseur de
+   bordure pour qu'il reste à 6px du bord extérieur dans les deux états. */
 .practice__mark {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 800;
-  color: var(--color-neutral-600);
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--color-neutral-600);
 }
 
 .is-checked .practice__mark {
-  color: var(--color-text);
+  top: 3px;
+  right: 3px;
+  border-color: var(--color-text);
+  background: var(--color-text);
 }
 
 .practice__text {
   display: block;
+  padding-top: 10px;
   font-size: 11.5px;
   line-height: 1.5;
 }

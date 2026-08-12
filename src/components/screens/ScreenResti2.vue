@@ -2,7 +2,10 @@
   <AppScreen>
     <LevelSummary :target-label="vm.targetLabel" :acquired-label="vm.acquiredLabel" />
 
-    <p class="section-title">Détails :</p>
+    <div class="details-head">
+      <p class="section-title">Détails :</p>
+      <p class="legend"><span class="mark" aria-hidden="true" /> area acquise</p>
+    </div>
 
     <div class="blocks">
       <section v-for="block in vm.blocks" :key="block.id" class="block">
@@ -14,6 +17,7 @@
               <th>Area</th>
               <th class="col-score">Objectifs</th>
               <th class="col-score">Pratiques</th>
+              <th class="col-mark" />
             </tr>
           </thead>
           <tbody>
@@ -28,6 +32,9 @@
               <td class="cell-area">{{ row.area }}</td>
               <td class="cell-goals">{{ row.goals }}</td>
               <td class="cell-practices">{{ row.practices }}</td>
+              <td class="cell-mark">
+                <span v-if="row.acquired" class="mark" role="img" aria-label="Area acquise" />
+              </td>
             </tr>
           </tbody>
         </table>
@@ -51,10 +58,26 @@ const emit = defineEmits(['back', 'next'])
 </script>
 
 <style scoped>
+.details-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .section-title {
   margin: 18px 0 10px;
   font-size: 11px;
   font-weight: 700;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 10.5px;
+  color: var(--color-neutral-700);
 }
 
 .blocks {
@@ -110,5 +133,24 @@ const emit = defineEmits(['back', 'next'])
 
 .cell-practices {
   font-size: 11px;
+}
+
+/* colonne de marquage : le carré plein reprend le noir de .tag--solid, qui dit
+   déjà « acquis » dans l'escalier de la restitution 1 */
+.col-mark {
+  width: 22px;
+}
+
+.cell-mark {
+  padding-left: 0;
+  padding-right: 10px;
+  text-align: right;
+}
+
+.mark {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--color-text);
 }
 </style>

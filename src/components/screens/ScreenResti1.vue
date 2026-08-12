@@ -30,7 +30,12 @@
     <p class="section-title">Détails :</p>
 
     <div class="blocks">
-      <section v-for="block in vm.blocks" :key="block.id" class="block">
+      <section
+        v-for="block in vm.blocks"
+        :key="block.id"
+        class="block"
+        :style="stripe(block.dimensionColors)"
+      >
         <h2 class="block__name heading">{{ block.name }}</h2>
         <div class="block__stats">
           <div>
@@ -68,6 +73,15 @@ defineProps({
 })
 
 const emit = defineEmits(['back', 'next'])
+
+// Bande supérieure du bloc : un segment par dimension, à parts égales sur la
+// largeur — même principe que le liseré de gauche du tableau de cadrage.
+function stripe(colors) {
+  const stops = colors
+    .map((color, index) => `${color} ${index / colors.length * 100}% ${(index + 1) / colors.length * 100}%`)
+    .join(',')
+  return { backgroundImage: `linear-gradient(to right, ${stops})` }
+}
 </script>
 
 <style scoped>
@@ -165,10 +179,18 @@ const emit = defineEmits(['back', 'next'])
   border: 2px solid var(--color-text);
 }
 
+/* la bande de dimensions est peinte dans le bord supérieur transparent :
+   background-origin la fait déborder sous la bordure, background-size lui
+   donne exactement son épaisseur */
 .block {
   padding: 16px 18px 18px;
+  border-top: 5px solid transparent;
   border-right: 2px solid var(--color-text);
-  background: var(--color-neutral-100);
+  background-color: var(--color-neutral-100);
+  background-origin: border-box;
+  background-repeat: no-repeat;
+  background-size: 100% 5px;
+  background-position: left top;
 }
 
 .block:last-child {

@@ -383,6 +383,7 @@ export function useMaturityTool() {
       return {
         id: block.id,
         name: block.name,
+        dimensionColors: block.dimensions.map(dimension => dimension.color),
         goals: `${totals.goalsDone}/${totals.goalsTotal}`,
         practices: `${totals.practicesDone}/${totals.practicesTotal}`,
         percent: totals.practicesTotal ? Math.round(totals.practicesDone / totals.practicesTotal * 100) : 0
@@ -408,7 +409,8 @@ export function useMaturityTool() {
               color: dimension.color,
               area: area.name,
               goals: `${stats.goalsDone}/${stats.goalsTotal}`,
-              practices: `${stats.practicesDone}/${stats.practicesTotal}`
+              practices: `${stats.practicesDone}/${stats.practicesTotal}`,
+              acquired: stats.acquired
             }
           })
       )
