@@ -101,4 +101,39 @@ defineProps({
 .area--pending {
   border-style: dashed;
 }
+
+@media (max-width: 1200px) {
+  .scope-map {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .block:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .block:nth-child(-n + 2) {
+    border-bottom: 2px solid var(--color-text);
+  }
+}
+
+@media (max-width: 900px) {
+  .scope-map {
+    grid-template-columns: 1fr;
+  }
+
+  .block {
+    border-right: 0;
+  }
+
+  .block:not(:last-child) {
+    border-bottom: 2px solid var(--color-text);
+  }
+
+  /* à une colonne, les dimensions d'un bloc se déploient à nouveau en largeur */
+  .block__dimensions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    align-items: start;
+  }
+}
 </style>

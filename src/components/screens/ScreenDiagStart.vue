@@ -30,6 +30,7 @@ const emit = defineEmits(['back', 'next'])
 .intro {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 16px;
 }
 

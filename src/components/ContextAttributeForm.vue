@@ -105,4 +105,20 @@ const emit = defineEmits(['select-option', 'toggle-context'])
   grid-template-columns: 1fr 1fr;
   gap: 18px 28px;
 }
+
+@media (max-width: 900px) {
+  .group__fields,
+  .descriptive__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .group__fields {
+    padding: 12px 16px 18px;
+  }
+
+  .group__title,
+  .descriptive {
+    padding-inline: 16px;
+  }
+}
 </style>

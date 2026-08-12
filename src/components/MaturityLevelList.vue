@@ -92,4 +92,30 @@ const emit = defineEmits(['toggle'])
   color: var(--color-neutral-800);
   text-wrap: pretty;
 }
+
+@media (max-width: 1200px) {
+  .level__label {
+    width: 170px;
+  }
+
+  .level__detail {
+    /* le retrait du détail suit la largeur du libellé */
+    padding-left: 206px;
+  }
+}
+
+@media (max-width: 900px) {
+  .level__row {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  .level__label {
+    width: 100%;
+  }
+
+  .level__detail {
+    padding-left: 16px;
+  }
+}
 </style>

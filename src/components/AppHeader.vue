@@ -38,7 +38,6 @@
         <span class="phase__head">
           <span class="phase__number">{{ phase.n }}</span>
           <span class="phase__name heading">{{ phase.name }}</span>
-          <span v-if="!phase.screen" class="tag tag--muted">désactivé</span>
         </span>
         <span class="phase__desc">{{ phase.desc }}</span>
       </button>
@@ -72,8 +71,9 @@ const emit = defineEmits(['home', 'phase', 'reset'])
 .header__bar {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 16px;
-  padding: 14px 40px 0;
+  padding: 14px var(--gutter) 0;
 }
 
 .header__brand {
@@ -118,7 +118,7 @@ const emit = defineEmits(['home', 'phase', 'reset'])
 .header__phases {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 10px 40px 0;
+  padding: 10px var(--gutter) 0;
 }
 
 .phase {
@@ -165,5 +165,39 @@ const emit = defineEmits(['home', 'phase', 'reset'])
   font-size: 10.5px;
   line-height: 1.35;
   color: var(--color-neutral-700);
+}
+
+@media (max-width: 1200px) {
+  .header__model {
+    /* la ligne de provenance du modèle passe sous le titre plutôt que de
+       comprimer le libellé de session */
+    order: 3;
+    width: 100%;
+  }
+
+  .phase {
+    padding: 10px 12px 12px;
+  }
+}
+
+/* Sur tablette l'en-tête est collant : il doit rester court. Le numéro et le
+   nom de la phase suffisent à se repérer, la phrase d'explication a déjà été
+   lue à l'accueil. */
+@media (max-width: 900px) {
+  .phase__desc {
+    display: none;
+  }
+
+  .phase {
+    padding: 9px 10px 10px;
+  }
+
+  .phase__number {
+    font-size: 16px;
+  }
+
+  .phase__name {
+    font-size: 12px;
+  }
 }
 </style>

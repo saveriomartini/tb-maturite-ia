@@ -153,4 +153,27 @@ const emit = defineEmits(['export', 'finish', 'back'])
 .actions__finish {
   min-width: 120px;
 }
+
+@media (max-width: 1200px) {
+  .group {
+    grid-template-columns: 170px 180px 1fr;
+    gap: 12px;
+  }
+}
+
+/* Empilé : dimension, puis area, puis les pratiques manquantes en dessous. */
+@media (max-width: 900px) {
+  .group {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .group__dimension {
+    justify-self: start;
+  }
+
+  .practices {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
 </style>

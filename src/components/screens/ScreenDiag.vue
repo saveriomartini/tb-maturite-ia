@@ -202,4 +202,37 @@ const emit = defineEmits(['toggle-practice', 'go-to-area', 'back', 'next'])
 .work__button {
   min-width: 150px;
 }
+
+@media (max-width: 1200px) {
+  .workspace {
+    grid-template-columns: 210px 1fr;
+  }
+
+  .work {
+    padding: 16px;
+  }
+}
+
+/* Empilé, le rappel de contexte (bloc, dimension, area, score) coiffe le
+   questionnaire au lieu de le border. */
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .context {
+    border-right: 0;
+    border-bottom: 2px solid var(--color-text);
+  }
+
+  .context__dimensions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .work__nav {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
 </style>

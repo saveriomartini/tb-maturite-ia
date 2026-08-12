@@ -49,4 +49,19 @@ const emit = defineEmits(['select-option', 'select-target', 'apply-recommendatio
 .cadrage3__nav {
   --nav-margin-top: 20px;
 }
+
+@media (max-width: 1200px) {
+  .cadrage3 {
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+  }
+}
+
+/* Empilé, le panneau de recommandation passe sous le formulaire : on renseigne
+   d'abord, on lit le niveau proposé ensuite. */
+@media (max-width: 900px) {
+  .cadrage3 {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

@@ -220,4 +220,39 @@ const emit = defineEmits(['start'])
 .start__button {
   min-width: 180px;
 }
+
+@media (max-width: 1200px) {
+  .phases {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* en deux colonnes, ce sont les phases paires qui ferment la ligne */
+  .phase:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .phase:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--color-divider);
+  }
+}
+
+@media (max-width: 900px) {
+  .journey,
+  .phases {
+    grid-template-columns: 1fr;
+  }
+
+  .persona {
+    border-right: 0;
+    border-bottom: 2px solid var(--color-text);
+  }
+
+  .phase {
+    border-right: 0;
+  }
+
+  .phase:not(:last-child) {
+    border-bottom: 1px solid var(--color-divider);
+  }
+}
 </style>

@@ -26,6 +26,7 @@ const emit = defineEmits(['back', 'next'])
 <style scoped>
 .nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   /* le parent peut resserrer ou aérer le pied de page */
   margin-top: var(--nav-margin-top, 24px);

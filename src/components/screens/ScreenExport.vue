@@ -221,4 +221,24 @@ const emit = defineEmits(['back'])
   font-size: 9.5px;
   color: var(--color-neutral-700);
 }
+
+/* La page ne se réagence pas : c'est un aperçu d'impression, sa largeur EST le
+   A4. Quand l'écran est plus étroit, on la fait défiler latéralement plutôt que
+   de mentir sur ce qui sortira de l'imprimante. */
+@media (max-width: 900px) {
+  .pages {
+    align-items: flex-start;
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+
+  .page {
+    flex: none;
+  }
+
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
 </style>

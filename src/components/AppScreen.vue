@@ -21,7 +21,7 @@ defineProps({
 .screen {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 32px 40px 0;
+  padding: 32px var(--gutter) 0;
 }
 
 .screen--tight {

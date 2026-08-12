@@ -156,4 +156,34 @@ const emit = defineEmits(['toggle'])
   font-size: 11.5px;
   line-height: 1.5;
 }
+
+@media (max-width: 1200px) {
+  .practices {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    padding-left: 0;
+  }
+}
+
+/* L'énoncé de l'objectif et son verdict ne tiennent plus sur une ligne :
+   le verdict passe dessous, aligné à gauche avec le reste. */
+@media (max-width: 900px) {
+  .goal__head {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+
+  .goal__label {
+    width: auto;
+  }
+
+  .goal__state {
+    margin-left: 0;
+    order: 3;
+  }
+
+  .goal__text {
+    width: 100%;
+    order: 2;
+  }
+}
 </style>

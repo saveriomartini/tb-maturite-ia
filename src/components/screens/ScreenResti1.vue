@@ -231,4 +231,47 @@ function stripe(colors) {
   height: 100%;
   background: var(--color-text);
 }
+
+@media (max-width: 1200px) {
+  .blocks {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .block:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .block:nth-child(-n + 2) {
+    border-bottom: 2px solid var(--color-text);
+  }
+}
+
+@media (max-width: 900px) {
+  .headline {
+    gap: 20px;
+  }
+
+  .headline__acquired {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .ladder,
+  .blocks {
+    grid-template-columns: 1fr;
+  }
+
+  .ladder__levels {
+    border-right: 0;
+    border-bottom: 2px solid var(--color-text);
+  }
+
+  .block {
+    border-right: 0;
+  }
+
+  .block:not(:last-child) {
+    border-bottom: 2px solid var(--color-text);
+  }
+}
 </style>

@@ -8,7 +8,7 @@
       <div
         class="cell cell--block"
         :class="blockCellClasses(blockIndex)"
-        :style="{ gridRow: `span ${block.dimensions.length}` }"
+        :style="{ '--row-span': block.dimensions.length }"
       >
         <div class="block-chip heading" :style="stripe(block.dimensionColors)">{{ block.name }}</div>
       </div>
@@ -101,8 +101,12 @@ function stripe(colors) {
   border-right: 2px solid var(--color-text);
 }
 
+/* la cellule de bloc couvre autant de lignes que le bloc a de dimensions ;
+   le nombre arrive du template, la règle reste ici pour rester surchargeable
+   aux points de rupture */
 .cell--block {
   grid-column: 1;
+  grid-row: span var(--row-span);
   padding-top: 5px;
   padding-bottom: 5px;
 }
@@ -162,5 +166,56 @@ function stripe(colors) {
 .area-chip--pending {
   border-style: dashed;
   border-left-style: solid;
+}
+
+@media (max-width: 1200px) {
+  .framework {
+    grid-template-columns: 150px 190px 1fr;
+  }
+
+  .cell--areas {
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  }
+
+  .block-chip {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* Sous 900px les trois colonnes ne tiennent plus : le tableau se lit alors
+   verticalement, bloc puis dimension puis ses areas. Les intitulés de colonnes
+   disparaissent, ils ne surmontent plus rien. */
+@media (max-width: 900px) {
+  .framework {
+    grid-template-columns: 1fr;
+  }
+
+  .framework__head {
+    display: none;
+  }
+
+  .cell--block,
+  .cell--dimension,
+  .cell--areas {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    border-right: 0;
+  }
+
+  .cell--block {
+    padding-top: 10px;
+    padding-bottom: 6px;
+    border-top: 1px solid var(--color-divider);
+  }
+
+  .cell.is-table-start {
+    border-top: 0;
+  }
+
+  .cell--areas {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    padding-bottom: 10px;
+  }
 }
 </style>

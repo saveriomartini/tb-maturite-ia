@@ -153,4 +153,23 @@ const emit = defineEmits(['back', 'next'])
   height: 8px;
   background: var(--color-text);
 }
+
+@media (max-width: 1200px) {
+  .blocks {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .details-head {
+    flex-wrap: wrap;
+    gap: 0 16px;
+  }
+
+  /* la colonne Dimension cesse d'occuper un tiers de la largeur : les intitulés
+     d'area, plus longs, en ont davantage besoin */
+  .col-dimension {
+    width: 26%;
+  }
+}
 </style>
