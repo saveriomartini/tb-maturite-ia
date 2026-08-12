@@ -1,16 +1,10 @@
 import { reactive, computed } from 'vue'
 import { AIMM } from '../data/model-data.js'
-
-const FORM_SPEC = [
-  { id: 'literacy', label: 'AI Literacy Direction', opts: [['low', 'Faible', 0], ['mid', 'Intermédiaire', 1], ['high', 'Avancée', 2]], hint: 'Connaissances IA du management et des équipes' },
-  { id: 'risk', label: 'Risk Appetite', opts: [['averse', 'Prudent', 0], ['moderate', 'Modéré', 1], ['open', 'Ouvert', 2]], hint: 'Tolérance au risque de l’organisation' },
-  { id: 'scope', label: 'Périmètre évaluation', opts: [['team', 'Une équipe', 0], ['unit', 'Un département', 1], ['org', 'Toute l’entreprise', 2]], hint: 'Organizational unit évalué' },
-  { id: 'horizon', label: 'Planning horizon', opts: [['12', '12 mois', 0], ['24', '24 mois', 1], ['36', '36 mois +', 2]], hint: 'Horizon de la feuille de route' },
-  { id: 'staffing', label: 'Staffing', opts: [['none', 'Aucun rôle IA', 0], ['partial', 'Rôles partagés', 1], ['dedicated', 'Équipe dédiée', 2]], hint: 'Ressources affectées à l’IA' },
-  { id: 'digital', label: 'Niveau Digitalisation de l’organisation', opts: [['low', 'Faible', 0], ['mid', 'Moyen', 1], ['high', 'Élevé', 2]], hint: 'Données, systèmes et processus numérisés' },
-  { id: 'roi', label: 'Approche ROI', opts: [['pilot', 'Preuve de concept', 0], ['business', 'Cas d’affaires', 1], ['portfolio', 'Portefeuille', 2]], hint: 'Manière de justifier les investissements' },
-  { id: 'goal', label: 'AI business goal', opts: [['productivity', 'Productivité interne', 0], ['service', 'Services clients', 1], ['product', 'Produits IA', 2]], hint: 'Valeur recherchée de l’adoption' }
-]
+import {
+  CONTEXT_GROUPS, DESCRIPTIVE_FIELDS, ALL_FIELDS,
+  LEVEL_CAPS, LEVEL5_REQUIREMENTS, REGULATED_RISK_CEILING, optionLabel
+} from '../data/context-attributes.js'
+import { loadSession, persistSession, clearSession, newSessionId } from './useSessionStorage.js'
 
 const JOURNEY_TEXT = [
   { n: '1', name: 'Cadrage', steps: ['vous comprenez le modèle et validez vos connaissances de base sur l’IA', 'vous déterminez le périmètre de l’évaluation et le niveau cible'],
@@ -46,16 +40,112 @@ function chip(active, opts) {
     ';padding:' + (o.pad || '7px 9px') + ';font-size:' + (o.fs || '10.5px') + ';line-height:1.3;font-weight:' + (active ? 700 : 500) + ';cursor:' + (o.cursor || 'default') + (o.nowrap ? ';white-space:nowrap;flex:none' : '')
 }
 
-export function useMaturityTool() {
-  const state = reactive({
+// — recommandation du niveau cible —
+// Deux axes : l'ambition affichée par l'organisation et la capacité qu'elle peut
+// soutenir. On ne recommande jamais plus d'un cran au-dessus de la capacité, puis
+// on applique les plafonds durs (facteurs bloquants qui ne se compensent pas).
+
+function fieldScore(field, form) {
+  const v = form[field.id]
+  if (v == null) return null
+  const o = field.opts.find(x => x[0] === v)
+  if (!o) return null
+  // Un cadre réglementaire fort borne l'appétit au risque effectivement retenu.
+  if (field.id === 'risk' && form.regulatory === 'regulated') return Math.min(o[2], REGULATED_RISK_CEILING)
+  return o[2]
+}
+
+// Valeur prise par un attribut non renseigné. 0.25 place le formulaire vide
+// exactement au Level 2 sur les deux axes — le niveau d'entrée du modèle — et
+// rend la recommandation progressive : chaque réponse déplace la moyenne au lieu
+// de la faire basculer.
+const NEUTRAL_SCORE = 0.25
+
+function axisFields(axis, form) {
+  return ALL_FIELDS.filter(f => f.axis === axis)
+    .map(f => ({ f, s: fieldScore(f, form) }))
+    .filter(x => x.s != null)
+}
+
+function axisLevel(axis, form) {
+  const fields = ALL_FIELDS.filter(f => f.axis === axis)
+  if (!fields.length) return null
+  const sum = fields.reduce((n, f) => {
+    const s = fieldScore(f, form)
+    return n + (s == null ? NEUTRAL_SCORE : s)
+  }, 0)
+  return levelFromScore(sum / fields.length)
+}
+
+function levelFromScore(s) {
+  return 1 + s * 4
+}
+
+function factorText(x, form) {
+  return (x.f.short || x.f.label) + ' : ' + optionLabel(x.f.id, form[x.f.id]).toLowerCase()
+}
+
+function buildRecommendation(form) {
+  const answered = ALL_FIELDS.filter(f => form[f.id] != null).length
+  const total = ALL_FIELDS.length
+  const amb = axisFields('ambition', form)
+  const cap = axisFields('capacity', form)
+  const ambitionLevel = axisLevel('ambition', form)
+  const capacityLevel = axisLevel('capacity', form)
+
+  const raw = Math.min(ambitionLevel, capacityLevel + 1)
+  let level = Math.max(1, Math.min(5, Math.round(raw)))
+  const cappedByCapacity = capacityLevel + 1 < ambitionLevel
+
+  const matched = LEVEL_CAPS.filter(c => c.values.indexOf(form[c.field]) >= 0)
+  let capNotes = []
+  if (matched.length) {
+    const capMax = matched.reduce((m, c) => Math.min(m, c.max), 5)
+    if (capMax < level) {
+      level = capMax
+      capNotes = matched.filter(c => c.max === capMax)
+    }
+  }
+
+  const level5Missing = LEVEL5_REQUIREMENTS.filter(r => r.values.indexOf(form[r.field]) < 0)
+  const blockedFrom5 = level === 5 && level5Missing.length > 0
+  if (blockedFrom5) level = 4
+
+  const drivers = amb.slice().sort((a, b) => b.s - a.s).filter(x => x.s >= 0.6).slice(0, 2).map(x => factorText(x, form))
+  const limits = cap.slice().sort((a, b) => a.s - b.s).filter(x => x.s <= 0.4).slice(0, 2).map(x => factorText(x, form))
+
+  return {
+    level, answered, total, complete: answered === total, empty: answered === 0,
+    ambitionLevel: Math.max(1, Math.min(5, Math.round(ambitionLevel))),
+    capacityLevel: Math.max(1, Math.min(5, Math.round(capacityLevel))),
+    cappedByCapacity, capNotes, level5Missing: blockedFrom5 ? level5Missing : [], drivers, limits
+  }
+}
+
+function defaultState() {
+  return {
     screen: 'home',
     diagIdx: 0,
     checked: {},
     openLevels: {},
     target: 2,
     form: {},
-    session: 'a634d43'
-  })
+    showContext: false,
+    session: newSessionId()
+  }
+}
+
+export function useMaturityTool() {
+  const restored = loadSession(SCREENS)
+  const state = reactive(Object.assign(defaultState(), restored || {}))
+  const wasRestored = !!restored
+  persistSession(state)
+
+  function resetSession() {
+    clearSession()
+    Object.assign(state, defaultState())
+    window.scrollTo(0, 0)
+  }
 
   const data = AIMM
 
@@ -110,18 +200,7 @@ export function useMaturityTool() {
     state.checked[key] = !state.checked[key]
   }
 
-  function formSpec() {
-    return FORM_SPEC
-  }
-
-  const recommended = computed(() => {
-    const spec = formSpec(), f = state.form
-    let sum = 0, n = 0
-    spec.forEach(s => { const v = f[s.id]; if (v != null) { const o = s.opts.find(x => x[0] === v); sum += o[2]; n++ } })
-    if (!n) return 2
-    const avg = sum / n
-    return avg < 0.4 ? 1 : avg < 1.1 ? 2 : avg < 1.6 ? 3 : 4
-  })
+  const recommendation = computed(() => buildRecommendation(state.form))
 
   function gapGroups() {
     const groups = []
@@ -212,18 +291,67 @@ export function useMaturityTool() {
       }
     })
 
-    const rec = recommended.value
-    const formFields = formSpec().map(f => ({
-      id: f.id, label: f.label, hint: f.hint,
-      options: f.opts.map(o => ({
-        value: o[0], label: o[1],
-        style: chip(st.form[f.id] === o[0], { cursor: 'pointer', pad: '7px 11px', fs: '11px', nowrap: true }),
-        onClick: function () { state.form = { ...state.form, [f.id]: o[0] } }
-      }))
+    const rec = recommendation.value
+
+    function buildField(f) {
+      const value = st.form[f.id]
+      return {
+        id: f.id, label: f.label, hint: f.hint, aimm: f.aimm,
+        aimmStyle: f.aimm
+          ? 'font-size:8.5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;color:var(--color-neutral-600);border:1px solid var(--color-neutral-400);padding:1px 4px;white-space:nowrap'
+          : 'display:none',
+        hintStyle: f.hint ? 'font-size:10.5px;color:var(--color-neutral-700);margin-top:6px;text-wrap:pretty' : 'display:none',
+        dotStyle: 'width:6px;height:6px;flex:none;border:1px solid var(--color-text);background:' + (value != null ? 'var(--color-text)' : 'transparent'),
+        options: f.opts.map(o => ({
+          value: o[0], label: o[1], active: value === o[0],
+          style: chip(value === o[0], { cursor: 'pointer', pad: '7px 11px', fs: '11px', nowrap: true }) +
+            ';font-family:inherit;margin:0;border-radius:0;text-align:left',
+          onClick: function () {
+            state.form = { ...state.form, [f.id]: state.form[f.id] === o[0] ? null : o[0] }
+          }
+        }))
+      }
+    }
+
+    const formGroups = CONTEXT_GROUPS.map(g => ({
+      id: g.id, label: g.label, fields: g.fields.map(buildField)
     }))
+    const descriptiveFields = DESCRIPTIVE_FIELDS.map(buildField)
+
+    const recFactors = []
+    if (!rec.empty) {
+      recFactors.push({
+        k: 'Ambition', v: 'Level ' + rec.ambitionLevel + (rec.drivers.length ? ' — ' + rec.drivers.join(', ') : '')
+      })
+    }
+    if (!rec.empty) {
+      recFactors.push({
+        k: 'Capacité', v: 'Level ' + rec.capacityLevel + (rec.limits.length ? ' — ' + rec.limits.join(', ') : '')
+      })
+    }
+    if (rec.cappedByCapacity && !rec.capNotes.length) {
+      recFactors.push({ k: 'Ajustement', v: 'l’ambition dépasse la capacité actuelle de plus d’un niveau' })
+    }
+    if (rec.capNotes.length) {
+      recFactors.push({ k: 'Plafond', v: 'Level ' + rec.level + ' — ' + rec.capNotes.map(c => c.why).join(' ; ') })
+    }
+    if (rec.level5Missing.length) {
+      recFactors.push({ k: 'Level 5', v: 'exige ' + rec.level5Missing.map(r => r.why).join(', ') })
+    }
+
+    const recWhy = rec.empty
+      ? 'Renseignez les attributs de contexte : le niveau cible est déduit de votre ambition d’adoption et de la capacité que vous pouvez soutenir.'
+      : 'Le niveau recommandé ne dépasse jamais d’un cran la capacité actuelle, puis les facteurs bloquants le plafonnent. Vous pouvez retenir un autre niveau cible ci-dessous.'
+
     const targetOptions = data.levels.map(l => ({
       label: 'Level ' + l.n + ' - ' + l.name,
-      style: chip(target === l.n, { cursor: 'pointer', pad: '8px 10px', fs: '11px', nowrap: true }),
+      active: target === l.n,
+      badge: l.n === rec.level && !rec.empty ? 'recommandé' : '',
+      badgeStyle: l.n === rec.level && !rec.empty
+        ? 'font-size:8.5px;text-transform:uppercase;letter-spacing:0.07em;font-weight:800;padding:1px 4px;border:1px solid currentColor;margin-left:6px;white-space:nowrap'
+        : 'display:none',
+      style: chip(target === l.n, { cursor: 'pointer', pad: '8px 10px', fs: '11px', nowrap: true }) +
+        ';font-family:inherit;margin:0;border-radius:0;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%',
       onClick: function () { state.target = l.n; state.diagIdx = 0 }
     }))
 
@@ -349,8 +477,17 @@ export function useMaturityTool() {
       label: 'page ' + (i + 1) + ' / ' + pages.length
     }))
 
+    const answeredCount = Object.keys(st.form).filter(k => st.form[k] != null).length
+    const hasProgress = answeredCount > 0 || Object.keys(st.checked).length > 0 ||
+      st.target !== 2 || st.screen !== 'home'
+
     return {
-      sessionLabel: 'session ' + st.session + ' · ' + levelLabel(target) + ' (cible)',
+      sessionLabel: 'session ' + st.session + ' · ' + levelLabel(target) + ' (cible)' +
+        (wasRestored && hasProgress ? ' · restaurée' : ''),
+      hasProgress,
+      onResetSession: function () {
+        if (window.confirm('Réinitialiser la session ? Les attributs de contexte, le niveau cible et les pratiques validées seront effacés.')) resetSession()
+      },
       phases, journey, frameworkRows, levelRows,
       isHome: s === 'home', isCadrage1: s === 'cadrage1', isCadrage2: s === 'cadrage2', isCadrage3: s === 'cadrage3',
       isDiagStart: s === 'diagStart', isDiag: s === 'diag', isResti1: s === 'resti1', isResti2: s === 'resti2', isResti3: s === 'resti3', isExport: s === 'export',
@@ -370,9 +507,29 @@ export function useMaturityTool() {
       },
       onExport: function () { go('export') },
       onFinish: function () { go('home') },
-      formFields, targetOptions, scopeSummary, scopeMap,
-      recommendedLabel: levelLabel(rec),
-      recommendedWhy: 'Calculé à partir de vos réponses : littératie IA, appétit au risque, digitalisation, horizon et ressources. Vous pouvez retenir un autre niveau cible ci-dessous.',
+      formGroups, descriptiveFields, targetOptions, scopeSummary, scopeMap,
+      showContext: st.showContext,
+      onToggleContext: function () { state.showContext = !st.showContext },
+      contextToggleLabel: (st.showContext ? '− masquer' : '+ afficher') + ' le contexte descriptif',
+      contextPanelStyle: st.showContext ? '' : 'display:none',
+      recommendedLabel: levelLabel(rec.level),
+      recommendedWhy: recWhy,
+      recommendedFactors: recFactors,
+      completenessLabel: rec.answered + ' / ' + rec.total + ' attributs renseignés',
+      completenessBarStyle: 'height:4px;width:' + Math.round(rec.answered / rec.total * 100) + '%;background:#fff',
+      provisionalLabel: rec.complete ? '' : 'recommandation indicative',
+      provisionalStyle: rec.complete
+        ? 'display:none'
+        : 'font-size:9px;text-transform:uppercase;letter-spacing:0.08em;font-weight:800;border:1px solid #fff;padding:2px 6px;white-space:nowrap',
+      canApplyRecommendation: !rec.empty && target !== rec.level,
+      applyLabel: 'Appliquer le Level ' + rec.level,
+      onApplyRecommendation: function () { state.target = rec.level; state.diagIdx = 0 },
+      targetMismatchLabel: !rec.empty && target !== rec.level
+        ? 'Choix manuel : le niveau retenu (Level ' + target + ') diffère de la recommandation (Level ' + rec.level + ').'
+        : '',
+      targetMismatchStyle: !rec.empty && target !== rec.level
+        ? 'font-size:10.5px;line-height:1.4;color:var(--color-neutral-800);border-left:3px solid var(--color-text);padding:6px 0 6px 9px;margin-top:12px'
+        : 'display:none',
       targetLabel: levelLabel(target),
       levelBadgeStyle: 'font-family:var(--font-heading);font-weight:800;font-size:13px;background:var(--color-text);color:#fff;padding:6px 12px',
       curAreaLevelLabel: cur ? levelLabel(cur.level) : levelLabel(target),

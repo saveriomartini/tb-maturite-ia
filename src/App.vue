@@ -37,11 +37,33 @@
         <div
           style="
             margin-left: auto;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
             font-size: 11px;
             color: var(--color-neutral-700);
           "
         >
-          {{ vm.sessionLabel }}
+          <span>{{ vm.sessionLabel }}</span>
+          <button
+            v-if="vm.hasProgress"
+            type="button"
+            style="
+              font-family: inherit;
+              font-size: 10px;
+              text-transform: uppercase;
+              letter-spacing: 0.07em;
+              font-weight: 700;
+              color: var(--color-neutral-700);
+              background: transparent;
+              border: 1px solid var(--color-neutral-400);
+              padding: 2px 7px;
+              cursor: pointer;
+            "
+            @click="vm.onResetSession"
+          >
+            réinitialiser
+          </button>
         </div>
       </div>
       <div
