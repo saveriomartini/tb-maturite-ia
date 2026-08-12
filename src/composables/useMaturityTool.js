@@ -492,6 +492,7 @@ export function useMaturityTool() {
       isHome: s === 'home', isCadrage1: s === 'cadrage1', isCadrage2: s === 'cadrage2', isCadrage3: s === 'cadrage3',
       isDiagStart: s === 'diagStart', isDiag: s === 'diag', isResti1: s === 'resti1', isResti2: s === 'resti2', isResti3: s === 'resti3', isExport: s === 'export',
       onStart: function () { go('cadrage1') },
+      onHome: function () { go('home') },
       onBack: function () {
         if (s === 'diag' && st.diagIdx > 0) { state.diagIdx = st.diagIdx - 1; window.scrollTo(0, 0); return }
         if (s === 'export') { go('resti3'); return }

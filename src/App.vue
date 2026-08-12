@@ -21,15 +21,26 @@
           gap: 16px;
         "
       >
-        <div
-          style="
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 15px;
-            letter-spacing: -0.01em;
-          "
-        >
-          MAIA - Maturité IA — Outil d'évaluation
+        <div style="display: flex; align-items: baseline; gap: 10px">
+          <button
+            type="button"
+            class="brand-home"
+            title="Retour à l'accueil"
+            aria-label="MAIA - Maturité IA — retour à l'accueil"
+            @click="vm.onHome"
+          >
+            MAIA - Maturité IA
+          </button>
+          <div
+            style="
+              font-family: var(--font-heading);
+              font-weight: 800;
+              font-size: 15px;
+              letter-spacing: -0.01em;
+            "
+          >
+            — Outil d'évaluation
+          </div>
         </div>
         <div style="font-size: 11px; color: var(--color-neutral-700)">
           modèle v1.0 · CMU SEI / Accenture · consolidation Matrice N2
