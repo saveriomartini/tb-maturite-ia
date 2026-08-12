@@ -1,10 +1,14 @@
 // Context attributes — AI Adoption Maturity Model v1.0, §4.1 « Context Attributes »
 // et Table 1 « Representative Context Attributes » (p. 26-27).
 //
+// Le calcul du niveau cible qui exploite ce fichier est documenté dans
+// docs/NIVEAU-CIBLE.md.
+//
 // Les attributs sont regroupés selon les trois familles du modèle (fonctions
 // organisationnelles / technologiques / IA). Chaque attribut porte :
 //   aimm  : l'attribut correspondant de la Table 1, '' si l'attribut vient
-//           du cadrage métier (littératie, digitalisation, ROI, pilotage, déploiement)
+//           du cadrage métier (littératie, digitalisation, ROI, pilotage,
+//           déploiement) — traçabilité vers la source, non affiché dans l'outil
 //   axis  : 'ambition' (ce que l'organisation veut atteindre)
 //           'capacity' (ce qu'elle est en mesure de soutenir)
 //           null       (attribut de cadrage : ne score pas, mais peut plafonner)
@@ -168,8 +172,8 @@ export const DESCRIPTIVE_FIELDS = [
   {
     id: 'size', label: 'Taille de l’unité évaluée', aimm: 'Size', axis: null, hint: '',
     opts: [
-      ['xs', 'Moins de 100', 0], ['s', '100 à 1 000', 0],
-      ['m', '1 000 à 10 000', 0], ['l', 'Plus de 10 000', 0]
+      ['xs', '10 à 49', 0], ['s', '50 à 99', 0],
+      ['m', '100 à 199', 0], ['l', '200 et plus', 0]
     ]
   },
   {

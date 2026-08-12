@@ -296,12 +296,8 @@ export function useMaturityTool() {
     function buildField(f) {
       const value = st.form[f.id]
       return {
-        id: f.id, label: f.label, hint: f.hint, aimm: f.aimm,
-        aimmStyle: f.aimm
-          ? 'font-size:8.5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;color:var(--color-neutral-600);border:1px solid var(--color-neutral-400);padding:1px 4px;white-space:nowrap'
-          : 'display:none',
+        id: f.id, label: f.label, hint: f.hint,
         hintStyle: f.hint ? 'font-size:10.5px;color:var(--color-neutral-700);margin-top:6px;text-wrap:pretty' : 'display:none',
-        dotStyle: 'width:6px;height:6px;flex:none;border:1px solid var(--color-text);background:' + (value != null ? 'var(--color-text)' : 'transparent'),
         options: f.opts.map(o => ({
           value: o[0], label: o[1], active: value === o[0],
           style: chip(value === o[0], { cursor: 'pointer', pad: '7px 11px', fs: '11px', nowrap: true }) +

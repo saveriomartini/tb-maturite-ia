@@ -7,11 +7,7 @@
         <div style="padding:10px 20px 0;font-family:var(--font-heading);font-weight:800;font-size:12px;letter-spacing:0.02em">{{ g.label }}</div>
         <div style="padding:12px 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:20px 28px">
           <fieldset v-for="f in g.fields" :key="f.id" style="border:0;margin:0;padding:0;min-width:0">
-            <legend style="padding:0;display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap">
-              <span :style="f.dotStyle"></span>
-              <span style="font-size:11px;font-weight:700">{{ f.label }}</span>
-              <span :style="f.aimmStyle">{{ f.aimm }}</span>
-            </legend>
+            <legend style="padding:0;font-size:11px;font-weight:700;margin-bottom:7px">{{ f.label }}</legend>
             <div role="radiogroup" :aria-label="f.label" style="display:flex;flex-wrap:wrap;gap:6px">
               <button
                 v-for="o in f.options" :key="o.value"
@@ -29,11 +25,7 @@
           <div style="font-size:10.5px;color:var(--color-neutral-700);margin:4px 0 14px;max-width:640px">Attributs documentaires issus de la Table 1 du modèle. Ils décrivent l’unité évaluée et n’interviennent pas dans le calcul du niveau cible.</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px 28px">
             <fieldset v-for="f in vm.descriptiveFields" :key="f.id" style="border:0;margin:0;padding:0;min-width:0">
-              <legend style="padding:0;display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap">
-                <span :style="f.dotStyle"></span>
-                <span style="font-size:11px;font-weight:700">{{ f.label }}</span>
-                <span :style="f.aimmStyle">{{ f.aimm }}</span>
-              </legend>
+              <legend style="padding:0;font-size:11px;font-weight:700;margin-bottom:7px">{{ f.label }}</legend>
               <div role="radiogroup" :aria-label="f.label" style="display:flex;flex-wrap:wrap;gap:6px">
                 <button
                   v-for="o in f.options" :key="o.value"
