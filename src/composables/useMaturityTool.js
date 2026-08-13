@@ -342,6 +342,7 @@ export function useMaturityTool() {
         name: area ? area.name : '',
         desc: area ? area.desc : '',
         color: area ? area.dimColor : 'transparent',
+        exampleArtifacts: area ? area.exampleArtifacts || [] : [],
         scoreLabel: stats
           ? `Objectifs atteints ${stats.goalsDone}/${stats.goalsTotal} · ` +
             `Pratiques validées ${stats.practicesDone}/${stats.practicesTotal}`

@@ -42,6 +42,13 @@
         <h3 class="context__area heading">{{ vm.area.name }}</h3>
         <p class="context__desc">{{ vm.area.desc }}</p>
         <p class="context__score">{{ vm.area.scoreLabel }}</p>
+
+        <div v-if="vm.area.exampleArtifacts.length" class="context__artifacts">
+          <p class="context__label">Exemples d'artefacts</p>
+          <ul class="context__artifacts-list">
+            <li v-for="artifact in vm.area.exampleArtifacts" :key="artifact">{{ artifact }}</li>
+          </ul>
+        </div>
       </aside>
 
       <div class="work">
@@ -172,6 +179,28 @@ const emit = defineEmits(['toggle-practice', 'go-to-area', 'back', 'next'])
   border-top: 1px solid var(--color-divider);
   font-size: 11px;
   color: var(--color-neutral-700);
+}
+
+.context__artifacts {
+  margin-top: 18px;
+}
+
+.context__artifacts .context__label {
+  margin-top: 0;
+}
+
+.context__artifacts-list {
+  max-height: 220px;
+  margin: 8px 0 0;
+  padding: 0 0 0 16px;
+  overflow-y: auto;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-neutral-800);
+}
+
+.context__artifacts-list li + li {
+  margin-top: 4px;
 }
 
 .work {

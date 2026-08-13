@@ -4,7 +4,6 @@
 
     <div class="details-head">
       <p class="section-title">Détails :</p>
-      <p class="legend"><span class="mark" aria-hidden="true" /> area acquise</p>
     </div>
 
     <div class="blocks">
@@ -33,7 +32,12 @@
               <td class="cell-goals">{{ row.goals }}</td>
               <td class="cell-practices">{{ row.practices }}</td>
               <td class="cell-mark">
-                <span v-if="row.acquired" class="mark" role="img" aria-label="Area acquise" />
+                <span
+                  class="mark"
+                  :class="{ 'mark--acquired': row.acquired }"
+                  role="img"
+                  :aria-label="row.acquired ? 'Area acquise' : 'Area non acquise'"
+                />
               </td>
             </tr>
           </tbody>
@@ -69,15 +73,6 @@ const emit = defineEmits(['back', 'next'])
   margin: 18px 0 10px;
   font-size: 11px;
   font-weight: 700;
-}
-
-.legend {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: 10.5px;
-  color: var(--color-neutral-700);
 }
 
 .blocks {
@@ -149,8 +144,14 @@ const emit = defineEmits(['back', 'next'])
 
 .mark {
   display: inline-block;
+  box-sizing: border-box;
   width: 8px;
   height: 8px;
+  border: 1px solid var(--color-text);
+  background: transparent;
+}
+
+.mark--acquired {
   background: var(--color-text);
 }
 

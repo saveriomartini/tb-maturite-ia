@@ -41,6 +41,15 @@
                     "Faire évoluer la stratégie IA en définissant des actions de suivi à mesure que les initiatives IA produisent des résultats, positifs ou négatifs."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "documentation de la stratégie IA",
+                "section d'une stratégie organisationnelle plus large incluant la stratégie d'adoption de l'IA, les documents de mission et de vision",
+                "documentation des objectifs métier devant être mesurablement améliorés par l'IA",
+                "plan de communication",
+                "exemples de newsletters internes communiquant l'avancement de l'adoption de l'IA",
+                "plan de projet d'adoption de l'IA avec jalons",
+                "cartographie de la chaîne de valeur (value stream mapping)"
               ]
             },
             {
@@ -78,6 +87,14 @@
                     "Prévoir dans les clauses contractuelles relatives à la rupture et à la remédiation le cas de non-atteinte des attentes de performance par le fournisseur."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "documents d'étude de marché, tels qu'une analyse concurrentielle",
+                "analyse de marché",
+                "analyse des tendances",
+                "matrice d'évaluation",
+                "analyse des écarts",
+                "check-lists liées à l'IA pour les contrats"
               ]
             },
             {
@@ -104,6 +121,13 @@
                     "Faire évoluer la structure organisationnelle pour améliorer l'avancement de l'adoption de l'IA."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "documents définissant la raison d'être de l'entreprise et ses aspirations à long terme — ce qu'elle vise à accomplir et comment l'avancement sera mesuré",
+                "organigramme identifiant les rôles liés à l'adoption de l'IA",
+                "stratégie IA",
+                "cadre 360° (360 Framework)",
+                "recensement des fonctions clés menant à l'adoption de l'IA"
               ]
             },
             {
@@ -140,6 +164,12 @@
                     "Identifier les évolutions et orientations futures susceptibles d'être retenues et intégrées dans la stratégie et les capacités IA de l'entreprise."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "analyse prédictive",
+                "cadre de mesure de la planification prospective basé sur une performance de référence (baseline) ou un benchmark",
+                "scénarios prospectifs",
+                "exemples de collaboration et études de cas"
               ]
             }
           ],
@@ -209,6 +239,15 @@
                     "Veiller au respect des exigences de formation."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "évaluations des connaissances, compétences et aptitudes",
+                "descriptions de rôles et de familles de métiers",
+                "analyse d'enquêtes de compétences",
+                "taxonomie ou référentiel de compétences",
+                "évaluation des collaborateurs et analyse des écarts",
+                "documents et directives de formation",
+                "plans de cours ; supports de formation (notamment sur l'usage responsable de l'IA)"
               ]
             },
             {
@@ -243,6 +282,11 @@
                     "Réviser ou créer des parcours de carrière dans les domaines de l'IA jugés clés pour les activités futures de l'entreprise."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "documentation sur la culture, les compétences, les comportements et les mentalités",
+                "indicateur d'adoption culturelle",
+                "supports de communication aux parties prenantes sur l'adoption de l'IA (newsletters, réunions plénières, ressources externes mises à disposition des collaborateurs)"
               ]
             }
           ],
@@ -287,6 +331,16 @@
                     "Utiliser les résultats des tests pour identifier des risques, corriger les insuffisances de contrôle ou définir de nouveaux contrôles si nécessaire."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "score de risque",
+                "méthodes d'identification des dangers et préjudices",
+                "approches d'évaluation des risques (par exemple analyse des causes racines, System Theoretic Process Analysis [STPA])",
+                "rapports d'audit des partenaires IA tiers",
+                "stratégie EGRC (Enterprise Governance, Risk & Compliance)",
+                "documentation de l'appétence au risque",
+                "documentation de l'appétence au risque des partenaires",
+                "catégories de risques liés à l'IA"
               ]
             },
             {
@@ -313,6 +367,15 @@
                     "Suivre et piloter la conformité liée à l'IA."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "guide juridique de référence (legal playbook)",
+                "licences et propriété des données et des modèles d'IA",
+                "réglementations locales, cantonales/régionales, nationales et internationales sur l'IA",
+                "accords et contrats avec les partenaires IA",
+                "politiques internes (par exemple politique de confidentialité, politique RH)",
+                "politiques IA sectorielles (par exemple automobile, santé)",
+                "journal des modifications de politiques"
               ]
             },
             {
@@ -347,6 +410,13 @@
                     "À mesure que la technologie et ses cas d'usage évoluent, revoir l'approche d'IA responsable afin de maintenir et de communiquer son alignement avec les besoins et risques émergents. Tous les objectifs et pratiques applicables de l'area « Gestion des risques » doivent être atteints pour que cette dimension atteigne le niveau de maturité Implemented AI (niveau 2)."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "directives d'usage responsable de l'IA",
+                "méthodes d'identification des dangers et préjudices",
+                "politique interne de risque IA responsable",
+                "formation à l'IA responsable",
+                "directives de conception et de mise en œuvre pour une IA responsable"
               ]
             }
           ],
@@ -387,6 +457,16 @@
                     "Analyser les résultats de l'expérimentation pour formuler des recommandations priorisées en vue du déploiement opérationnel et de la montée en charge."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "plans d'expérimentation",
+                "tableaux de bord de gestion des expérimentations de cas d'usage et de workflows",
+                "plans de ressources pour l'expérimentation",
+                "supports d'expérience utilisateur (UX) et d'interaction homme-machine (HCI)",
+                "documents de référence du sandbox",
+                "résultats d'expérimentation",
+                "recommandations",
+                "documents de clôture"
               ]
             },
             {
@@ -421,6 +501,15 @@
                     "S'assurer que les exigences et contrôles des solutions IA sont mis à jour, périodiquement ou en cas de changement, en fonction des exigences et des risques inhérents aux workflows."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "analyse d'impact métier (BIA)",
+                "accord de niveau de service (SLA)",
+                "objectif de délai de reprise (RTO)",
+                "analyse du ROI",
+                "taux d'adoption",
+                "documentation des processus métier",
+                "diagrammes de cas d'usage"
               ]
             },
             {
@@ -446,6 +535,14 @@
                     "Mettre en place des mécanismes de supervision et de contrôle pour les workflows nécessitant une action humaine, aux points de décision critiques et irréversibles."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "plans de test",
+                "évaluations par des experts métier (SME)",
+                "résultats et recommandations des tests d'utilisabilité",
+                "plans d'étude UX et enseignements",
+                "documentation d'analyse des points de décision critiques avec les workflows associés",
+                "tests d'exécution des workflows fondés sur les risques IA"
               ]
             },
             {
@@ -471,6 +568,22 @@
                     "Définir la fréquence et la méthodologie des mesures futures."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "performance de référence (baseline) et de benchmark",
+                "tableau de bord avec suivi en temps réel des KPI",
+                "performance des modèles IA (par exemple précision, scores F1, vitesse/latence/débit, temps de réponse et de reprise)",
+                "objectifs et résultats clés (OKR)",
+                "analyse prédictive des succès et des échecs",
+                "taux d'adoption",
+                "rapports au conseil d'administration et aux actionnaires",
+                "retours d'expérience sur les succès et les changements",
+                "gabarit de conception et de restitution des tests",
+                "plan de test et attentes associées",
+                "stratégie et planification de communication",
+                "analyse du ROI",
+                "processus de continuité de service",
+                "accords de niveau de service"
               ]
             }
           ],
@@ -516,6 +629,21 @@
                     "Identifier et maîtriser les risques pour la vie privée liés à l'agrégation et à l'analyse des données par les solutions IA."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "directives de curation des données",
+                "fiches de données (data cards)",
+                "schéma de données",
+                "description des jeux de données",
+                "ontologie des données",
+                "critères du data lake",
+                "directives sur les droits d'auteur",
+                "directives de classification des jeux de données",
+                "directives d'usage des données",
+                "documents avec marquage de classification",
+                "responsabilités liées aux données",
+                "politique de conservation des données",
+                "métadonnées"
               ]
             },
             {
@@ -543,6 +671,13 @@
                     "Rendre les données non structurées (texte, images, audio et autres données non tabulaires) fiables, exploitables et gouvernables pour un usage en aval, grâce à des formats standardisés, des libellés clairs et des métadonnées."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "directives d'étiquetage des données",
+                "résultats d'analyse exploratoire des données (EDA)",
+                "pipelines d'extraction-transformation-chargement (ETL)",
+                "approches d'identification et de suppression des biais",
+                "métadonnées"
               ]
             }
           ],
@@ -588,6 +723,22 @@
                     "Déterminer comment la demande et les besoins en ressources nécessaires à l'échelle visée de l'activité IA seront évalués, pris en charge et communiqués (stockage des données, besoins d'inférence des modèles, besoins réseau)."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "exigences déterminantes pour l'architecture",
+                "prototypes",
+                "accords de niveau de service (SLA)",
+                "documentation d'architecture de référence",
+                "documentation de la pile technologique",
+                "directives de conformité d'implémentation et d'architecture",
+                "dépendances internes et externes entre systèmes et données",
+                "sources de données partagées",
+                "gestion de versions",
+                "journaux (logs)",
+                "analyse des options et des compromis",
+                "plan d'évolution",
+                "roadmap",
+                "plan de modernisation"
               ]
             },
             {
@@ -615,6 +766,18 @@
                     "Assurer un suivi rigoureux des changements apportés en réponse aux résultats des tests, et effectuer de nouveaux tests si nécessaire."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "cas de test",
+                "plan de test",
+                "approches de test",
+                "revues de code",
+                "préparation au déploiement en production",
+                "tests qualité",
+                "tests automatisés",
+                "performances de référence (baselines)",
+                "modes de défaillance",
+                "journaux d'erreurs"
               ]
             },
             {
@@ -641,6 +804,16 @@
                     "Retirer les applications, systèmes et infrastructures obsolètes afin d'optimiser les investissements technologiques, de soutenir l'adoption de l'IA et de limiter les risques liés à la fin de vie ou à la fin de support."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "exigences des modèles IA",
+                "critères du data lake",
+                "spécifications de l'environnement système",
+                "exigences fonctionnelles et matérielles du système",
+                "spécifications du sandbox",
+                "processus de continuité de service",
+                "plan de modernisation",
+                "documentation logicielle et d'architecture des systèmes existants (legacy)"
               ]
             },
             {
@@ -671,6 +844,14 @@
                     "Appliquer des pratiques de conception d'interaction adaptées et recueillir les retours des utilisateurs finaux afin de valider que les explications des résultats du système sont compréhensibles et utiles."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "patrons de conception liés à la transparence et à l'explicabilité",
+                "documentation des exigences de transparence et d'explicabilité",
+                "besoins des utilisateurs finaux",
+                "directives de confidentialité et d'IA responsable",
+                "documentation des API concernées",
+                "documentation des données"
               ]
             }
           ],
@@ -710,6 +891,16 @@
                     "Évaluer et traiter les risques associés au déploiement ou à la modification d'un modèle IA."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "répertoire décrivant les modèles IA disponibles (modèles ML, modèles d'IA générative et modèles de solutions fournisseurs, le cas échéant)",
+                "fiches de modèle (model cards)",
+                "descriptions des modèles",
+                "responsabilités liées aux modèles",
+                "directives d'usage des modèles",
+                "directives de licence et de propriété des modèles",
+                "politiques de confidentialité et d'usage",
+                "exigences des modèles IA"
               ]
             },
             {
@@ -734,6 +925,11 @@
                     "Définir et mettre en œuvre un suivi et des analyses adaptées des actions des agents, dans le cadre du suivi global des solutions IA."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "directives de gestion des identités et des accès (IAM)",
+                "répertoires des modèles et agents IA",
+                "journaux d'interaction des agents"
               ]
             },
             {
@@ -768,6 +964,12 @@
                     "Collecter les données de coûts et de revenus, ainsi que les résultats des modèles, pour soutenir l'analyse du retour sur investissement (ROI)."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "accords de niveau de service",
+                "journaux de suivi (monitoring)",
+                "descriptions des alertes",
+                "outils et implémentations de suivi (monitoring)"
               ]
             }
           ],
@@ -807,6 +1009,11 @@
                     "Mettre à niveau les technologies (bibliothèques, solutions IA, API, infrastructure, logiciels), y compris la résolution des vulnérabilités et autres risques de cybersécurité."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "vues de déploiement des descriptions d'architecture",
+                "mise en correspondance de la stratégie IA avec les exigences technologiques",
+                "plans de capacité"
               ]
             },
             {
@@ -840,6 +1047,17 @@
                     "Suivre et appliquer les pratiques de gestion des données aux données collectées dans le cadre de l'utilisation de services tiers."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "documents de planification de la demande et de la capacité",
+                "procédures opérationnelles normalisées",
+                "nomenclatures logicielles (SBOM)",
+                "check-lists de conformité",
+                "traçabilité de la lignée des modèles IA (lineage)",
+                "registres de dépendances",
+                "spécifications des API fournisseurs",
+                "journaux de transactions",
+                "enregistrements de traçabilité et de provenance"
               ]
             },
             {
@@ -868,6 +1086,12 @@
                     "Tenir à jour les plans de continuité d'activité, le déploiement des projets et programmes, ainsi que leurs dépendances, afin de garantir un fonctionnement fluide des solutions à l'échelle. Tous les objectifs et pratiques applicables de l'area « Déploiement à l'échelle » doivent être atteints pour que cette dimension atteigne le niveau de maturité Scaled AI (niveau 4)."
                   ]
                 }
+              ],
+              "exampleArtifacts": [
+                "exigences de scalabilité",
+                "technologie, gestion de projet et ressources",
+                "processus de planification soutenant des solutions IA déployées à l'échelle",
+                "listes de solutions redondantes"
               ]
             }
           ],

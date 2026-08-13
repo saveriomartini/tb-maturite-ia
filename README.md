@@ -197,6 +197,12 @@ compétence cités dans ces textes reprennent leur traduction française telle q
 `blocks[].dimensions[].areas[].name`, afin que le renvoi d'un paragraphe vers une area reste
 vérifiable dans l'outil.
 
+Chaque area porte enfin un `exampleArtifacts` : la liste des exemples d'artefacts associés à la
+capability area correspondante, traduite depuis les sections 4.4 à 4.11 du document source
+(regroupées dans `docs/MODEL_EXTRAS.md`), avec la même règle de registre que le reste du modèle.
+Elle est affichée dans la barre latérale de l'écran Diagnostic. Les trois areas de la Matrice N2
+(A5-A7, `pending`) n'en portent pas, faute d'équivalent dans le document source.
+
 ---
 
 ## 5. Déclaration d'usage de l'intelligence artificielle

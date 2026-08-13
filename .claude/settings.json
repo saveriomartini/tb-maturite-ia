@@ -48,7 +48,29 @@
       "Bash(node \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/check-vacuity.mjs\")",
       "Bash(node --experimental-json-modules \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/check-vacuity.mjs\")",
       "Bash(node \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/run.mjs\")",
-      "Bash(node \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/equiv.mjs\")"
+      "Bash(node \"C:/Users/penni/AppData/Local/Temp/claude/c--Hearc-Code-TB-tb-maturite-ia/f0d232f3-50c3-4ee7-bace-a26d703fc06d/scratchpad/equiv.mjs\")",
+      "Bash(where pdftoppm *)",
+      "Bash(where python *)",
+      "Bash(where choco *)",
+      "Bash(where scoop *)",
+      "Bash(pdftotext -f 33 -l 51 -layout \"c:\\\\Hearc\\\\Code\\\\TB\\\\tb-maturite-ia\\\\docs\\\\The_AI_Adoption_Maturity_Model_v1.0.pdf\" \"C:\\\\Users\\\\penni\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Hearc-Code-TB-tb-maturite-ia\\\\18f5136e-6531-4519-aa8a-f36d12202663\\\\scratchpad\\\\pages_33_51.txt\")",
+      "Bash(xxd)",
+      "Bash(node \"C:\\\\Users\\\\penni\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Hearc-Code-TB-tb-maturite-ia\\\\05962f86-c585-44d2-92e8-486178ff43a5\\\\scratchpad\\\\add-artifacts.js\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/data/model-data.json','utf8'\\)\\); console.log\\('valid JSON'\\)\")",
+      "Bash(echo \"exit:$?\")",
+      "Bash(node -e \"require\\('playwright'\\)\")",
+      "Bash(npx --yes playwright install chromium --with-deps)",
+      "Bash(npx --yes playwright install chromium)",
+      "Bash(curl -s http://localhost:5173/ -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(node \"C:\\\\Users\\\\penni\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Hearc-Code-TB-tb-maturite-ia\\\\05962f86-c585-44d2-92e8-486178ff43a5\\\\scratchpad\\\\check-diag.js\")",
+      "Bash(npm install *)",
+      "Bash(node \"C:\\\\Users\\\\penni\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Hearc-Code-TB-tb-maturite-ia\\\\05962f86-c585-44d2-92e8-486178ff43a5\\\\scratchpad\\\\check-diag2.js\")",
+      "Bash(node \"C:\\\\Users\\\\penni\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Hearc-Code-TB-tb-maturite-ia\\\\05962f86-c585-44d2-92e8-486178ff43a5\\\\scratchpad\\\\check-diag3.js\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('vue:', p.dependencies && p.dependencies.vue, p.devDependencies && p.devDependencies.vue\\)\")",
+      "Bash(xargs -I{} sh -c 'awk \"/<[a-zA-Z][^>]*v-for[^>]*>/{if \\(/v-if/\\) print FILENAME\\\\\": \\\\\" \\\\$0}\" {}')",
+      "Bash(find c:/Hearc/Code/TB/tb-maturite-ia/.claude/skills -maxdepth 2 -name SKILL.md)",
+      "Bash(npm run *)",
+      "Read(//tmp/**)"
     ]
   }
 }
