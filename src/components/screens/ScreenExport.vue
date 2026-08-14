@@ -24,8 +24,8 @@
           </p>
 
           <section v-for="group in page.groups" :key="group.id" class="group">
+            <p v-if="group.showBlock" class="group__block">{{ group.block }}</p>
             <header class="group__head">
-              <span class="group__block">{{ group.block }}</span>
               <span class="group__swatch" :style="{ background: group.dimColor }" />
               <span class="group__dimension">{{ group.dim }}</span>
               <span class="group__area heading">{{ group.area }}</span>
@@ -155,7 +155,10 @@ const emit = defineEmits(['back'])
   border-bottom: 1px solid var(--color-divider);
 }
 
+/* Le bloc annonce les areas qui suivent sur sa propre ligne : les dimensions
+   restent alignées à gauche d'une area à l'autre. */
 .group__block {
+  margin: 0 0 6px;
   font-size: 9.5px;
   text-transform: uppercase;
   letter-spacing: 0.08em;

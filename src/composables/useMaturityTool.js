@@ -278,7 +278,7 @@ export function useMaturityTool() {
         label: levelLabel(rec.level),
         why: rec.empty
           ? 'Renseignez les attributs de contexte : le niveau cible est déduit de votre ambition d’adoption et de la capacité que vous pouvez soutenir.'
-          : 'Le niveau recommandé ne dépasse jamais d’un cran la capacité actuelle, puis les facteurs bloquants le plafonnent. Vous pouvez retenir un autre niveau cible ci-dessous.',
+          : '',
         factors: recommendationFactors(rec),
         provisional: !rec.complete,
         completenessLabel: `${rec.answered} / ${rec.total} attributs renseignés`,
@@ -447,7 +447,12 @@ export function useMaturityTool() {
   })
 
   const exportPreview = computed(() => {
-    const groups = gaps.value
+    // Les areas sont ordonnées par bloc : le nom du bloc n'est annoncé qu'à sa
+    // toute première area, même si la liste déborde sur les pages suivantes.
+    const groups = gaps.value.map((group, i, all) => ({
+      ...group,
+      showBlock: i === 0 || all[i - 1].blockId !== group.blockId
+    }))
     const pages = []
     for (let i = 0; i < groups.length; i += GAP_GROUPS_PER_PAGE) {
       pages.push(groups.slice(i, i + GAP_GROUPS_PER_PAGE))

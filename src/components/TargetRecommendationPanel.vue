@@ -15,7 +15,7 @@
         </div>
       </dl>
 
-      <p class="card__why">{{ recommendation.why }}</p>
+      <p v-if="recommendation.why" class="card__why">{{ recommendation.why }}</p>
 
       <div class="completeness">
         <p class="completeness__label">{{ recommendation.completenessLabel }}</p>
