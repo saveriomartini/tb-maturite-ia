@@ -90,6 +90,27 @@ retenue sont affichés à l'utilisateur avec leur motif.
 Noter que le périmètre et la réglementation n'ont pas d'`axis` mais agissent ici : ils ne
 contribuent pas à une moyenne, ils bornent.
 
+### Critères d'acceptation
+
+Un plafond dur décide du niveau cible à lui seul : il ne se compense pas. La réponse ne peut donc
+pas reposer sur une appréciation — « nos données sont-elles prêtes ? » n'est pas une question
+qu'un comité de direction, même accompagné du responsable informatique, peut trancher de façon
+reproductible.
+
+Les options des attributs concernés portent pour cette raison un **critère d'acceptation** :
+quatrième valeur du tuple `opts` dans `context-attributes.js`, énoncé comme un fait vérifiable
+(existe-t-il un responsable désigné ? un flux documenté ? une instance mandatée ?) plutôt que
+comme un niveau à estimer.
+
+À l'écran de cadrage 3, un attribut au repos ne montre que son libellé et ses options. L'aide et
+les critères sont dépliés par le « + » qui suit le libellé, un attribut à la fois : c'est ce qui
+permet de rédiger des critères longs sans encombrer un formulaire de treize attributs.
+
+Sont rédigés à ce jour les quatre attributs dont le libellé seul restait interprétable :
+préparation des données, niveau de digitalisation, littératie du conseil et de la direction,
+pilotage de l'adoption. Les autres attributs à plafond — ressources affectées à l'IA, périmètre,
+horizon, approche de déploiement — ont des libellés qui se suffisent, et n'en portent pas.
+
 ## 6. Condition d'accès au Level 5
 
 Le Level 5 suppose que **toutes** les conditions structurelles de `LEVEL5_REQUIREMENTS` sont

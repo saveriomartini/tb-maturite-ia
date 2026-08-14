@@ -12,7 +12,13 @@
 //   axis  : 'ambition' (ce que l'organisation veut atteindre)
 //           'capacity' (ce qu'elle est en mesure de soutenir)
 //           null       (attribut de cadrage : ne score pas, mais peut plafonner)
-//   opts  : [valeur, libellé, score normalisé 0..1]
+//   opts  : [valeur, libellé, score normalisé 0..1, critère d'acceptation]
+//
+// Le critère d'acceptation est facultatif. Il est rédigé pour les attributs
+// dont le libellé seul n'est pas répondable en séance de direction — ceux dont
+// une option déclenche un plafond dur (LEVEL_CAPS) décident à eux seuls du
+// niveau cible, et ne peuvent pas reposer sur un jugement. Chaque critère
+// énonce donc un fait vérifiable, pas une appréciation.
 
 export const CONTEXT_GROUPS = [
   {
@@ -57,20 +63,26 @@ export const CONTEXT_GROUPS = [
     fields: [
       {
         id: 'digital', short: 'Digitalisation', label: 'Niveau de digitalisation actuel', aimm: '', axis: 'capacity',
-        hint: 'D’où part l’organisation : systèmes et processus numérisés',
+        hint: 'Ce qui est déjà numérisé dans les processus cœur de métier, et si les applications communiquent entre elles',
         opts: [
-          ['low', 'Faible', 0],
-          ['mid', 'Moyen', 0.5],
-          ['high', 'Élevé', 1]
+          ['low', 'Faible', 0,
+            'Les processus cœur de métier reposent encore sur le papier, la messagerie ou des fichiers locaux ; les applications en place ne s’échangent pas de données.'],
+          ['mid', 'Moyen', 0.5,
+            'Les processus cœur de métier tournent dans des applications partagées, mais les échanges entre elles restent manuels : ressaisies, exports et imports de fichiers.'],
+          ['high', 'Élevé', 1,
+            'Les processus cœur de métier sont numérisés de bout en bout et les applications s’échangent des données automatiquement (interfaces, API) ; les données de gestion sont disponibles sans ressaisie.']
         ]
       },
       {
         id: 'data', short: 'Données', label: 'Préparation des données', aimm: 'Data readiness', axis: 'capacity',
-        hint: 'Disponibilité de jeux de données exploitables par l’IA',
+        hint: 'Combien de temps faut-il pour fournir un jeu de données exploitable à un nouveau cas d’usage IA, et qui en répond ?',
         opts: [
-          ['none', 'Non préparées', 0],
-          ['partial', 'Partiellement prêtes', 0.5],
-          ['ready', 'Prêtes ou acquises pour l’IA', 1]
+          ['none', 'Non préparées', 0,
+            'Les données vivent dans les applications métier ou des fichiers, sans inventaire ni responsable désigné. Constituer un jeu de données est un projet en soi : plusieurs mois, ou délai inconnu.'],
+          ['partial', 'Partiellement prêtes', 0.5,
+            'Au moins un domaine clé est déjà consolidé et exploité (reporting, tableaux de bord), avec un responsable identifié. Sa réutilisation pour l’IA reste à qualifier : qualité, documentation, droits d’usage. Compter quelques semaines.'],
+          ['ready', 'Prêtes ou acquises pour l’IA', 1,
+            'Les jeux de données visés sont accessibles par un flux documenté et maintenu, leur qualité est suivie et leur droit d’usage pour l’IA est tranché (données personnelles, contrats tiers) — ou ils ont été acquis pour le cas d’usage. Compter quelques jours.']
         ]
       },
       {
@@ -91,11 +103,14 @@ export const CONTEXT_GROUPS = [
     fields: [
       {
         id: 'literacy', short: 'Littératie', label: 'Littératie IA du conseil et de la direction', aimm: '', axis: 'capacity',
-        hint: 'Sensibilisation et connaissances de base au niveau du conseil d’administration et du comité de direction',
+        hint: 'Ce que le conseil d’administration et le comité de direction savent faire eux-mêmes face à une proposition IA',
         opts: [
-          ['low', 'Faible', 0],
-          ['mid', 'Intermédiaire', 0.5],
-          ['high', 'Avancée', 1]
+          ['low', 'Faible', 0,
+            'Aucune sensibilisation formelle n’a eu lieu ; l’IA n’a pas été portée à l’ordre du jour et l’appréciation d’une proposition repose sur une ou deux personnes.'],
+          ['mid', 'Intermédiaire', 0.5,
+            'Le conseil et la direction ont été sensibilisés (formation, séminaire, intervention d’expert) et distinguent les usages possibles de leurs limites ; juger une proposition demande encore l’avis d’un tiers.'],
+          ['high', 'Avancée', 1,
+            'L’IA figure régulièrement à l’ordre du jour ; le conseil et la direction discutent d’eux-mêmes cas d’usage, risques et obligations réglementaires, et savent challenger un fournisseur sans appui externe.']
         ]
       },
       {
@@ -119,11 +134,14 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'governance', short: 'Pilotage', label: 'Pilotage de l’adoption', aimm: '', axis: 'capacity',
-        hint: 'Adoption déléguée aux métiers ou portée par une instance transverse',
+        hint: 'Qui recense les initiatives IA, qui les arbitre, et avec quel mandat',
         opts: [
-          ['delegated', 'Délégué aux équipes métiers', 0],
-          ['coordinated', 'Coordination légère', 0.5],
-          ['crossfunctional', 'Instance transverse (commission IA)', 1]
+          ['delegated', 'Délégué aux équipes métiers', 0,
+            'Chaque équipe décide seule de ses initiatives IA ; aucune instance ne les recense ni ne les arbitre au niveau de l’organisation.'],
+          ['coordinated', 'Coordination légère', 0.5,
+            'Un référent ou un groupe de travail recense les initiatives et diffuse des règles communes, sans mandat d’arbitrage ni budget propre.'],
+          ['crossfunctional', 'Instance transverse (commission IA)', 1,
+            'Une instance mandatée, réunissant métiers, IT et conformité, se réunit à intervalle fixe, arbitre le portefeuille d’initiatives et rend compte à la direction.']
         ]
       },
       {

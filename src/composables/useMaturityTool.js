@@ -221,7 +221,18 @@ export function useMaturityTool() {
         value: optionValue,
         label: optionLabelText,
         active: value === optionValue
-      }))
+      })),
+      // Critères d'acceptation, rédigés pour les seuls attributs dont une option
+      // plafonne le niveau cible : la liste est vide ailleurs, et le composant
+      // n'affiche alors rien.
+      criteria: field.opts
+        .filter(([, , , criterion]) => criterion)
+        .map(([optionValue, optionLabelText, , criterion]) => ({
+          value: optionValue,
+          label: optionLabelText,
+          text: criterion,
+          active: value === optionValue
+        }))
     }
   }
 
