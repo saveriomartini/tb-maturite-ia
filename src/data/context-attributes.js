@@ -87,7 +87,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'devApproach', short: 'Développement IA', label: 'Approche de développement IA', aimm: 'Primary AI development approach', axis: null,
-        hint: 'Oriente les areas techniques à prioriser, sans modifier le niveau cible',
+        hint: 'Oriente les areas techniques à prioriser, sans modifier le profil visé',
         opts: [
           ['buy', 'Acheter sur étagère', 0],
           ['customize', 'Personnaliser', 0.33],

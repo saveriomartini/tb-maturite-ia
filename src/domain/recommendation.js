@@ -5,7 +5,7 @@
 // Le raisonnement complet est documenté dans docs/NIVEAU-CIBLE.md.
 
 import {
-  ALL_FIELDS, LEVEL_CAPS, LEVEL5_REQUIREMENTS, REGULATED_RISK_CEILING, optionLabel
+  ALL_FIELDS, LEVEL_CAPS, LEVEL5_REQUIREMENTS, REGULATED_RISK_CEILING
 } from '../data/context-attributes.js'
 
 // Valeur prise par un attribut non renseigné. 0.25 place le formulaire vide
@@ -33,14 +33,6 @@ function fieldsOfAxis(axis) {
   return ALL_FIELDS.filter(field => field.axis === axis)
 }
 
-// Attributs renseignés d'un axe, avec leur score — sert à nommer les deux
-// facteurs les plus déterminants dans la restitution.
-function answeredScores(axis, form) {
-  return fieldsOfAxis(axis)
-    .map(field => ({ field, score: fieldScore(field, form) }))
-    .filter(entry => entry.score != null)
-}
-
 function axisLevel(axis, form) {
   const fields = fieldsOfAxis(axis)
   if (!fields.length) return null
@@ -59,15 +51,8 @@ function clampLevel(level) {
   return Math.max(MIN_LEVEL, Math.min(MAX_LEVEL, Math.round(level)))
 }
 
-function factorText(entry, form) {
-  const field = entry.field
-  return `${field.short || field.label} : ${optionLabel(field.id, form[field.id]).toLowerCase()}`
-}
-
 export function buildRecommendation(form) {
   const answered = ALL_FIELDS.filter(field => form[field.id] != null).length
-  const ambitionScores = answeredScores('ambition', form)
-  const capacityScores = answeredScores('capacity', form)
   const ambitionLevel = axisLevel('ambition', form)
   const capacityLevel = axisLevel('capacity', form)
 
@@ -90,30 +75,17 @@ export function buildRecommendation(form) {
   const blockedFrom5 = level === MAX_LEVEL && level5Missing.length > 0
   if (blockedFrom5) level = MAX_LEVEL - 1
 
-  const drivers = ambitionScores
-    .filter(entry => entry.score >= 0.6)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 2)
-    .map(entry => factorText(entry, form))
-
-  const limits = capacityScores
-    .filter(entry => entry.score <= 0.4)
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 2)
-    .map(entry => factorText(entry, form))
-
+  // Les deux axes ne sortent pas d'ici : ils portent le calcul, pas la
+  // restitution. Seul `cappedByCapacity` en subsiste, parce qu'il explique un
+  // écart entre le profil visé et celui qu'appelaient les réponses.
   return {
     level,
     answered,
     total: ALL_FIELDS.length,
     complete: answered === ALL_FIELDS.length,
     empty: answered === 0,
-    ambitionLevel: clampLevel(ambitionLevel),
-    capacityLevel: clampLevel(capacityLevel),
     cappedByCapacity,
     capNotes,
-    level5Missing: blockedFrom5 ? level5Missing : [],
-    drivers,
-    limits
+    level5Missing: blockedFrom5 ? level5Missing : []
   }
 }

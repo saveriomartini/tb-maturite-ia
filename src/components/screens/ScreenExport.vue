@@ -15,12 +15,13 @@
           <div class="page__levels">
             <p class="page__level">Profil visé : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
             <p class="page__level">Profil actuel : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
+            <p class="page__coverage">{{ vm.coverage }}</p>
           </div>
         </header>
 
         <div class="page__body">
           <p v-if="page.empty" class="page__empty">
-            Aucune pratique manquante — toutes les areas du profil visé sont acquises.
+            Aucune pratique manquante — toutes les areas évaluées sont acquises.
           </p>
 
           <section v-for="group in page.groups" :key="group.id" class="group">
@@ -128,6 +129,15 @@ const emit = defineEmits(['back'])
 
 .page__level-value {
   font-weight: 700;
+}
+
+/* Sur quoi porte la liste : une area jamais présentée n'y figure pas, et le
+   document doit le dire pour être lu correctement hors de l'outil. */
+.page__coverage {
+  margin: 3px 0 0;
+  font-size: 9px;
+  line-height: 1.4;
+  color: var(--color-neutral-700);
 }
 
 .page__body {

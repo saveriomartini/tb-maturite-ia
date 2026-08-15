@@ -1,6 +1,6 @@
 <template>
   <section class="panel">
-    <h2 class="panel-head form__title">Attributs de contexte — périmètre et niveau cible</h2>
+    <h2 class="panel-head form__title">Attributs de contexte — votre organisation</h2>
 
     <div v-for="group in groups" :key="group.id" class="group">
       <h3 class="group__title heading">{{ group.label }}</h3>
@@ -27,7 +27,7 @@
       <div v-show="showContext" id="descriptive-fields">
         <p class="descriptive__intro">
           Attributs documentaires issus de la Table 1 du modèle. Ils décrivent l’unité évaluée et
-          n’interviennent pas dans le calcul du niveau cible.
+          n’entrent pas dans l’ordre du diagnostic.
         </p>
         <div class="descriptive__fields">
           <ContextField

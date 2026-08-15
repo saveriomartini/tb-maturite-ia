@@ -1,37 +1,58 @@
 // Machine à écrans : ordre du parcours, phase d'appartenance, enchaînement.
 // Aucune dépendance à Vue — testable isolément.
+//
+// L'accueil n'ouvre plus un parcours linéaire unique : il propose trois entrées
+// de même rang — information, outil, démonstration. Seule la branche « outil »
+// est phasée, et c'est la seule dont l'en-tête montre la progression :
+// `tool1` cadre, `tool2` évalue, `tool3` et `tool3b` restituent.
 
 export const SCREENS = [
-  'home', 'cadrage1', 'cadrage2', 'cadrage3',
-  'diagStart', 'diag',
-  'resti1', 'resti2', 'resti3', 'export'
+  'home', 'info', 'demo',
+  'tool1', 'tool2', 'palier',
+  'tool3', 'tool3b', 'export'
 ]
 
-// Phase (1-4) à laquelle appartient chaque écran ; 0 = accueil, hors phase.
+// Phase (1-3) à laquelle appartient chaque écran ; 0 = hors branche outil.
+// Le palier ferme la première série du questionnaire : il appartient encore à
+// l'Évaluation, même s'il ouvre sur les Résultats.
 export const PHASE_OF = {
-  home: 0,
-  cadrage1: 1, cadrage2: 1, cadrage3: 1,
-  diagStart: 2, diag: 2,
-  resti1: 3, resti2: 3, resti3: 3, export: 3
+  home: 0, info: 0, demo: 0,
+  tool1: 1,
+  tool2: 2, palier: 2,
+  tool3: 3, tool3b: 3, export: 3
 }
 
 // Écran suivant par défaut. Les écrans absents ont un enchaînement conditionnel
-// (diag parcourt les areas, resti3 propose l'export ou la fin).
+// (tool2 parcourt les areas, le palier repart au questionnaire ou aux résultats,
+// tool3b propose l'export ou la fin).
 export const NEXT_OF = {
-  home: 'cadrage1',
-  cadrage1: 'cadrage2',
-  cadrage2: 'cadrage3',
-  cadrage3: 'diagStart',
-  diagStart: 'diag',
-  resti1: 'resti2',
-  resti2: 'resti3'
+  tool1: 'tool2',
+  tool3: 'tool3b'
 }
 
 // Écran d'entrée de chaque phase, dans l'ordre des onglets de l'en-tête.
-// null = phase hors périmètre du travail de Bachelor (Ancrage).
-export const PHASE_ENTRY = ['cadrage1', 'diagStart', 'resti1', null]
+export const PHASE_ENTRY = ['tool1', 'tool2', 'tool3']
+
+// Retour explicite plutôt que déduit de la position dans `SCREENS` : l'accueil a
+// désormais trois successeurs possibles, et un simple décalage d'index ferait
+// remonter le cadrage vers la démonstration.
+const PREVIOUS_OF = {
+  info: 'home',
+  demo: 'home',
+  tool1: 'home',
+  tool2: 'tool1',
+  palier: 'tool2',
+  tool3: 'palier',
+  tool3b: 'tool3',
+  export: 'tool3b'
+}
 
 export function previousScreen(screen) {
-  const index = SCREENS.indexOf(screen)
-  return SCREENS[Math.max(0, index - 1)]
+  return PREVIOUS_OF[screen] || 'home'
+}
+
+// Hors de la branche outil, l'en-tête se réduit au titre : afficher trois phases
+// inertes sur l'accueil ou la page d'information ne renseigne sur rien.
+export function isToolScreen(screen) {
+  return PHASE_OF[screen] > 0
 }

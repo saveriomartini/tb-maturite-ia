@@ -6,14 +6,7 @@
         <div v-for="dimension in block.dimensions" :key="dimension.id" class="dimension">
           <h3 class="dimension__name" :style="{ background: dimension.color }">{{ dimension.name }}</h3>
           <div class="dimension__areas">
-            <p
-              v-for="area in dimension.areas"
-              :key="area.id"
-              class="area"
-              :class="{ 'area--in-scope': area.inScope, 'area--pending': area.pending }"
-            >
-              {{ area.label }}
-            </p>
+            <p v-for="area in dimension.areas" :key="area.id" class="area">{{ area.label }}</p>
           </div>
         </div>
       </div>
@@ -22,8 +15,9 @@
 </template>
 
 <script setup>
-// Carte du périmètre : les 28 areas, celles retenues par le niveau cible en
-// évidence, les autres en retrait.
+// Carte du diagnostic : les areas qui vont être parcourues, groupées par bloc
+// et dimension. Elle ne montre rien d'autre — ni le reste du modèle, ni ce qui
+// a présidé à la sélection.
 defineProps({
   blocks: { type: Array, required: true }
 })
@@ -86,20 +80,11 @@ defineProps({
 .area {
   margin: 0;
   padding: 5px 7px;
-  border: 1px solid var(--color-neutral-300);
-  color: var(--color-neutral-500);
-  font-size: 9.5px;
-  line-height: 1.3;
-}
-
-.area--in-scope {
-  border-color: var(--color-text);
+  border: 1px solid var(--color-text);
   background: var(--color-neutral-200);
   color: var(--color-text);
-}
-
-.area--pending {
-  border-style: dashed;
+  font-size: 9.5px;
+  line-height: 1.3;
 }
 
 @media (max-width: 1200px) {

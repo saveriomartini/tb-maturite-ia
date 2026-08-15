@@ -1,9 +1,7 @@
 <template>
-  <AppScreen>
-    <LevelSummary :target-label="vm.targetLabel" :acquired-label="vm.acquiredLabel" />
-
+  <div class="detail">
     <div class="details-head">
-      <p class="section-title">Détails :</p>
+      <p class="section-title">Par area de compétence :</p>
     </div>
 
     <div class="blocks">
@@ -44,21 +42,16 @@
         </table>
       </section>
     </div>
-
-    <AppScreenNav @back="emit('back')" @next="emit('next')" />
-  </AppScreen>
+  </div>
 </template>
 
 <script setup>
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
-import LevelSummary from '../LevelSummary.vue'
-
+// Détail par area de compétence. Le rappel « profil visé / profil actuel » a été
+// retiré : cette section suit immédiatement la synthèse qui l'affiche déjà en
+// tête de page, il n'y répétait qu'une information à l'écran.
 defineProps({
   vm: { type: Object, required: true }
 })
-
-const emit = defineEmits(['back', 'next'])
 </script>
 
 <style scoped>

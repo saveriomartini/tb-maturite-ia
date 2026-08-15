@@ -1,7 +1,8 @@
 // Persistance locale de la session d'évaluation.
 //
-// L'état complet (écran courant, attributs de contexte, niveau cible, pratiques
-// validées) est écrit dans localStorage sous une clé versionnée. Toute donnée
+// L'état complet (écran courant, attributs de contexte, profil visé retenu,
+// série ouverte, areas présentées, pratiques validées) est écrit dans
+// localStorage sous une clé versionnée. Toute donnée
 // relue est validée avant d'être réinjectée : un payload écrit par une version
 // antérieure du modèle ne doit jamais pouvoir corrompre l'état applicatif —
 // les valeurs inconnues sont écartées silencieusement, pas l'ensemble.
@@ -55,11 +56,15 @@ function sanitize(raw, screens) {
   const out = {}
   if (screens.indexOf(raw.screen) >= 0) out.screen = raw.screen
   if (Number.isInteger(raw.diagIdx) && raw.diagIdx >= 0) out.diagIdx = raw.diagIdx
+  // Un `target` absent ou invalide retombe sur la valeur par défaut (null),
+  // c'est-à-dire sur la recommandation : le choix manuel seul est mémorisé.
   if (Number.isInteger(raw.target) && raw.target >= 1 && raw.target <= 5) out.target = raw.target
+  if (raw.wave === 1 || raw.wave === 2) out.wave = raw.wave
   if (typeof raw.showContext === 'boolean') out.showContext = raw.showContext
   if (typeof raw.session === 'string' && /^[a-z0-9]{4,16}$/.test(raw.session)) out.session = raw.session
   out.checked = boolMap(raw.checked)
   out.openLevels = boolMap(raw.openLevels)
+  out.seen = boolMap(raw.seen)
   out.form = validForm(raw.form)
   return out
 }
@@ -69,10 +74,12 @@ function snapshot(state) {
     screen: state.screen,
     diagIdx: state.diagIdx,
     target: state.target,
+    wave: state.wave,
     showContext: state.showContext,
     session: state.session,
     checked: boolMap(state.checked),
     openLevels: boolMap(state.openLevels),
+    seen: boolMap(state.seen),
     form: validForm(state.form)
   }
 }

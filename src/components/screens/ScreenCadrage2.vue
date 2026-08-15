@@ -1,25 +1,18 @@
 <template>
-  <AppScreen spacing="loose">
-    <aside class="callout">
-      <p class="callout__title heading">NB</p>
-      <p class="callout__text">
-        Il est très important de bien définir (avec ou sans l'assistance offerte par l'outil) son
-        niveau cible AVANT l'évaluation. Cela permet de sélectionner les areas de compétence
-        intéressantes pour l'organisation et d'établir ainsi les priorités d'action.
-      </p>
-    </aside>
-
-    <div class="callout-nav">
-      <AppScreenNav align="end" @back="emit('back')" @next="emit('next')" />
-    </div>
-  </AppScreen>
+  <aside class="callout">
+    <p class="callout__title heading">NB</p>
+    <p class="callout__text">
+      Décrire son organisation AVANT l'évaluation change tout : l'outil s'en sert pour vous
+      proposer d'abord les areas de compétence qui comptent le plus pour vous, et vous n'avez
+      pas à trancher vous-même par où commencer.
+    </p>
+  </aside>
 </template>
 
 <script setup>
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
-
-const emit = defineEmits(['back', 'next'])
+// Justification du formulaire de contexte. Section centrale du cadrage : elle
+// précède immédiatement le formulaire, vers lequel la page invite à défiler.
+// Le gabarit et la navigation appartiennent à la page qui l'accueille.
 </script>
 
 <style scoped>
@@ -42,10 +35,5 @@ const emit = defineEmits(['back', 'next'])
   font-size: 19px;
   line-height: 1.45;
   text-wrap: pretty;
-}
-
-.callout-nav {
-  max-width: 900px;
-  --nav-margin-top: 32px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <AppScreen>
+  <div class="summary">
     <div class="headline">
       <div>
         <p class="headline__label">Profil visé :</p>
@@ -27,7 +27,7 @@
       <p class="ladder__desc">{{ vm.acquiredDesc }}</p>
     </div>
 
-    <p class="section-title">Détails :</p>
+    <p class="section-title">Par bloc :</p>
 
     <div class="blocks">
       <section
@@ -59,20 +59,16 @@
         </div>
       </section>
     </div>
-
-    <AppScreenNav @back="emit('back')" @next="emit('next')" />
-  </AppScreen>
+  </div>
 </template>
 
 <script setup>
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
-
+// Synthèse des résultats : profil atteint, escalier des profils, avancement par
+// bloc. Section haute de la page de résultats — le détail par area la suit sans
+// changer d'écran, et la navigation appartient à la page.
 defineProps({
   vm: { type: Object, required: true }
 })
-
-const emit = defineEmits(['back', 'next'])
 
 // Bande supérieure du bloc : un segment par dimension, à parts égales sur la
 // largeur — même principe que le liseré de gauche du tableau de cadrage.

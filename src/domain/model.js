@@ -44,8 +44,17 @@ export function levelDescription(n) {
   return level ? level.desc : ''
 }
 
-// Areas effectivement évaluées : celles du niveau cible ou en dessous, les
-// areas encore à définir (Matrice N2) restant hors périmètre.
-export function scopedAreas(target) {
-  return AREAS.filter(area => !area.pending && area.level <= target)
+// Areas ordonnées pour le questionnaire. Le profil visé n'exclut plus personne :
+// il ordonne. Les areas qu'il met en jeu forment la première série (`wave` 1),
+// les autres suivent (`wave` 2) et ne sont proposées que si l'utilisateur
+// choisit de poursuivre. Seules les areas encore à définir (Matrice N2) restent
+// hors du modèle évaluable.
+export function orderedAreas(target) {
+  const evaluable = AREAS.filter(area => !area.pending)
+  const first = evaluable.filter(area => area.level <= target)
+  const rest = evaluable.filter(area => area.level > target)
+  return [
+    ...first.map(area => ({ ...area, wave: 1 })),
+    ...rest.map(area => ({ ...area, wave: 2 }))
+  ]
 }

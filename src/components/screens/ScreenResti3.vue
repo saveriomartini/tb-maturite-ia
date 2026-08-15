@@ -29,6 +29,16 @@
       </section>
     </div>
 
+    <section v-if="vm.deferred" class="deferred panel">
+      <h2 class="panel-head">{{ vm.deferred.summary }}</h2>
+      <div class="deferred__body">
+        <p class="deferred__note">{{ vm.deferred.note }}</p>
+        <button type="button" class="btn btn-secondary deferred__resume" @click="emit('resume')">
+          {{ vm.deferred.resumeLabel }}
+        </button>
+      </div>
+    </section>
+
     <AppScreenNav @back="emit('back')">
       <template #actions>
         <div class="actions">
@@ -49,7 +59,7 @@ defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['export', 'finish', 'back'])
+const emit = defineEmits(['export', 'finish', 'resume', 'back'])
 </script>
 
 <style scoped>
@@ -139,6 +149,30 @@ const emit = defineEmits(['export', 'finish', 'back'])
   background: var(--color-neutral-200);
   font-size: 11px;
   line-height: 1.35;
+}
+
+/* Les areas jamais présentées ne sont pas un manque : elles sortent de la liste
+   du gap et sont annoncées ici, à part, avec le moyen d'y revenir. */
+.deferred {
+  margin-top: 22px;
+  background: var(--color-bg);
+  border-style: dashed;
+}
+
+.deferred__body {
+  padding: 14px 16px;
+}
+
+.deferred__note {
+  max-width: 640px;
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-neutral-800);
+}
+
+.deferred__resume {
+  margin-top: 14px;
 }
 
 .actions {

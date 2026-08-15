@@ -2,61 +2,59 @@
   <ScreenHome
     v-if="screen === 'home'"
     :vm="tool.home"
-    @start="tool.nav.start"
+    @open="open"
   />
-  <ScreenCadrage1
-    v-else-if="screen === 'cadrage1'"
-    :vm="tool.cadrage1"
+  <ScreenInfo
+    v-else-if="screen === 'info'"
+    :cadrage1="tool.cadrage1"
+    :scope="tool.diagStart"
     @toggle-level="tool.actions.toggleLevelDetail"
-    @back="tool.nav.back"
-    @next="tool.nav.next"
+    @start="tool.nav.start"
+    @back="tool.nav.home"
   />
-  <ScreenCadrage2
-    v-else-if="screen === 'cadrage2'"
-    @back="tool.nav.back"
-    @next="tool.nav.next"
+  <ScreenDemo
+    v-else-if="screen === 'demo'"
+    @start="tool.nav.start"
+    @back="tool.nav.home"
   />
-  <ScreenCadrage3
-    v-else-if="screen === 'cadrage3'"
-    :vm="tool.cadrage3"
+  <ScreenTool1
+    v-else-if="screen === 'tool1'"
+    :journey="tool.journey"
+    :cadrage3="tool.cadrage3"
     @select-option="tool.actions.selectOption"
-    @select-target="tool.actions.selectTarget"
-    @apply-recommendation="tool.actions.applyRecommendation"
     @toggle-context="tool.actions.toggleDescriptiveContext"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
-  <ScreenDiagStart
-    v-else-if="screen === 'diagStart'"
-    :vm="tool.diagStart"
-    @back="tool.nav.back"
-    @next="tool.nav.next"
-  />
   <ScreenDiag
-    v-else-if="screen === 'diag'"
+    v-else-if="screen === 'tool2'"
     :vm="tool.diag"
     @toggle-practice="tool.actions.togglePractice"
     @go-to-area="tool.actions.goToArea"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
-  <ScreenResti1
-    v-else-if="screen === 'resti1'"
-    :vm="tool.resti1"
+  <ScreenPalier
+    v-else-if="screen === 'palier'"
+    :vm="tool.palier"
+    @select-profile="tool.actions.selectTarget"
+    @continue="tool.actions.continueDiagnostic"
+    @skip="tool.nav.skipToRestitution"
     @back="tool.nav.back"
-    @next="tool.nav.next"
   />
-  <ScreenResti2
-    v-else-if="screen === 'resti2'"
-    :vm="tool.resti2"
+  <ScreenTool3
+    v-else-if="screen === 'tool3'"
+    :resti1="tool.resti1"
+    :resti2="tool.resti2"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
   <ScreenResti3
-    v-else-if="screen === 'resti3'"
+    v-else-if="screen === 'tool3b'"
     :vm="tool.resti3"
     @export="tool.nav.exportPreview"
     @finish="tool.nav.finish"
+    @resume="tool.actions.continueDiagnostic"
     @back="tool.nav.back"
   />
   <ScreenExport
@@ -70,15 +68,19 @@
 // Aiguillage vers l'écran courant. Seul composant à connaître l'outil complet :
 // chaque écran ne reçoit que son propre view-model et remonte ses intentions
 // sous forme d'évènements.
+//
+// Les écrans de cadrage et de restitution ne sont plus routés individuellement :
+// ils sont devenus des sections empilées dans `info`, `tool1` et `tool3`, qui
+// portent désormais le gabarit et la navigation. Leurs fichiers gardent leurs
+// noms, le temps qu'un renommage se justifie.
 import { computed } from 'vue'
 import ScreenHome from './screens/ScreenHome.vue'
-import ScreenCadrage1 from './screens/ScreenCadrage1.vue'
-import ScreenCadrage2 from './screens/ScreenCadrage2.vue'
-import ScreenCadrage3 from './screens/ScreenCadrage3.vue'
-import ScreenDiagStart from './screens/ScreenDiagStart.vue'
+import ScreenInfo from './screens/ScreenInfo.vue'
+import ScreenDemo from './screens/ScreenDemo.vue'
+import ScreenTool1 from './screens/ScreenTool1.vue'
 import ScreenDiag from './screens/ScreenDiag.vue'
-import ScreenResti1 from './screens/ScreenResti1.vue'
-import ScreenResti2 from './screens/ScreenResti2.vue'
+import ScreenPalier from './screens/ScreenPalier.vue'
+import ScreenTool3 from './screens/ScreenTool3.vue'
 import ScreenResti3 from './screens/ScreenResti3.vue'
 import ScreenExport from './screens/ScreenExport.vue'
 
@@ -87,4 +89,12 @@ const props = defineProps({
 })
 
 const screen = computed(() => props.tool.state.screen)
+
+// L'accueil nomme la porte qu'il ouvre ; sa traduction en écran reste ici, pour
+// que le composant d'accueil ignore les noms de la machine à écrans.
+function open(target) {
+  if (target === 'info') props.tool.nav.info()
+  else if (target === 'demo') props.tool.nav.demo()
+  else props.tool.nav.start()
+}
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <AppScreen>
+  <div class="framework">
     <p class="intro">
       Le modèle est proposé en 4 blocs-thématiques où ses 9 dimensions sont organisées ; à l'intérieur
       de chaque dimension on retrouve des areas de compétence, pour un total de 28 areas. Pour
@@ -17,14 +17,13 @@
     <MaturityLevelList :levels="vm.levels" @toggle="emit('toggle-level', $event)" />
 
     <p class="note">Le niveau de maturité par bloc peut être calculé séparément dans cet outil.</p>
-
-    <AppScreenNav align="end" @back="emit('back')" @next="emit('next')" />
-  </AppScreen>
+  </div>
 </template>
 
 <script setup>
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
+// Présentation du modèle. Section de la page d'information : elle n'ouvre plus
+// le parcours d'évaluation, où elle imposait une lecture avant toute question.
+// Le gabarit et la navigation appartiennent désormais à la page qui l'accueille.
 import FrameworkTable from '../FrameworkTable.vue'
 import MaturityLevelList from '../MaturityLevelList.vue'
 
@@ -32,7 +31,7 @@ defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['toggle-level', 'back', 'next'])
+const emit = defineEmits(['toggle-level'])
 </script>
 
 <style scoped>

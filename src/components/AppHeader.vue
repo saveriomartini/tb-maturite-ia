@@ -6,15 +6,19 @@
           type="button"
           class="brand-home"
           title="Retour à l'accueil"
-          aria-label="MAIA - Maturité IA — retour à l'accueil"
+          aria-label="M.A.IA — retour à l'accueil"
           @click="emit('home')"
         >
-          MAIA - Maturité IA
+          M.A.IA
         </button>
-        <div class="header__subtitle heading">— Outil d'évaluation</div>
+        <div class="header__subtitle heading">
+          — Outil d'auto-évaluation de la maturité d'adoption de l'IA pour PME
+        </div>
       </div>
 
-      <p class="meta header__model">modèle v1.0 · CMU SEI / Accenture · consolidation Matrice N2</p>
+      <p v-if="vm.showPhases" class="meta header__model">
+        modèle v1.0 · CMU SEI / Accenture · consolidation Matrice N2
+      </p>
 
       <div class="header__session meta">
         <span>{{ vm.sessionLabel }}</span>
@@ -24,7 +28,7 @@
       </div>
     </div>
 
-    <nav class="header__phases" aria-label="Phases du parcours">
+    <nav v-if="vm.showPhases" class="header__phases" aria-label="Phases du parcours">
       <button
         v-for="phase in vm.phases"
         :key="phase.n"
@@ -73,7 +77,12 @@ const emit = defineEmits(['home', 'phase', 'reset'])
   align-items: baseline;
   flex-wrap: wrap;
   gap: 16px;
-  padding: 14px var(--gutter) 0;
+  /* sans la barre de phases, l'en-tête garde sa respiration en bas */
+  padding: 14px var(--gutter) 12px;
+}
+
+.header:has(.header__phases) .header__bar {
+  padding-bottom: 0;
 }
 
 .header__brand {
@@ -83,7 +92,9 @@ const emit = defineEmits(['home', 'phase', 'reset'])
 }
 
 .header__subtitle {
-  font-size: 15px;
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: var(--color-neutral-800);
 }
 
 .header__model {
@@ -117,7 +128,7 @@ const emit = defineEmits(['home', 'phase', 'reset'])
 
 .header__phases {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   padding: 10px var(--gutter) 0;
 }
 
@@ -184,6 +195,12 @@ const emit = defineEmits(['home', 'phase', 'reset'])
    nom de la phase suffisent à se repérer, la phrase d'explication a déjà été
    lue à l'accueil. */
 @media (max-width: 900px) {
+  /* le titre suffit à identifier l'outil : la ligne de description passe à la
+     trappe avant que l'en-tête collant ne mange l'écran */
+  .header__subtitle {
+    display: none;
+  }
+
   .phase__desc {
     display: none;
   }

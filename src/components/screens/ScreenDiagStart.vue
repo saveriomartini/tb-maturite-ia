@@ -1,48 +1,28 @@
 <template>
-  <AppScreen>
-    <div class="intro">
-      <p class="level-badge">{{ vm.targetLabel }}</p>
-      <p class="intro__text">
-        selon le niveau cible vous êtes soumis seulement aux pratiques et objectifs qui vous
-        concernent : {{ vm.scopeSummary }}
-      </p>
-    </div>
+  <div class="scope-section">
+    <p class="intro">{{ vm.intro }}</p>
 
     <ScopeMap class="scope" :blocks="vm.blocks" />
-
-    <AppScreenNav next-label="Commencer" @back="emit('back')" @next="emit('next')" />
-  </AppScreen>
+  </div>
 </template>
 
 <script setup>
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
+// Carte des areas retenues. Ce n'est pas le questionnaire — c'est l'explication
+// de ce sur quoi il porte, d'où son passage dans la page d'information : on la
+// consulte quand on veut comprendre la sélection, pas au moment de répondre.
 import ScopeMap from '../ScopeMap.vue'
 
 defineProps({
   vm: { type: Object, required: true }
 })
-
-const emit = defineEmits(['back', 'next'])
 </script>
 
 <style scoped>
 .intro {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.intro__text {
-  max-width: 620px;
+  max-width: 720px;
   margin: 0;
   font-size: 13px;
-  line-height: 1.4;
-}
-
-.level-badge {
-  margin: 0;
+  line-height: 1.5;
 }
 
 .scope {

@@ -1,56 +1,50 @@
-// Texte du parcours utilisateur en quatre phases (Cadrage, Diagnostic,
-// Restitution, Ancrage) : étapes, points de friction et opportunités.
+// Texte du parcours utilisateur en trois phases (Cadrage, Évaluation,
+// Résultats) : étapes, points de friction et opportunités.
 // Contenu rédactionnel, au même titre que model-data.json — aucune logique.
+//
+// Les définitions ne mentionnent plus de « niveau cible » : le profil visé se
+// déduit du contexte et ne s'annonce qu'au palier, une fois la première série
+// d'areas parcourue. L'annoncer ici rouvrirait dès le cadrage une décision qu'on
+// ne demande plus.
 
 export const JOURNEY = [
   {
     n: '1',
     name: 'Cadrage',
     steps: [
-      'vous comprenez le modèle et validez vos connaissances de base sur l’IA',
-      'vous déterminez le périmètre de l’évaluation et le niveau cible'
+      'vous décrivez votre organisation en quelques attributs',
+      'l’outil en déduit les areas de compétence à évaluer en priorité'
     ],
     frictions: [
-      'manque de temps à consacrer à l’apprentissage',
-      'difficulté à percevoir la vue d’ensemble et les détails en même temps',
-      'description de son organisation peut être fastidieuse'
+      'décrire son organisation avant d’avoir commencé peut sembler fastidieux',
+      'difficulté à percevoir la vue d’ensemble et les détails en même temps'
     ],
     opps: [
-      's’approprier un vocabulaire technique adapté',
-      'sélection des critères et objectifs les plus pertinents = clarification, gain de temps et d’adhérence'
+      'la sélection des areas est faite pour vous : rien à trancher soi-même',
+      's’approprier un vocabulaire commun sur l’adoption de l’IA'
     ]
   },
   {
     n: '2',
-    name: 'Diagnostic',
+    name: 'Évaluation',
     steps: [
-      'vous répondez au questionnaire et définissez votre niveau actuel',
-      'selon le niveau cible vous êtes soumis seulement aux pratiques et objectifs qui vous concernent'
+      'vous validez, area par area, les pratiques déjà en place',
+      'seules les pratiques que votre situation appelle vous sont présentées'
     ],
-    frictions: ['coordination et analyse profonde requise pour valider une pratique'],
-    opps: ['choix binaire oui/non pour valider la liste de pratiques d’un objectif = définition claire et objective de son niveau']
+    frictions: ['valider une pratique demande parfois de vérifier auprès d’un collègue'],
+    opps: ['choix binaire oui / non : une définition claire et objective de ce qui est acquis']
   },
   {
     n: '3',
-    name: 'Restitution',
+    name: 'Résultats',
     steps: [
-      'vous visualisez les résultats, une appréciation qualitative et un score chiffré de votre avancement',
-      'vous obtenez une liste des pratiques manquantes (le gap)'
+      'vous situez votre organisation sur l’échelle des profils d’adoption',
+      'vous obtenez la liste des pratiques manquantes, prête à exporter'
     ],
     frictions: ['frustration de voir un objectif non atteint pour une seule pratique manquante'],
     opps: [
-      'adhésion à la règle du niveau le plus bas pour chaque bloc',
-      'identification rapide des gaps simplifiée par le regroupement par bloc/thématique'
+      'les écarts regroupés par bloc se lisent d’un coup d’œil',
+      'une liste d’actions concrètes pour engager la suite'
     ]
-  },
-  {
-    n: '4',
-    name: 'Ancrage',
-    steps: [
-      'vous générez une roadmap actionnable selon vos priorités',
-      'vous lancez des projets concrets'
-    ],
-    frictions: ['difficulté à établir les priorités et allouer les ressources'],
-    opps: ['motivation à agir rapidement avec des objectifs clairs']
   }
 ]

@@ -1,5 +1,5 @@
 <template>
-  <AppScreen class="cadrage3">
+  <div class="cadrage3">
     <ContextAttributeForm
       :groups="vm.groups"
       :descriptive-fields="vm.descriptiveFields"
@@ -8,60 +8,28 @@
       @select-option="(fieldId, value) => emit('select-option', fieldId, value)"
       @toggle-context="emit('toggle-context')"
     />
-
-    <div>
-      <TargetRecommendationPanel
-        :recommendation="vm.recommendation"
-        :target-options="vm.targetOptions"
-        :mismatch-label="vm.mismatchLabel"
-        :scope-summary="vm.scopeSummary"
-        @select="emit('select-target', $event)"
-        @apply="emit('apply-recommendation')"
-      />
-      <div class="cadrage3__nav">
-        <AppScreenNav next-label="Suivant" @back="emit('back')" @next="emit('next')" />
-      </div>
-    </div>
-  </AppScreen>
+  </div>
 </template>
 
 <script setup>
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
+// Cadrage du contexte. L'écran ne montre plus ce que le formulaire produit :
+// la recommandation se calcule en arrière-plan et n'est expliquée qu'au palier,
+// une fois la première série d'areas parcourue. Section basse de la page de
+// cadrage, on y arrive en défilant depuis le NB qui la justifie.
 import ContextAttributeForm from '../ContextAttributeForm.vue'
-import TargetRecommendationPanel from '../TargetRecommendationPanel.vue'
 
 defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['select-option', 'select-target', 'apply-recommendation', 'toggle-context', 'back', 'next'])
+const emit = defineEmits(['select-option', 'toggle-context'])
 </script>
 
 <style scoped>
+/* Le formulaire ne s'étale pas sur toute la largeur : ses champs restent sur
+   deux colonnes lisibles, comme lorsqu'il partageait l'écran avec le panneau
+   de recommandation. */
 .cadrage3 {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 32px;
-  align-items: start;
-}
-
-.cadrage3__nav {
-  --nav-margin-top: 20px;
-}
-
-@media (max-width: 1200px) {
-  .cadrage3 {
-    grid-template-columns: 1fr 320px;
-    gap: 24px;
-  }
-}
-
-/* Empilé, le panneau de recommandation passe sous le formulaire : on renseigne
-   d'abord, on lit le niveau proposé ensuite. */
-@media (max-width: 900px) {
-  .cadrage3 {
-    grid-template-columns: 1fr;
-  }
+  max-width: 1040px;
 }
 </style>
