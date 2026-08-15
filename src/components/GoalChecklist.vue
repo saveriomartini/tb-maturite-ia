@@ -1,80 +1,122 @@
 <template>
   <div class="goals">
     <section
-      v-for="(goal, goalIndex) in goals"
-      :key="goalIndex"
+      v-for="goal in goals"
+      :key="goal.key"
       class="goal"
-      :class="{ 'is-started': goal.started, 'is-done': goal.done }"
+      :class="{ 'is-done': goal.done }"
     >
-      <header class="goal__head">
-        <p class="goal__text">{{ goal.text }}</p>
-        <span class="goal__mark" role="img" :aria-label="goal.stateLabel" :title="goal.stateLabel" />
-      </header>
-
-      <div class="practices">
+      <div class="goal__head">
         <button
-          v-for="practice in goal.practices"
-          :key="practice.key"
           type="button"
-          class="practice"
-          :class="{ 'is-checked': practice.checked }"
-          :aria-pressed="practice.checked"
-          @click="emit('toggle', practice.key)"
+          class="button-reset goal__check"
+          :aria-pressed="goal.done"
+          @click="emit('toggle', goal.keys)"
         >
-          <span class="practice__mark" aria-hidden="true" />
-          <span class="practice__text">{{ practice.text }}</span>
+          <span class="goal__mark" aria-hidden="true" />
+          <span class="goal__text">{{ goal.text }}</span>
+        </button>
+        <button
+          type="button"
+          class="button-reset goal__toggle"
+          :aria-expanded="isOpen(goal)"
+          :aria-controls="detailId(goal)"
+          :aria-label="toggleLabel(goal)"
+          @click="fold(goal)"
+        >
+          {{ isOpen(goal) ? '−' : '+' }}
         </button>
       </div>
+
+      <ul v-show="isOpen(goal)" :id="detailId(goal)" class="practices">
+        <li v-for="practice in goal.practices" :key="practice" class="practice">
+          <span class="practice__mark" aria-hidden="true" />
+          <span>{{ practice }}</span>
+        </li>
+      </ul>
     </section>
   </div>
 </template>
 
 <script setup>
-// Objectifs de l'area courante et pratiques à valider. Chaque pratique est un
-// interrupteur oui/non : un objectif n'est atteint que si toutes le sont.
+// Objectifs de l'area courante. L'objectif est l'unité de réponse : un
+// interrupteur oui/non qui vaut pour toutes ses pratiques à la fois. Celles-ci
+// ne se cochent plus — elles disent ce que l'objectif recouvre, et se replient
+// comme l'aide d'un attribut de contexte pour que l'écran ne se lise pas comme
+// un mur de texte.
+//
+// Le dépliage est un état local : il ne décrit pas l'évaluation et n'a pas à
+// survivre à la session. Il n'appartient qu'à l'utilisateur — cocher un
+// objectif n'ouvre ni ne referme son détail, et le pli tient d'une area à
+// l'autre tant que l'écran reste monté.
+import { ref, useId } from 'vue'
+
 defineProps({
   goals: { type: Array, required: true }
 })
 
 const emit = defineEmits(['toggle'])
+
+const open = ref({})
+const uid = useId()
+
+function isOpen(goal) {
+  return Boolean(open.value[goal.key])
+}
+
+function fold(goal) {
+  open.value[goal.key] = !isOpen(goal)
+}
+
+function detailId(goal) {
+  return `practices-${goal.key}-${uid}`
+}
+
+function toggleLabel(goal) {
+  return `${isOpen(goal) ? 'Masquer' : 'Afficher'} les pratiques — ${goal.text}`
+}
 </script>
 
 <style scoped>
 .goals {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
-/* la marge s'engage à la première coche : elle dit que l'objectif est entamé,
-   pas qu'il est atteint — ça, c'est l'affaire du signe */
+/* la marge s'allume à la validation : de loin, la colonne des traits dit
+   combien d'objectifs sont acquis, sans qu'on ait à lire une ligne */
 .goal {
   padding: 2px 0 14px 14px;
   border-left: 3px solid var(--color-neutral-300);
   border-bottom: 1px solid var(--color-divider);
 }
 
-.goal.is-started {
+.goal.is-done {
   border-left-color: var(--color-text);
 }
 
 .goal__head {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-start;
 }
 
-.goal__text {
-  max-width: 760px;
-  margin: 0;
-  font-size: 12.5px;
-  line-height: 1.45;
+/* toute la ligne de l'objectif est la case à cocher : la cible est large,
+   l'énoncé et son carré ne se cliquent pas séparément */
+.goal__check {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 4px 0;
+  text-align: left;
 }
 
-/* même carré que les cartes de pratiques, en plus grand : vide = objectif
-   non atteint, plein = atteint. Il remplace le badge en toutes lettres. */
+/* même carré que la colonne de marquage de la restitution 2 :
+   vide = objectif à valider, plein = objectif validé */
 .goal__mark {
-  margin-left: auto;
   flex: none;
   width: 11px;
   height: 11px;
@@ -82,75 +124,83 @@ const emit = defineEmits(['toggle'])
   border: 1px solid var(--color-neutral-600);
 }
 
+.goal__check:hover .goal__mark {
+  border-color: var(--color-text);
+}
+
 .is-done .goal__mark {
   border-color: var(--color-text);
   background: var(--color-text);
 }
 
-.practices {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
-  align-items: stretch;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-/* validée : la bordure épaissit et le rembourrage compense, la carte ne bouge pas */
-.practice {
-  position: relative;
-  display: block;
-  padding: 12px 13px;
-  border: 1px solid var(--color-neutral-400);
-  background: #fff;
-  color: var(--color-text);
-  font: inherit;
-  font-weight: 400;
-  text-align: left;
-  text-wrap: pretty;
-  cursor: pointer;
-}
-
-.practice:hover {
-  border-color: var(--color-text);
-}
-
-.practice.is-checked {
-  padding: 10px 11px;
-  border-width: 3px;
-  border-color: var(--color-text);
+/* Pas de mesure de confort ici : l'énoncé prend toute la largeur du panneau.
+   Débarrassé de sa formule d'introduction, il tient en deux lignes plutôt
+   qu'en quatre — c'est la hauteur, pas la longueur de ligne, qui pesait. */
+.goal__text {
+  font-size: 12.5px;
   font-weight: 600;
+  line-height: 1.45;
+  text-wrap: pretty;
 }
 
-/* même carré que la colonne de marquage de la restitution 2 :
-   vide = pratique à valider, plein = pratique validée.
-   Ancré dans le coin haut-droit de la carte : les décalages compensent l'épaisseur de
-   bordure pour qu'il reste à 6px du bord extérieur dans les deux états. */
+.is-done .goal__text {
+  font-weight: 700;
+}
+
+/* Affordance discrète, empruntée aux attributs de contexte : le pli ne doit pas
+   concurrencer l'énoncé qu'il suit. */
+.goal__toggle {
+  flex: none;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--color-neutral-600);
+}
+
+.goal__toggle:hover {
+  color: var(--color-text);
+}
+
+/* Le détail de l'objectif : ce qu'il demande, en texte secondaire. Rien n'y est
+   cliquable — la réponse s'est déjà donnée une ligne plus haut. */
+.practices {
+  margin: 8px 0 0 21px;
+  padding: 0 0 0 10px;
+  list-style: none;
+  border-left: 2px solid var(--color-divider);
+}
+
+.practice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  text-wrap: pretty;
+}
+
+.practice + .practice {
+  margin-top: 5px;
+}
+
+/* Le même carré que l'objectif, en plus petit : il ne se clique pas, il
+   constate. Cocher l'objectif remplit les siens d'un coup — c'est là que se
+   voit ce que la validation en bloc recouvre. */
 .practice__mark {
-  position: absolute;
-  top: 5px;
-  right: 5px;
+  flex: none;
   width: 8px;
   height: 8px;
+  margin-top: 4px;
   border: 1px solid var(--color-neutral-600);
 }
 
-.is-checked .practice__mark {
-  top: 3px;
-  right: 3px;
+.is-done .practice {
+  color: var(--color-neutral-800);
+}
+
+.is-done .practice__mark {
   border-color: var(--color-text);
   background: var(--color-text);
-}
-
-.practice__text {
-  display: block;
-  padding-top: 10px;
-  font-size: 11.5px;
-  line-height: 1.5;
-}
-
-@media (max-width: 1200px) {
-  .practices {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
 }
 </style>

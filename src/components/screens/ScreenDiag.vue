@@ -38,8 +38,20 @@
         <p class="context__desc">{{ vm.area.desc }}</p>
 
         <div v-if="vm.area.exampleArtifacts.length" class="context__artifacts">
-          <p class="context__label">Exemples d'artefacts</p>
-          <ul class="context__artifacts-list">
+          <p class="context__label">
+            Exemples d'artefacts
+            <button
+              type="button"
+              class="button-reset context__toggle"
+              :aria-expanded="artifactsOpen"
+              :aria-controls="artifactsId"
+              :aria-label="`${artifactsOpen ? 'Masquer' : 'Afficher'} les exemples d'artefacts`"
+              @click="artifactsOpen = !artifactsOpen"
+            >
+              {{ artifactsOpen ? '−' : '+' }}
+            </button>
+          </p>
+          <ul v-show="artifactsOpen" :id="artifactsId" class="context__artifacts-list">
             <li v-for="artifact in vm.area.exampleArtifacts" :key="artifact">{{ artifact }}</li>
           </ul>
         </div>
@@ -59,7 +71,7 @@
       </div>
 
       <div v-else class="work">
-        <GoalChecklist :goals="vm.goals" @toggle="emit('toggle-practice', $event)" />
+        <GoalChecklist :goals="vm.goals" @toggle="emit('toggle-goal', $event)" />
 
         <div class="work__nav">
           <button type="button" class="btn btn-ghost" @click="emit('back')">Précédent</button>
@@ -76,6 +88,11 @@
 </template>
 
 <script setup>
+// Les exemples d'artefacts se déplient comme les pratiques d'un objectif ou
+// l'aide d'un attribut de contexte : au repos, la colonne ne dit que ce qu'est
+// l'area. L'état est local et suit d'une area à l'autre — qui a demandé les
+// artefacts une fois les veut en général partout.
+import { ref, useId } from 'vue'
 import AppScreen from '../AppScreen.vue'
 import GoalChecklist from '../GoalChecklist.vue'
 
@@ -83,7 +100,10 @@ defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['toggle-practice', 'open-area', 'close-off-scope', 'back', 'next'])
+const emit = defineEmits(['toggle-goal', 'open-area', 'close-off-scope', 'back', 'next'])
+
+const artifactsOpen = ref(false)
+const artifactsId = `artifacts-${useId()}`
 </script>
 
 <style scoped>
@@ -217,6 +237,20 @@ const emit = defineEmits(['toggle-practice', 'open-area', 'close-off-scope', 'ba
   font-weight: 700;
 }
 
+/* Même affordance que les attributs de contexte et les objectifs : discrète,
+   elle suit le libellé sans lui disputer la place. */
+.context__toggle {
+  margin-left: 5px;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 400;
+  color: var(--color-neutral-600);
+}
+
+.context__toggle:hover {
+  color: var(--color-text);
+}
+
 .context__area {
   margin: 0;
   font-size: 19px;
@@ -238,11 +272,11 @@ const emit = defineEmits(['toggle-practice', 'open-area', 'close-off-scope', 'ba
   border-top: 1px solid var(--color-divider);
 }
 
+/* Plus d'ascenseur : la liste ne s'affiche que sur demande, elle se donne alors
+   en entier (14 artefacts au plus dans le modèle) plutôt que par la fenêtre. */
 .context__artifacts-list {
-  max-height: 220px;
   margin: 8px 0 0;
   padding: 0 0 0 16px;
-  overflow-y: auto;
   font-size: 11px;
   line-height: 1.5;
   color: var(--color-neutral-800);

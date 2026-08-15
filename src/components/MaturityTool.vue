@@ -31,7 +31,7 @@
   <ScreenDiag
     v-else-if="screen === 'tool2'"
     :vm="tool.diag"
-    @toggle-practice="tool.actions.togglePractice"
+    @toggle-goal="tool.actions.toggleGoal"
     @open-area="tool.actions.openArea"
     @close-off-scope="tool.actions.closeOffScope"
     @back="tool.nav.back"

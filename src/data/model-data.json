@@ -15,7 +15,7 @@
               "desc": "La capacité de l'entreprise à définir comment l'IA soutiendra les résultats métier visés, au travers d'une stratégie IA réaliste, évolutive et exécutable.",
               "goals": [
                 {
-                  "goal": "Un périmètre d'adoption de l'IA cohérent avec la mission, la vision et les objectifs métier de l'entreprise est clairement défini. Des processus et pratiques sont en place pour",
+                  "goal": "Un périmètre d'adoption de l'IA cohérent avec la mission, la vision et les objectifs métier de l'entreprise est clairement défini.",
                   "practices": [
                     "Identifier et impliquer les parties prenantes concernées par le périmètre envisagé pour l'adoption de l'IA.",
                     "Identifier les objectifs métier et les besoins pertinents pour l'adoption de l'IA.",
@@ -24,7 +24,7 @@
                   ]
                 },
                 {
-                  "goal": "Une stratégie d'adoption de l'IA est établie pour le périmètre retenu. Des processus et pratiques sont en place pour",
+                  "goal": "Une stratégie d'adoption de l'IA est établie pour le périmètre retenu.",
                   "practices": [
                     "Identifier les objectifs clés, les critères d'évaluation et les jalons de la stratégie IA.",
                     "Documenter la stratégie IA.",
@@ -33,7 +33,7 @@
                   ]
                 },
                 {
-                  "goal": "L'avancement de l'adoption de l'IA est régulièrement évalué au regard des objectifs, valeurs et principes métier, en cohérence avec la stratégie IA. Des processus et pratiques sont en place pour",
+                  "goal": "L'avancement de l'adoption de l'IA est régulièrement évalué au regard des objectifs, valeurs et principes métier, en cohérence avec la stratégie IA.",
                   "practices": [
                     "Mettre en place un processus pour évaluer et partager l'avancement de l'adoption de l'IA au regard des valeurs, objectifs et principes.",
                     "Revoir périodiquement la stratégie IA pour s'assurer qu'elle reste actuelle, pertinente et ajustée selon les résultats obtenus, positifs ou négatifs.",
@@ -59,7 +59,7 @@
               "desc": "La capacité à sélectionner et à évaluer en continu des partenaires en cohérence avec la stratégie de l'entreprise et sa stratégie IA.",
               "goals": [
                 {
-                  "goal": "Une veille sur l'évolution du secteur de l'IA et de ses écosystèmes est maintenue. Des processus et pratiques sont en place pour",
+                  "goal": "Une veille sur l'évolution du secteur de l'IA et de ses écosystèmes est maintenue.",
                   "practices": [
                     "Définir des exigences spécifiques à l'IA pour les partenaires et prestataires tiers, cohérentes avec la culture de l'entreprise et son appétit au risque.",
                     "Évaluer régulièrement les tendances du marché de l'IA, les nouvelles versions et les nouvelles technologies pour éclairer les décisions.",
@@ -69,7 +69,7 @@
                   ]
                 },
                 {
-                  "goal": "Des partenaires externes potentiels, y compris des fournisseurs, dont les capacités IA sont cohérentes avec les objectifs d'adoption, sont sollicités. Des processus et pratiques sont en place pour",
+                  "goal": "Des partenaires externes potentiels, y compris des fournisseurs, dont les capacités IA sont cohérentes avec les objectifs d'adoption, sont sollicités.",
                   "practices": [
                     "Définir l'approche d'acquisition des données, modèles et solutions IA (par exemple achat sur étagère, adaptation de solutions existantes ou développement en interne).",
                     "Identifier les briques technologiques externes clés dont les capacités complètent, plutôt qu'elles ne dupliquent, les capacités IA existantes.",
@@ -79,7 +79,7 @@
                   ]
                 },
                 {
-                  "goal": "Les contrats et les mécanismes de mise en relation sont revus pour garantir leur cohérence avec les objectifs d'adoption de l'IA. Des processus et pratiques sont en place pour",
+                  "goal": "Les contrats et les mécanismes de mise en relation sont revus pour garantir leur cohérence avec les objectifs d'adoption de l'IA.",
                   "practices": [
                     "Établir des contrats et partenariats qui préservent flexibilité et maîtrise (par exemple en évitant une dépendance excessive à un fournisseur).",
                     "Définir contractuellement la propriété des données, des modèles, des systèmes et de leurs livrables.",
@@ -104,7 +104,7 @@
               "desc": "La capacité de l'entreprise à examiner ses processus et sa structure actuels, et à les ajuster pour soutenir l'adoption de l'IA.",
               "goals": [
                 {
-                  "goal": "Les processus organisationnels sont évalués afin d'identifier les changements nécessaires ou de définir de nouveaux processus permettant de piloter efficacement l'adoption de l'IA et les initiatives IA. Des processus et pratiques sont en place pour",
+                  "goal": "Les processus organisationnels sont évalués afin d'identifier les changements nécessaires ou de définir de nouveaux processus permettant de piloter efficacement l'adoption de l'IA et les initiatives IA.",
                   "practices": [
                     "Identifier les processus organisationnels et technologiques pertinents pour l'adoption de l'IA.",
                     "Revoir régulièrement l'alignement entre les processus organisationnels et la stratégie IA afin d'identifier l'évolution des besoins métier.",
@@ -113,7 +113,7 @@
                   ]
                 },
                 {
-                  "goal": "La structure organisationnelle est évaluée de manière proactive afin de garantir son adéquation avec l'adoption de l'IA, notamment la conception, le développement, la mise en œuvre, le suivi et la mise en exploitation des solutions IA. Des processus et pratiques sont en place pour",
+                  "goal": "La structure organisationnelle est évaluée de manière proactive afin de garantir son adéquation avec l'adoption de l'IA, notamment la conception, le développement, la mise en œuvre, le suivi et la mise en exploitation des solutions IA.",
                   "practices": [
                     "Déterminer le personnel, les partenaires et les workflows associés aux initiatives IA de l'entreprise.",
                     "Cartographier la propriété et les responsabilités du personnel, des partenaires et des workflows au sein de la structure organisationnelle.",
@@ -137,7 +137,7 @@
               "desc": "La capacité à se préparer à différents scénarios futurs à l'aide de modèles analytiques (causaux, statistiques, de simulation, etc.) et à entretenir un programme de veille et de collaboration pour construire des feuilles de route stratégiques pour les capacités liées à l'IA (compétences, processus, technologies).",
               "goals": [
                 {
-                  "goal": "Des méthodes analytiques pour planifier, suivre, développer, tester et déployer les capacités liées à l'IA sont établies et maintenues. Des processus et pratiques sont en place pour",
+                  "goal": "Des méthodes analytiques pour planifier, suivre, développer, tester et déployer les capacités liées à l'IA sont établies et maintenues.",
                   "practices": [
                     "Établir et maintenir des méthodes analytiques (causales, statistiques, de simulation, etc.) pour mesurer l'efficacité des capacités IA de l'entreprise dans l'atteinte des objectifs métier.",
                     "Utiliser des méthodes et modèles analytiques pour suivre l'usage courant des technologies IA de l'entreprise et anticiper (estimer) les résultats et les taux d'échec.",
@@ -147,7 +147,7 @@
                   ]
                 },
                 {
-                  "goal": "La stratégie IA est actualisée périodiquement afin de positionner l'entreprise face à plusieurs scénarios futurs et horizons temporels. Des processus et pratiques sont en place pour",
+                  "goal": "La stratégie IA est actualisée périodiquement afin de positionner l'entreprise face à plusieurs scénarios futurs et horizons temporels.",
                   "practices": [
                     "Établir et maintenir un ensemble de scénarios futurs possibles concernant l'environnement d'affaires, les risques opérationnels et organisationnels, et les capacités liées à l'IA.",
                     "Recueillir des idées pour améliorer les capacités IA de l'entreprise, aussi bien en interne (séances de brainstorming, propositions spontanées des collaborateurs) qu'en externe (veille technologique, actions de sensibilisation, échanges avec des partenaires externes, visites d'étalonnage).",
@@ -157,7 +157,7 @@
                   ]
                 },
                 {
-                  "goal": "Des actions de rayonnement et de collaboration liées à l'IA sont mises en place pour contribuer aux communautés concernées et soutenir la vision à long terme de l'entreprise. Des processus et pratiques sont en place pour",
+                  "goal": "Des actions de rayonnement et de collaboration liées à l'IA sont mises en place pour contribuer aux communautés concernées et soutenir la vision à long terme de l'entreprise.",
                   "practices": [
                     "Développer des collaborations avec des organisations de référence (monde académique, industrie, autorités).",
                     "Partager les bonnes pratiques et les retours d'expérience pour faire progresser et influencer la communauté.",
@@ -223,7 +223,7 @@
               "desc": "La capacité à recruter et à développer des collaborateurs qualifiés, dotés des compétences et connaissances nécessaires pour utiliser l'IA efficacement dans leur travail.",
               "goals": [
                 {
-                  "goal": "Les rôles et compétences (connaissances, savoir-faire, aptitudes) nécessaires à l'adoption de l'IA sont identifiés et documentés. Des processus et pratiques sont en place pour",
+                  "goal": "Les rôles et compétences (connaissances, savoir-faire, aptitudes) nécessaires à l'adoption de l'IA sont identifiés et documentés.",
                   "practices": [
                     "Identifier les rôles, compétences et savoir-faire nécessaires pour soutenir l'adoption de l'IA au sein de l'entreprise.",
                     "Intégrer la réalisation des formations et les compétences liées à l'IA dans la gestion des ressources humaines et les parcours d'évolution de carrière.",
@@ -231,7 +231,7 @@
                   ]
                 },
                 {
-                  "goal": "Des formations sont dispensées pour développer et entretenir les compétences liées à l'IA. Des processus et pratiques sont en place pour",
+                  "goal": "Des formations sont dispensées pour développer et entretenir les compétences liées à l'IA.",
                   "practices": [
                     "Définir les besoins de formation et les processus associés pour les rôles liés à l'IA.",
                     "Créer ou acquérir des formations liées à l'IA.",
@@ -257,7 +257,7 @@
               "desc": "La capacité à instaurer une culture proactive, nativement tournée vers l'IA, au sein de l'entreprise, par le biais des processus RH et de la communication, afin de faire évoluer les mentalités et les façons de travailler.",
               "goals": [
                 {
-                  "goal": "Une culture ouverte, participative, collaborative et engagée dans l'apprentissage est instaurée. Des processus et pratiques sont en place pour",
+                  "goal": "Une culture ouverte, participative, collaborative et engagée dans l'apprentissage est instaurée.",
                   "practices": [
                     "Instaurer et entretenir un environnement de travail ouvert, collaboratif et participatif, où la stratégie IA est élaborée collectivement et où chacun est encouragé à expérimenter avec l'IA.",
                     "Communiquer les valeurs et principes de l'entreprise aux équipes et aux individus, et renforcer régulièrement les messages clés sur l'adoption de l'IA.",
@@ -265,7 +265,7 @@
                   ]
                 },
                 {
-                  "goal": "Des collaborateurs en phase avec la culture IA de l'entreprise sont recrutés et développés. Des processus et pratiques sont en place pour",
+                  "goal": "Des collaborateurs en phase avec la culture IA de l'entreprise sont recrutés et développés.",
                   "practices": [
                     "Recruter, embaucher et faire évoluer (y compris en interne) des collaborateurs capables d'assumer des rôles clés dans les activités liées à l'IA, actuelles et à court terme.",
                     "Reconnaître et récompenser les individus et équipes qui contribuent aux objectifs d'adoption de l'IA et à la culture IA de l'entreprise.",
@@ -275,7 +275,7 @@
                   ]
                 },
                 {
-                  "goal": "La préparation des collaborateurs à l'adoption de l'IA est suivie et pilotée. Des processus et pratiques sont en place pour",
+                  "goal": "La préparation des collaborateurs à l'adoption de l'IA est suivie et pilotée.",
                   "practices": [
                     "Suivre la performance sur les projets liés à l'IA afin que les équipes puissent identifier les actions de développement de compétences à mener à court terme.",
                     "Intégrer la contribution et le soutien à l'adoption de l'IA dans les objectifs individuels des collaborateurs.",
@@ -303,7 +303,7 @@
               "desc": "La capacité de l'entreprise à identifier, comprendre et traiter les risques liés à l'IA, en cohérence avec sa culture, ses exigences et sa tolérance au risque.",
               "goals": [
                 {
-                  "goal": "Les risques liés à l'adoption de l'IA par l'entreprise sont identifiés, évalués et communiqués. Des processus et pratiques sont en place pour",
+                  "goal": "Les risques liés à l'adoption de l'IA par l'entreprise sont identifiés, évalués et communiqués.",
                   "practices": [
                     "Identifier les types ou catégories de risques concernés par l'adoption de l'IA (par exemple risques opérationnels, de conformité, réputationnels, liés aux tiers, à la sécurité de l'information et à la protection des données).",
                     "Évaluer les risques existants susceptibles de s'aggraver ou de freiner les efforts d'adoption de l'IA.",
@@ -313,7 +313,7 @@
                   ]
                 },
                 {
-                  "goal": "Un processus de gestion des risques liés à l'IA est établi. Des processus et pratiques sont en place pour",
+                  "goal": "Un processus de gestion des risques liés à l'IA est établi.",
                   "practices": [
                     "Intégrer la gestion des risques IA dans les processus et systèmes de gestion des risques existants (par exemple les référentiels de risques ou les solutions de gouvernance, risques et conformité [GRC]).",
                     "Définir et communiquer les contrôles attendus pour les domaines spécifiques à l'IA, en fonction des risques inhérents (par exemple explicabilité, supervision humaine, filtrage des prompts, biais ou identité).",
@@ -323,7 +323,7 @@
                   ]
                 },
                 {
-                  "goal": "L'efficacité des contrôles attendus liés à l'adoption de l'IA est testée de manière indépendante. Des processus et pratiques sont en place pour",
+                  "goal": "L'efficacité des contrôles attendus liés à l'adoption de l'IA est testée de manière indépendante.",
                   "practices": [
                     "Identifier les contrôles attendus pour atténuer les risques liés à l'adoption de l'IA, conformément à la tolérance au risque et aux lignes directrices de gestion des risques de l'entreprise.",
                     "Ajuster, si nécessaire, la tolérance et l'appétit au risque de l'entreprise dans les domaines concernés.",
@@ -350,7 +350,7 @@
               "desc": "La capacité de l'entreprise à établir et respecter des politiques adaptées, à adopter des normes liées à l'IA pertinentes pour son secteur et son appétit au risque, et à respecter ses obligations de conformité.",
               "goals": [
                 {
-                  "goal": "Les politiques de l'entreprise sont alignées avec l'adoption de l'IA. Des processus et pratiques sont en place pour",
+                  "goal": "Les politiques de l'entreprise sont alignées avec l'adoption de l'IA.",
                   "practices": [
                     "Identifier les politiques existantes de l'entreprise, tous domaines confondus (technologie, ressources humaines, gestion des risques tiers ou des fournisseurs), pertinentes pour l'adoption de l'IA.",
                     "Évaluer les politiques concernées afin d'identifier les évolutions nécessaires au regard des priorités ou de la stratégie d'adoption de l'IA.",
@@ -359,7 +359,7 @@
                   ]
                 },
                 {
-                  "goal": "La conformité aux normes sectorielles, exigences réglementaires et obligations contractuelles applicables est gérée. Des processus et pratiques sont en place pour",
+                  "goal": "La conformité aux normes sectorielles, exigences réglementaires et obligations contractuelles applicables est gérée.",
                   "practices": [
                     "Identifier l'impact des plans d'adoption de l'IA de l'entreprise sur la conformité aux exigences réglementaires et normes sectorielles existantes.",
                     "Identifier les nouvelles exigences réglementaires ou normes sectorielles applicables liées à l'adoption de l'IA.",
@@ -385,7 +385,7 @@
               "desc": "La capacité à définir et à faire respecter un développement et un usage responsables de l'IA, cohérents avec la mission de l'entreprise, sa dépendance à la technologie, ses parties prenantes et son appétit au risque.",
               "goals": [
                 {
-                  "goal": "Les parties prenantes concernées par l'adoption de l'IA sont identifiées. Des processus et pratiques sont en place pour",
+                  "goal": "Les parties prenantes concernées par l'adoption de l'IA sont identifiées.",
                   "practices": [
                     "Identifier les populations d'utilisateurs, parties prenantes, citoyens et systèmes susceptibles d'être affectés par l'adoption de l'IA.",
                     "Identifier les exigences spécifiques aux populations concernées (par exemple selon la juridiction applicable ou l'impact sur des populations historiquement vulnérables).",
@@ -394,7 +394,7 @@
                   ]
                 },
                 {
-                  "goal": "L'approche de l'entreprise en matière d'IA responsable est définie. Des processus et pratiques sont en place pour",
+                  "goal": "L'approche de l'entreprise en matière d'IA responsable est définie.",
                   "practices": [
                     "Identifier les services et produits pertinents pour les parties prenantes et concernés par l'adoption de l'IA.",
                     "Identifier les risques pour les parties prenantes inhérents à ces produits et services.",
@@ -402,7 +402,7 @@
                   ]
                 },
                 {
-                  "goal": "L'approche de l'entreprise en matière d'IA responsable est mise en œuvre. Des processus et pratiques sont en place pour",
+                  "goal": "L'approche de l'entreprise en matière d'IA responsable est mise en œuvre.",
                   "practices": [
                     "Communiquer l'approche d'IA responsable aux parties prenantes internes et externes concernées.",
                     "Identifier les politiques, processus et contrôles nécessaires pour faire respecter l'approche d'IA responsable de l'entreprise.",
@@ -439,7 +439,7 @@
               "desc": "La capacité d'une entreprise à expérimenter des cas d'usage et des applications de l'IA pour concevoir, exécuter et évaluer des workflows propulsés par l'IA.",
               "goals": [
                 {
-                  "goal": "Des preuves de concept (POC) sont réalisées pour confirmer les attentes, mobiliser les parties prenantes et identifier les risques. Des processus et pratiques sont en place pour",
+                  "goal": "Des preuves de concept (POC) sont réalisées pour confirmer les attentes, mobiliser les parties prenantes et identifier les risques.",
                   "practices": [
                     "Identifier les objectifs et opportunités métier et de workflow.",
                     "Identifier les cas d'usage et les preuves de concept (POC).",
@@ -449,7 +449,7 @@
                   ]
                 },
                 {
-                  "goal": "Une expérimentation opérationnelle est menée pour valider les preuves de concept, les cas d'usage sous-jacents, ainsi que leurs risques techniques et métier. Des processus et pratiques sont en place pour",
+                  "goal": "Une expérimentation opérationnelle est menée pour valider les preuves de concept, les cas d'usage sous-jacents, ainsi que leurs risques techniques et métier.",
                   "practices": [
                     "Planifier et communiquer la conception de l'expérimentation, y compris les personnes qui y participeront (utilisateurs finaux), les tâches qui leur seront demandées et les critères de succès.",
                     "Mettre à disposition un environnement de test (sandbox) représentatif pour soutenir le cycle de vie des expérimentations, y compris les tests et la collecte de données.",
@@ -476,7 +476,7 @@
               "desc": "La capacité de l'entreprise à repenser et reconcevoir ses processus et workflows métier existants pour tirer parti de l'IA, avec des résultats de meilleure valeur et un meilleur retour sur investissement (ROI).",
               "goals": [
                 {
-                  "goal": "Les processus et workflows métier susceptibles d'être soutenus par l'IA pour créer des gains d'efficacité et des améliorations sont identifiés et priorisés. Des processus et pratiques sont en place pour",
+                  "goal": "Les processus et workflows métier susceptibles d'être soutenus par l'IA pour créer des gains d'efficacité et des améliorations sont identifiés et priorisés.",
                   "practices": [
                     "Identifier et documenter les workflows et processus métier cohérents avec le périmètre visé pour l'adoption de l'IA.",
                     "Analyser l'efficacité des processus métier candidats (par exemple identifier les étapes sans valeur ajoutée, quantifier les facteurs de coût, et revoir les indicateurs de performance clés [KPI] et la performance historique).",
@@ -493,7 +493,7 @@
                   ]
                 },
                 {
-                  "goal": "Les workflows soutenus par l'IA sont validés en vue d'une montée en charge opérationnelle. Des processus et pratiques sont en place pour",
+                  "goal": "Les workflows soutenus par l'IA sont validés en vue d'une montée en charge opérationnelle.",
                   "practices": [
                     "Définir la responsabilité opérationnelle et le support des workflows soutenus par l'IA.",
                     "Valider l'intégration avec les systèmes amont et aval, avec des mécanismes de repli, de gestion des exceptions et d'escalade en cas de défaillance de l'IA.",
@@ -519,7 +519,7 @@
               "desc": "La capacité à concevoir des systèmes d'IA qui garantissent une juste responsabilité, supervision et appréciation humaines dans les décisions prises ou influencées par les résultats du système, en particulier lorsque ces décisions affectent la santé, la sécurité, la qualité de vie, la réputation ou l'autonomie des individus ou de la collectivité.",
               "goals": [
                 {
-                  "goal": "Les systèmes et workflows sont conçus pour renforcer le rôle des humains, en leur apportant assistance, augmentation ou autonomie selon les cas, au travers d'interfaces et d'interactions compréhensibles. Des processus et pratiques sont en place pour",
+                  "goal": "Les systèmes et workflows sont conçus pour renforcer le rôle des humains, en leur apportant assistance, augmentation ou autonomie selon les cas, au travers d'interfaces et d'interactions compréhensibles.",
                   "practices": [
                     "Concevoir des workflows et interfaces centrés sur l'humain, lui conférant une supervision décisionnelle et une responsabilité appropriées tout au long du processus.",
                     "Communiquer clairement le partage des responsabilités entre humains et IA sur les résultats, et faire respecter un développement et un usage de l'IA éthiques, équitables et responsables.",
@@ -528,7 +528,7 @@
                   ]
                 },
                 {
-                  "goal": "Une supervision est mise en place pour les décisions critiques. Des processus et pratiques sont en place pour",
+                  "goal": "Une supervision est mise en place pour les décisions critiques.",
                   "practices": [
                     "Définir les points ou processus de décision critiques et irréversibles qui, en raison du risque, de leur criticité ou de la performance attendue de l'IA, nécessitent une supervision humaine renforcée, continue et/ou spécifique (par exemple les décisions affectant la santé individuelle ou collective, l'autonomie des personnes, la sécurité, la qualité de vie ou la réputation).",
                     "Définir l'impact qu'aurait une défaillance de l'IA sur le processus ou les résultats des décisions critiques et irréversibles.",
@@ -552,7 +552,7 @@
               "desc": "La capacité à mesurer et analyser l'efficacité et la performance des workflows et initiatives soutenus par l'IA.",
               "goals": [
                 {
-                  "goal": "Les objectifs de mesure, les critères de succès et les activités associées aux workflows soutenus par l'IA et aux objectifs métier sont identifiés. Des processus et pratiques sont en place pour",
+                  "goal": "Les objectifs de mesure, les critères de succès et les activités associées aux workflows soutenus par l'IA et aux objectifs métier sont identifiés.",
                   "practices": [
                     "Établir et maintenir des objectifs de mesure découlant des objectifs du workflow et de ceux de l'entreprise.",
                     "Définir les activités permettant de mesurer les workflows nativement IA au regard des objectifs de l'entreprise.",
@@ -560,7 +560,7 @@
                   ]
                 },
                 {
-                  "goal": "Les résultats de mesure des workflows soutenus par l'IA sont communiqués. Des processus et pratiques sont en place pour",
+                  "goal": "Les résultats de mesure des workflows soutenus par l'IA sont communiqués.",
                   "practices": [
                     "Analyser et interpréter les données de mesure collectées.",
                     "Déterminer la méthode de communication des résultats la plus appropriée.",
@@ -600,7 +600,7 @@
               "desc": "La capacité à acquérir des données adaptées à l'usage visé et pertinentes pour les cas d'usage et workflows concernés.",
               "goals": [
                 {
-                  "goal": "Les données pertinentes sont acquises et leur provenance est tracée. Des processus et pratiques sont en place pour",
+                  "goal": "Les données pertinentes sont acquises et leur provenance est tracée.",
                   "practices": [
                     "Identifier, collecter, acquérir et/ou créer les données nécessaires au développement, à l'exploitation et aux tests des solutions IA soutenant les workflows métier.",
                     "Identifier et documenter les sources et catégories de données (par exemple type de produit, ligne d'activité) susceptibles d'être exploitées dans le cadre des initiatives IA.",
@@ -611,7 +611,7 @@
                   ]
                 },
                 {
-                  "goal": "La gouvernance des données (data stewardship) est attribuée afin de formaliser la responsabilité des données et de leur cycle de vie. Des processus et pratiques sont en place pour",
+                  "goal": "La gouvernance des données (data stewardship) est attribuée afin de formaliser la responsabilité des données et de leur cycle de vie.",
                   "practices": [
                     "Documenter et identifier l'ensemble des systèmes et sources de données faisant référence (source de vérité).",
                     "Désigner des responsables (owners) et des experts métier pour chaque source ou catégorie de données.",
@@ -619,7 +619,7 @@
                   ]
                 },
                 {
-                  "goal": "La confidentialité et la sécurité des données sont assurées tout au long de leur cycle de vie. Des processus et pratiques sont en place pour",
+                  "goal": "La confidentialité et la sécurité des données sont assurées tout au long de leur cycle de vie.",
                   "practices": [
                     "Identifier et classifier les données, y compris les informations relatives à des personnes ou groupes de personnes, les données personnelles identifiables, les données de santé, les données sensibles de l'entreprise et autres données sensibles, conformément aux réglementations et normes applicables.",
                     "Restreindre l'accès aux données selon leur sensibilité, le besoin d'en connaître et le principe du moindre privilège.",
@@ -653,7 +653,7 @@
               "desc": "La capacité à garantir que les données soutenant l'ensemble des activités liées à l'IA sont (et restent) adaptées à l'usage visé, organisées, fiables et exploitables tout au long du cycle de vie des initiatives IA, y compris le développement de modèles de machine learning et les solutions d'IA générative et agentique.",
               "goals": [
                 {
-                  "goal": "Les exigences de qualité des données sont identifiées. Des processus et pratiques sont en place pour",
+                  "goal": "Les exigences de qualité des données sont identifiées.",
                   "practices": [
                     "Mobiliser l'ensemble des parties prenantes concernées pour définir les besoins de qualité des données et fixer les attentes sur leur contenu.",
                     "Évaluer les données pour détecter les problèmes susceptibles d'entraîner des résultats indésirables ou des préjudices potentiels.",
@@ -662,7 +662,7 @@
                   ]
                 },
                 {
-                  "goal": "Les données structurées et non structurées des systèmes IA sont préparées en vue d'un usage adapté. Des processus et pratiques sont en place pour",
+                  "goal": "Les données structurées et non structurées des systèmes IA sont préparées en vue d'un usage adapté.",
                   "practices": [
                     "Confirmer la pertinence et l'adéquation des données pour le cas d'usage visé.",
                     "Fournir les données contextuelles clés au système opérationnel (par exemple prompts, recherche RAG, applications agentiques).",
@@ -700,7 +700,7 @@
               "desc": "La capacité à développer et intégrer des composants IA et des systèmes soutenus par l'IA répondant aux besoins métier de l'entreprise, en garantissant que le produit final possède les attributs de qualité requis.",
               "goals": [
                 {
-                  "goal": "Des architectures de systèmes soutenus par l'IA, maintenables et répondant aux exigences des parties prenantes, sont développées. Des processus et pratiques sont en place pour",
+                  "goal": "Des architectures de systèmes soutenus par l'IA, maintenables et répondant aux exigences des parties prenantes, sont développées.",
                   "practices": [
                     "Recueillir et documenter les exigences des parties prenantes concernant les architectures système, afin de répondre aux besoins des solutions IA à court et long terme.",
                     "Définir l'architecture de référence de la pile technologique afin d'encadrer la mise en œuvre des systèmes IA et leurs interactions au sein de l'écosystème technologique, y compris avec les systèmes fournis par des partenaires externes.",
@@ -708,7 +708,7 @@
                   ]
                 },
                 {
-                  "goal": "Les risques de sécurité et opérationnels sont pris en compte dans l'architecture des systèmes. Des processus et pratiques sont en place pour",
+                  "goal": "Les risques de sécurité et opérationnels sont pris en compte dans l'architecture des systèmes.",
                   "practices": [
                     "Maintenir à jour l'information sur les flux de données attendus impliquant les systèmes et agents IA.",
                     "Intégrer les exigences de sécurité liées à l'IA dans la conception des architectures (par exemple suivi, contrôle des flux de données, identifiants temporaires ou à durée limitée).",
@@ -717,7 +717,7 @@
                   ]
                 },
                 {
-                  "goal": "Les besoins de montée en charge d'une solution IA sont pris en compte dès la conception du système. Des processus et pratiques sont en place pour",
+                  "goal": "Les besoins de montée en charge d'une solution IA sont pris en compte dès la conception du système.",
                   "practices": [
                     "Définir comment les ressources seront mises à l'échelle, verticalement ou horizontalement, pour répondre aux utilisateurs et aux charges de travail IA selon les attentes de montée en charge.",
                     "Déterminer comment la demande et les besoins en ressources nécessaires à l'échelle visée de l'activité IA seront évalués, pris en charge et communiqués (stockage des données, besoins d'inférence des modèles, besoins réseau)."
@@ -748,7 +748,7 @@
               "desc": "La capacité à mener des activités de vérification et de validation permettant de démontrer que les solutions IA répondent à leurs exigences techniques et soutiennent les objectifs métier.",
               "goals": [
                 {
-                  "goal": "Des tests spécifiques aux solutions IA, en complément des tests logiciels habituels, sont réalisés pour les fonctionnalités propres à l'IA. Des processus et pratiques sont en place pour",
+                  "goal": "Des tests spécifiques aux solutions IA, en complément des tests logiciels habituels, sont réalisés pour les fonctionnalités propres à l'IA.",
                   "practices": [
                     "Identifier les fonctionnalités spécifiques à l'IA devant être testées.",
                     "Tester, si nécessaire, les fonctionnalités IA dans un environnement isolé et adapté.",
@@ -758,7 +758,7 @@
                   ]
                 },
                 {
-                  "goal": "La capacité de la solution IA à atteindre les niveaux de qualité attendus est correctement suivie et documentée. Des processus et pratiques sont en place pour",
+                  "goal": "La capacité de la solution IA à atteindre les niveaux de qualité attendus est correctement suivie et documentée.",
                   "practices": [
                     "Définir une méthode adaptée pour établir une référence et valider les résultats des fonctionnalités IA qui ne produisent pas toujours le même résultat.",
                     "S'assurer que les responsables des systèmes et des processus ont connaissance des résultats des tests et de leur niveau de reproductibilité.",
@@ -787,7 +787,7 @@
               "desc": "La capacité à assembler des produits et workflows soutenus par l'IA qui renforcent les capacités des systèmes existants et interagissent avec les outils, données et infrastructures en place.",
               "goals": [
                 {
-                  "goal": "L'intégration des composants IA aux systèmes existants s'appuie sur des approches d'architecture solides et sur l'interopérabilité. Des processus et pratiques sont en place pour",
+                  "goal": "L'intégration des composants IA aux systèmes existants s'appuie sur des approches d'architecture solides et sur l'interopérabilité.",
                   "practices": [
                     "Recueillir auprès des parties prenantes concernées les besoins au niveau système et les différents attributs de qualité lors de l'intégration avec les systèmes existants.",
                     "Évaluer la capacité d'intégration des composants IA avec les systèmes existants, y compris la pertinence de solutions IA autonomes (IA agentique).",
@@ -797,7 +797,7 @@
                   ]
                 },
                 {
-                  "goal": "Le cycle de vie des systèmes existants est géré en continu afin de permettre une intégration fluide avec les systèmes et composants IA. Des processus et pratiques sont en place pour",
+                  "goal": "Le cycle de vie des systèmes existants est géré en continu afin de permettre une intégration fluide avec les systèmes et composants IA.",
                   "practices": [
                     "Mettre à jour les architectures de référence existantes pour y intégrer les composants IA.",
                     "Mettre à jour régulièrement les bibliothèques et API des infrastructures existantes afin de rester à jour des dernières fonctionnalités et correctifs de sécurité.",
@@ -823,14 +823,14 @@
               "desc": "La capacité à garantir que les systèmes IA fournissent des explications compréhensibles et adaptées au cas d'usage sur leur comportement et leurs résultats, afin d'offrir une expérience de confiance et une traçabilité permettant de comprendre le comportement des solutions agentiques.",
               "goals": [
                 {
-                  "goal": "Les exigences de transparence et d'explicabilité des solutions IA sont identifiées. Des processus et pratiques sont en place pour",
+                  "goal": "Les exigences de transparence et d'explicabilité des solutions IA sont identifiées.",
                   "practices": [
                     "Recueillir, documenter et collecter auprès des parties prenantes concernées (y compris les équipes techniques) les exigences d'explicabilité et de traçabilité qui soutiennent les objectifs opérationnels, de conformité et d'entreprise.",
                     "Recueillir, collecter et documenter auprès des utilisateurs finaux les exigences d'explicabilité et de compréhensibilité afin de soutenir le développement de systèmes dignes de confiance."
                   ]
                 },
                 {
-                  "goal": "Les exigences de transparence, d'explicabilité et de compréhensibilité sont explicitement prises en compte dans la conception des solutions IA. Des processus et pratiques sont en place pour",
+                  "goal": "Les exigences de transparence, d'explicabilité et de compréhensibilité sont explicitement prises en compte dans la conception des solutions IA.",
                   "practices": [
                     "Appliquer des protocoles clairement définis sur les composants IA afin d'exposer la traçabilité et l'explicabilité des décisions propres à l'IA.",
                     "Mettre en place des mécanismes pour suivre et journaliser les attributs liés à l'explicabilité.",
@@ -838,7 +838,7 @@
                   ]
                 },
                 {
-                  "goal": "Les explications fournies par les solutions IA sont pertinentes et efficaces pour les utilisateurs finaux des systèmes. Des processus et pratiques sont en place pour",
+                  "goal": "Les explications fournies par les solutions IA sont pertinentes et efficaces pour les utilisateurs finaux des systèmes.",
                   "practices": [
                     "Identifier les contenus, interactions et résultats susceptibles de prêter à confusion, et déterminer quand, où et comment fournir aux utilisateurs des explications utiles sur les résultats du système IA.",
                     "Appliquer des pratiques de conception d'interaction adaptées et recueillir les retours des utilisateurs finaux afin de valider que les explications des résultats du système sont compréhensibles et utiles."
@@ -868,7 +868,7 @@
               "desc": "La capacité à gérer le cycle de vie des modèles IA, y compris leur mise hors service.",
               "goals": [
                 {
-                  "goal": "La version des modèles utilisés pour l'inférence est tracée et maîtrisable au point de terminaison opérationnel. Des processus et pratiques sont en place pour",
+                  "goal": "La version des modèles utilisés pour l'inférence est tracée et maîtrisable au point de terminaison opérationnel.",
                   "practices": [
                     "Utiliser un système de gestion de versions pour les modèles, les composants IA et logiciels associés, ainsi que les jeux de données, et tracer la filiation des données et des modèles entraînés.",
                     "Archiver les versions antérieures des modèles et les rendre accessibles via une API.",
@@ -876,7 +876,7 @@
                   ]
                 },
                 {
-                  "goal": "Les changements de disponibilité des modèles sont documentés et communiqués clairement aux parties prenantes concernées. Des processus et pratiques sont en place pour",
+                  "goal": "Les changements de disponibilité des modèles sont documentés et communiqués clairement aux parties prenantes concernées.",
                   "practices": [
                     "Disposer d'un processus de réentraînement stable, pouvant être exécuté par des utilisateurs autorisés.",
                     "Définir des conditions précises pour déclencher automatiquement un réentraînement sur la base de valeurs surveillées.",
@@ -884,7 +884,7 @@
                   ]
                 },
                 {
-                  "goal": "Des conditions d'évaluation formelles sont remplies avant que les modèles ne soient mis à disposition des initiatives IA ou utilisés dans des solutions IA. Des processus et pratiques sont en place pour",
+                  "goal": "Des conditions d'évaluation formelles sont remplies avant que les modèles ne soient mis à disposition des initiatives IA ou utilisés dans des solutions IA.",
                   "practices": [
                     "Exécuter une suite de tests de modèle définie par l'initiative IA dans le cadre du processus de mise en production du modèle.",
                     "Définir et mettre en œuvre des tests des solutions IA permettant de détecter leurs évolutions.",
@@ -910,7 +910,7 @@
               "desc": "La capacité à sécuriser les solutions IA, les agents et les données associées, afin de limiter les risques opérationnels, de prévenir toute atteinte à l'intégrité des solutions et des données, et de maîtriser les actions des agents IA.",
               "goals": [
                 {
-                  "goal": "Les modèles et agents IA sont protégés afin de prévenir toute compromission ou atteinte à l'intégrité du code, des modèles ou des données. Des processus et pratiques sont en place pour",
+                  "goal": "Les modèles et agents IA sont protégés afin de prévenir toute compromission ou atteinte à l'intégrité du code, des modèles ou des données.",
                   "practices": [
                     "Mettre en œuvre des contrôles d'intégrité (par exemple signature de code, traçabilité de la provenance du code) dans les pipelines des solutions IA.",
                     "Renforcer le contrôle des accès aux modèles et aux données (par exemple gestion des identités à privilèges, authentification multifacteur, et modèles de contrôle d'accès adaptés [par attributs ou par rôles] pour les droits touchant aux pipelines et aux environnements de production).",
@@ -918,7 +918,7 @@
                   ]
                 },
                 {
-                  "goal": "Les actions des modèles et agents IA sont suivies et contrôlées. Des processus et pratiques sont en place pour",
+                  "goal": "Les actions des modèles et agents IA sont suivies et contrôlées.",
                   "practices": [
                     "Identifier et définir les droits autorisés pour les modèles, agents et systèmes IA.",
                     "Appliquer les principes et pratiques de gestion des identités et des accès aux entités non humaines (par exemple comptes système et de service, agents IA).",
@@ -939,7 +939,7 @@
               "desc": "La capacité à observer le comportement spécifique à l'IA des systèmes déployés et à collecter des données sur leur performance et leur exécution.",
               "goals": [
                 {
-                  "goal": "Des informations exploitables concernant les solutions en exploitation sont collectées et utilisées. Des processus et pratiques sont en place pour",
+                  "goal": "Des informations exploitables concernant les solutions en exploitation sont collectées et utilisées.",
                   "practices": [
                     "Définir les exigences de suivi des solutions IA (par exemple performance, détection de dérive, dégradation et usage).",
                     "Recueillir les retours des utilisateurs sur la performance du produit et le fonctionnement du modèle.",
@@ -949,7 +949,7 @@
                   ]
                 },
                 {
-                  "goal": "Les défaillances des solutions IA sont détectées et traitées. Des processus et pratiques sont en place pour",
+                  "goal": "Les défaillances des solutions IA sont détectées et traitées.",
                   "practices": [
                     "Établir un plan de réponse aux incidents définissant les lignes directrices de détection, de corrélation, d'escalade et de réponse aux événements, défaillances et incidents des solutions IA.",
                     "Générer des alertes automatiques de défaillance pour les pipelines de données récurrents (pipelines automatisés s'exécutant à intervalles réguliers).",
@@ -957,7 +957,7 @@
                   ]
                 },
                 {
-                  "goal": "Les données opérationnelles nécessaires aux usages juridiques, de conformité, comptables et d'audit sont collectées. Des processus et pratiques sont en place pour",
+                  "goal": "Les données opérationnelles nécessaires aux usages juridiques, de conformité, comptables et d'audit sont collectées.",
                   "practices": [
                     "Suivre l'utilisation des systèmes IA afin de détecter et identifier tout usage inapproprié.",
                     "Collecter les preuves de conformité réglementaire.",
@@ -986,7 +986,7 @@
               "desc": "La capacité à fournir une infrastructure technologique qui soutient la réussite des initiatives IA sur le long terme.",
               "goals": [
                 {
-                  "goal": "Les exigences d'infrastructure technologique nécessaires aux initiatives IA sont définies. Des processus et pratiques sont en place pour",
+                  "goal": "Les exigences d'infrastructure technologique nécessaires aux initiatives IA sont définies.",
                   "practices": [
                     "Recueillir et documenter les exigences d'infrastructure et les besoins de calcul nécessaires à l'adoption de l'IA (par exemple stockage rapide, bande passante élevée, accélérateurs).",
                     "Évaluer les compromis liés aux composants d'infrastructure au regard des enjeux de niveau de service pertinents pour l'IA (par exemple surcharge des ressources, disponibilité, sécurité, traçabilité des intentions, maîtrise des données).",
@@ -994,7 +994,7 @@
                   ]
                 },
                 {
-                  "goal": "L'infrastructure technologique nécessaire aux initiatives IA est fournie. Des processus et pratiques sont en place pour",
+                  "goal": "L'infrastructure technologique nécessaire aux initiatives IA est fournie.",
                   "practices": [
                     "Planifier et allouer l'infrastructure technologique.",
                     "Mettre les ressources d'infrastructure à disposition des équipes pour tester et déployer les solutions IA.",
@@ -1002,7 +1002,7 @@
                   ]
                 },
                 {
-                  "goal": "Une stratégie proactive de renouvellement technologique est établie. Des processus et pratiques sont en place pour",
+                  "goal": "Une stratégie proactive de renouvellement technologique est établie.",
                   "practices": [
                     "Collecter et analyser les données relatives aux technologies IA et à l'infrastructure associée, afin d'éclairer la gestion du cycle de vie technologique et les décisions de renouvellement.",
                     "Définir des échéances claires pour mettre à jour de manière proactive les solutions IA et les technologies associées.",
@@ -1023,7 +1023,7 @@
               "desc": "La capacité à identifier, analyser et gérer les dépendances existantes de la chaîne d'approvisionnement et des tiers, liées aux systèmes et produits IA.",
               "goals": [
                 {
-                  "goal": "Un inventaire des fournisseurs tiers et des dépendances, incluant les tiers liés à l'IA, est tenu à jour. Des processus et pratiques sont en place pour",
+                  "goal": "Un inventaire des fournisseurs tiers et des dépendances, incluant les tiers liés à l'IA, est tenu à jour.",
                   "practices": [
                     "Tenir à jour un inventaire des tiers fournissant des données, modèles, solutions et outils liés à l'IA, qu'ils soient intégrés à l'environnement technologique de l'entreprise ou hébergés en externe.",
                     "Prioriser les tiers selon leur criticité et leur impact sur les objectifs d'adoption de l'IA et l'appétit au risque.",
@@ -1032,7 +1032,7 @@
                   ]
                 },
                 {
-                  "goal": "Les tiers et fournisseurs sont évalués afin de garantir leur conformité avec les exigences de l'entreprise et son appétit au risque pour les solutions IA. Des processus et pratiques sont en place pour",
+                  "goal": "Les tiers et fournisseurs sont évalués afin de garantir leur conformité avec les exigences de l'entreprise et son appétit au risque pour les solutions IA.",
                   "practices": [
                     "Identifier et suivre les exigences applicables aux tiers (par exemple partage des données, sécurité, IA responsable, approche centrée sur l'humain, adéquation du modèle).",
                     "Suivre ou évaluer la performance des tiers au regard des exigences et des contrats de l'entreprise, selon leur niveau de priorité.",
@@ -1040,7 +1040,7 @@
                   ]
                 },
                 {
-                  "goal": "Les dépendances aux données externes sont gérées. Des processus et pratiques sont en place pour",
+                  "goal": "Les dépendances aux données externes sont gérées.",
                   "practices": [
                     "Identifier et suivre les données utilisées dans les solutions IA qui proviennent de sources externes aux pratiques internes de gestion des données, y compris les entités externes et les sources de données non traditionnelles.",
                     "Intégrer les sources de données externes à la gestion des tiers de l'entreprise.",
@@ -1067,7 +1067,7 @@
               "desc": "La capacité à déployer et à mettre à l'échelle les technologies et solutions IA au sein de l'entreprise, afin de soutenir la stratégie et les workflows nativement IA, tout en maximisant le retour sur investissement (ROI) et en limitant les risques liés aux changements technologiques.",
               "goals": [
                 {
-                  "goal": "La montée en charge des solutions IA au service de l'entreprise est planifiée et correctement documentée. Des processus et pratiques sont en place pour",
+                  "goal": "La montée en charge des solutions IA au service de l'entreprise est planifiée et correctement documentée.",
                   "practices": [
                     "Identifier les solutions IA créatrices de valeur à l'échelle de l'entreprise et planifier leur déploiement à grande échelle.",
                     "Identifier et gérer les risques organisationnels et technologiques liés à la montée en charge, y compris les coûts et la performance.",
@@ -1077,7 +1077,7 @@
                   ]
                 },
                 {
-                  "goal": "Des objectifs de performance et de fiabilité des solutions IA sont définis et atteints. Des processus et pratiques sont en place pour",
+                  "goal": "Des objectifs de performance et de fiabilité des solutions IA sont définis et atteints.",
                   "practices": [
                     "Établir des accords de niveau de service (SLA) et des objectifs de niveau de service (SLO) pour les solutions IA.",
                     "Veiller à ce que la capacité soit gérée en fonction de la criticité des solutions déployées à l'échelle.",

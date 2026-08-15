@@ -5,10 +5,18 @@
 // ce niveau le sont. Le bloc n'intervient pas dans la mesure : ce n'est qu'un
 // regroupement de restitution, emprunté au vocabulaire d'Elia.
 
+// Identifiant d'un objectif, préfixe de celui de ses pratiques.
+export function goalKey(areaId, goalIndex) {
+  return `${areaId}-${goalIndex}`
+}
+
 // Identifiant d'une pratique dans la table des cases cochées.
 // Une seule définition : la clé est écrite à la validation et relue au calcul.
+// La saisie porte désormais sur l'objectif entier — valider un objectif écrit
+// toutes ses clés de pratiques d'un coup — mais la mesure continue de compter
+// des pratiques : c'est l'unité du gap, donc du plan d'action.
 export function practiceKey(areaId, goalIndex, practiceIndex) {
-  return `${areaId}-${goalIndex}-${practiceIndex}`
+  return `${goalKey(areaId, goalIndex)}-${practiceIndex}`
 }
 
 // Une area est acquise lorsque tous ses objectifs le sont, et un objectif

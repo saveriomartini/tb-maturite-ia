@@ -15,7 +15,8 @@ import {
 import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, isToolScreen, previousScreen } from '../domain/navigation.js'
 import { buildRecommendation } from '../domain/recommendation.js'
 import {
-  acquiredLevel, areaStats, blockTotals, gapGroups, missingPracticeCount, practiceKey, preparationReached
+  acquiredLevel, areaStats, blockTotals, gapGroups, goalKey, missingPracticeCount, practiceKey,
+  preparationReached
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
@@ -25,7 +26,7 @@ const MODEL_VERSION = 'v1'
 const GAP_GROUPS_PER_PAGE = 4
 
 const RESET_CONFIRMATION =
-  'Réinitialiser la session ? Les attributs de contexte, le profil visé et les pratiques validées seront effacés.'
+  'Réinitialiser la session ? Les attributs de contexte, le profil visé et les objectifs validés seront effacés.'
 
 // Question d'intention posée avant le formulaire de contexte. Elle recueille le
 // profil que l'organisation *souhaite* atteindre, là où les attributs décrivent
@@ -206,8 +207,13 @@ export function useMaturityTool() {
   }
 
   const actions = {
-    togglePractice(key) {
-      state.checked[key] = !state.checked[key]
+    // La validation porte sur l'objectif : ses pratiques suivent en bloc. On
+    // écrit malgré tout une clé par pratique — le calcul et le gap continuent
+    // de raisonner en pratiques. Un objectif à moitié coché, hérité d'une
+    // session antérieure, se complète au premier clic plutôt que de se vider.
+    toggleGoal(keys) {
+      const on = !keys.every(key => state.checked[key])
+      keys.forEach(key => { state.checked[key] = on })
     },
     toggleLevelDetail(n) {
       state.openLevels[n] = !state.openLevels[n]
@@ -303,7 +309,7 @@ export function useMaturityTool() {
         id: 'tool',
         letter: 't',
         name: 'Outil',
-        desc: 'Décrivez votre organisation, validez les pratiques en place, obtenez vos écarts.',
+        desc: 'Décrivez votre organisation, validez les objectifs atteints, obtenez vos écarts.',
         action: 'Démarrer le diagnostic',
         target: 'tool',
         ready: true,
@@ -458,10 +464,12 @@ export function useMaturityTool() {
   const diagStart = computed(() => ({
     intro: answeredCount.value
       ? `Le diagnostic porte sur ${requiredIds.value.size} areas de compétence, retenues à partir de ce que ` +
-        `vous avez décrit. Pour chacune, vous validez les pratiques déjà en place dans votre organisation.`
+        `vous avez décrit. Pour chacune, vous validez les objectifs déjà atteints dans votre organisation ; ` +
+        `les pratiques qu'ils recouvrent se déplient sous chaque objectif.`
       : `Sans cadrage, le diagnostic parcourt les ${requiredIds.value.size} areas de compétence évaluables du ` +
         `modèle : ne rien décrire n'écarte rien. Décrire votre organisation en retire celles que votre ` +
-        `situation n'appelle pas. Pour chacune, vous validez les pratiques déjà en place.`,
+        `situation n'appelle pas. Pour chacune, vous validez les objectifs déjà atteints ; les pratiques ` +
+        `qu'ils recouvrent se déplient sous chaque objectif.`,
     blocks: BLOCKS
       .map(block => ({
         id: block.id,
@@ -589,23 +597,23 @@ export function useMaturityTool() {
         // l'area n'est pas acquise, les carrés des objectifs le montrent déjà.
         hint: stats && stats.acquired ? 'area acquise' : ''
       },
-      // `started` et `done` disent deux choses différentes : la première coche
-      // engage l'objectif, la dernière l'atteint. L'écran marque l'un dans la
-      // marge, l'autre par un signe — le verdict n'est plus écrit en toutes
-      // lettres, d'où le libellé accessible qui l'accompagne.
+      // L'objectif est l'unité de réponse : une case, un verdict. Ses pratiques
+      // ne sont plus des interrupteurs mais le détail de ce qu'il recouvre —
+      // repliable, comme l'aide d'un attribut de contexte. `keys` porte les
+      // clés que la validation écrit ; `done` reste vrai au sens du calcul,
+      // c'est-à-dire toutes pratiques validées.
       goals: area && !offScopeArea
         ? area.goals.map((goal, goalIndex) => {
-          const practices = goal.practices.map((practice, practiceIndex) => {
-            const key = practiceKey(area.id, goalIndex, practiceIndex)
-            return { key, text: practice, checked: Boolean(state.checked[key]) }
-          })
-          const done = practices.every(practice => practice.checked)
+          const keys = goal.practices.map(
+            (practice, practiceIndex) => practiceKey(area.id, goalIndex, practiceIndex)
+          )
+          const done = keys.every(key => state.checked[key])
           return {
+            key: goalKey(area.id, goalIndex),
             text: goal.goal,
             done,
-            started: practices.some(practice => practice.checked),
-            stateLabel: done ? 'Objectif atteint' : 'Objectif non atteint',
-            practices
+            keys,
+            practices: goal.practices
           }
         })
         : []
