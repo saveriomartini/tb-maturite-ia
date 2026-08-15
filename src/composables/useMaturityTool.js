@@ -10,7 +10,7 @@ import { CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.j
 import { JOURNEY } from '../data/journey.js'
 import { IN_PROGRESS, PREPARATION } from '../data/preparation.js'
 import {
-  BLOCKS, LEVELS, levelDescription, orderedAreas, profileExportLabel, profileName
+  BLOCKS, EVALUABLE_AREAS, LEVELS, levelDescription, orderedAreas, profileExportLabel, profileName
 } from '../domain/model.js'
 import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, isToolScreen, previousScreen } from '../domain/navigation.js'
 import { buildRecommendation } from '../domain/recommendation.js'
@@ -27,11 +27,22 @@ const GAP_GROUPS_PER_PAGE = 4
 const RESET_CONFIRMATION =
   'Réinitialiser la session ? Les attributs de contexte, le profil visé et les pratiques validées seront effacés.'
 
+// Question d'intention posée avant le formulaire de contexte. Elle recueille le
+// profil que l'organisation *souhaite* atteindre, là où les attributs décrivent
+// ce qu'elle est. La réponse est mémorisée mais n'entre encore dans aucun
+// calcul : l'ordre du questionnaire reste dicté par la recommandation, et la
+// façon dont cette variable le corrigera se décide dans un second temps.
+const TRANSFORMATION_QUESTION =
+  'Quel degré de transformation l’adoption de l’IA doit-elle déterminer dans votre organisation, ' +
+  'selon vous ?'
+
 // `target` à null : le profil visé suit la recommandation, qui se déplace au fil
 // des attributs de contexte. Un entier n'y apparaît qu'après un choix manuel au
 // palier. `wave` dit jusqu'où le questionnaire est ouvert (1 = première série
 // seule), `seen` retient les areas effectivement présentées — la restitution ne
-// parle que de celles-là.
+// parle que de celles-là. `offScope` désigne l'area hors cadrage consultée
+// depuis la barre : une vue passagère, jamais persistée, qui laisse la position
+// du parcours (`diagIdx`) exactement où elle était.
 function defaultState() {
   return {
     screen: 'home',
@@ -40,9 +51,12 @@ function defaultState() {
     openLevels: {},
     seen: {},
     wave: 1,
+    offScope: null,
     target: null,
     form: {},
     showContext: false,
+    transformation: null,
+    showTransformation: true,
     session: newSessionId()
   }
 }
@@ -122,6 +136,7 @@ export function useMaturityTool() {
     answeredCount.value > 0 ||
     Object.keys(state.checked).length > 0 ||
     state.target != null ||
+    state.transformation != null ||
     state.screen !== 'home'
   )
 
@@ -129,6 +144,9 @@ export function useMaturityTool() {
 
   function go(screen) {
     if (screen === 'home') state.diagIdx = 0
+    // Changer d'écran referme toujours la consultation hors cadrage : elle ne
+    // survit pas au questionnaire qu'elle interrompt.
+    state.offScope = null
     state.screen = screen
     scrollToTop()
   }
@@ -197,6 +215,14 @@ export function useMaturityTool() {
     toggleDescriptiveContext() {
       state.showContext = !state.showContext
     },
+    toggleTransformation() {
+      state.showTransformation = !state.showTransformation
+    },
+    // Même convention que les attributs de contexte : recliquer le profil retenu
+    // annule la réponse.
+    selectTransformation(n) {
+      state.transformation = state.transformation === n ? null : n
+    },
     // Recliquer sur l'option retenue l'annule : l'attribut redevient non renseigné.
     selectOption(fieldId, value) {
       state.form = { ...state.form, [fieldId]: state.form[fieldId] === value ? null : value }
@@ -214,9 +240,22 @@ export function useMaturityTool() {
       state.diagIdx = index >= 0 ? index : Math.max(0, presented.value.length - 1)
       go('tool2')
     },
-    goToArea(index) {
-      if (index < 0) return
-      state.diagIdx = index
+    // La barre navigue par identifiant, pas par rang : elle montre désormais des
+    // areas que le parcours ne contient pas, et qui n'ont donc pas de rang.
+    // Cliquer l'une d'elles ne déplace pas le questionnaire — il reste où il en
+    // était et se retrouve intact au retour.
+    openArea(id) {
+      const index = presented.value.findIndex(area => area.id === id)
+      if (index >= 0) {
+        state.diagIdx = index
+        state.offScope = null
+      } else {
+        state.offScope = id
+      }
+      scrollToTop()
+    },
+    closeOffScope() {
+      state.offScope = null
       scrollToTop()
     },
     resetSession() {
@@ -367,9 +406,35 @@ export function useMaturityTool() {
     return factors
   }
 
+  // La question d'intention prend la forme d'un attribut de contexte — même
+  // libellé, mêmes options cliquables, même aide dépliable — pour n'introduire
+  // aucune mécanique nouvelle dans le cadrage. Ses options sont les cinq profils
+  // du modèle tels quels, chacun rappelé par sa formule courte sous le « + ».
+  const transformationField = computed(() => ({
+    id: 'transformation',
+    label: TRANSFORMATION_QUESTION,
+    hint: '',
+    options: LEVELS.map(level => ({
+      value: level.n,
+      label: level.name,
+      active: state.transformation === level.n
+    })),
+    criteria: LEVELS.map(level => ({
+      value: level.n,
+      label: level.name,
+      text: level.tag,
+      active: state.transformation === level.n
+    }))
+  }))
+
   // Le cadrage ne montre plus que le formulaire : la recommandation qu'il
   // alimente se calcule en silence et ne s'explique qu'au palier.
   const cadrage3 = computed(() => ({
+    transformation: {
+      field: transformationField.value,
+      open: state.showTransformation,
+      toggleLabel: state.showTransformation ? '− replier' : '+ déplier'
+    },
     groups: CONTEXT_GROUPS.map(group => ({
       id: group.id,
       label: group.label,
@@ -394,9 +459,9 @@ export function useMaturityTool() {
     intro: answeredCount.value
       ? `Le diagnostic porte sur ${requiredIds.value.size} areas de compétence, retenues à partir de ce que ` +
         `vous avez décrit. Pour chacune, vous validez les pratiques déjà en place dans votre organisation.`
-      : `Le diagnostic ne parcourt pas les 28 areas de compétence du modèle : il retient celles que votre ` +
-        `situation appelle. Voici, à titre d'exemple, les ${requiredIds.value.size} areas d'une organisation ` +
-        `type. Pour chacune, vous validez les pratiques déjà en place.`,
+      : `Sans cadrage, le diagnostic parcourt les ${requiredIds.value.size} areas de compétence évaluables du ` +
+        `modèle : ne rien décrire n'écarte rien. Décrire votre organisation en retire celles que votre ` +
+        `situation n'appelle pas. Pour chacune, vous validez les pratiques déjà en place.`,
     blocks: BLOCKS
       .map(block => ({
         id: block.id,
@@ -453,59 +518,96 @@ export function useMaturityTool() {
     }
   })
 
-  // Index de la première area proposée d'une dimension, -1 si aucune ne l'est
-  // encore : sert aussi de test d'accessibilité du lien.
-  function firstAreaOfDimension(dimensionId) {
-    return presented.value.findIndex(area => area.dimId === dimensionId)
-  }
-
   const diag = computed(() => {
     const area = currentArea.value
-    const stats = area ? areaStats(area, state.checked) : null
-    const currentBlock = area ? BLOCKS.find(block => block.id === area.blockId) : null
+    // Une area hors cadrage se consulte sans quitter le questionnaire : elle
+    // prend la place de l'area courante à l'écran, mais pas dans le parcours.
+    const offScopeArea = state.offScope
+      ? EVALUABLE_AREAS.find(candidate => candidate.id === state.offScope) || null
+      : null
+    // Ce que la colonne de rappel décrit : l'area consultée s'il y en a une,
+    // l'area courante sinon.
+    const shown = offScopeArea || area
+    const stats = area && !offScopeArea ? areaStats(area, state.checked) : null
 
-    function dimensionLink(dimension) {
-      const index = firstAreaOfDimension(dimension.id)
-      return {
-        id: dimension.id,
-        name: dimension.name,
-        color: dimension.color,
-        index,
-        available: index >= 0,
-        active: Boolean(area) && dimension.id === area.dimId
+    // La barre de parcours ne connaît que deux termes : le bloc, qui coiffe, et
+    // l'area, numérotée dans l'ordre du modèle. Elle montre toujours les 25
+    // areas évaluables, quel que soit le profil visé : celui-ci n'en retire
+    // aucune de la barre, il éteint seulement celles qu'il ne met pas en jeu.
+    // Les numéros suivent donc le modèle et non le parcours — changer de profil
+    // au palier rallume des cases, il n'en renumérote aucune.
+    const inWalk = new Set(presented.value.map(presentedArea => presentedArea.id))
+    const groupsByBlock = new Map()
+    EVALUABLE_AREAS.forEach((modelArea, index) => {
+      let group = groupsByBlock.get(modelArea.blockId)
+      if (!group) {
+        group = { key: modelArea.blockId, name: modelArea.block, areas: [] }
+        groupsByBlock.set(modelArea.blockId, group)
       }
-    }
+      const inScope = inWalk.has(modelArea.id)
+      group.areas.push({
+        id: modelArea.id,
+        number: index + 1,
+        name: modelArea.name,
+        // Pas de couleur hors cadrage : la case retombe sur le gris de la CSS,
+        // qui est le seul endroit à décider de quel gris il s'agit.
+        color: inScope ? modelArea.dimColor : null,
+        inScope,
+        active: shown ? modelArea.id === shown.id : false
+      })
+    })
+    const blockGroups = [...groupsByBlock.values()]
 
     return {
-      profileLabel: area ? profileName(area.level) : targetLabel.value,
-      progress: `Area ${diagIndex.value + 1} / ${presented.value.length} · ${area ? area.dim : ''}`,
+      // Hors cadrage, le compteur cesse de situer : l'area consultée n'occupe
+      // aucun rang dans le parcours, en annoncer un mentirait.
+      progress: offScopeArea ? 'Area hors cadrage' : `Area ${diagIndex.value + 1} / ${presented.value.length}`,
       nextLabel: diagIndex.value + 1 < presented.value.length ? 'Suivant' : 'Terminer',
-      dimensions: BLOCKS.flatMap(block => block.dimensions.map(dimensionLink)),
-      blockName: area ? area.block : '',
-      blockDimensions: currentBlock ? currentBlock.dimensions.map(dimensionLink) : [],
+      blockGroups,
+      // Ce que le questionnaire affiche à la place des objectifs quand l'area
+      // consultée est hors cadrage. Le message dit pourquoi elle est vide, et
+      // par où elle peut rejoindre le parcours.
+      offScope: offScopeArea
+        ? {
+          message: `« ${offScopeArea.name} » et ses pratiques ne sont pas applicables selon le profil ` +
+            'visé : cette area est sortie du cadrage.',
+          note: 'Elle reste consultable, mais rien n’y est à valider. En fin de série, le palier propose ' +
+            'de poursuivre avec les profils plus avancés : elle rejoindra alors le questionnaire.',
+          backLabel: 'Revenir au questionnaire'
+        }
+        : null,
+      // La colonne de rappel s'en tient à l'area affichée : ce qu'elle est, ce
+      // qu'elle demande. L'avancement chiffré n'y figure plus — la case cochée
+      // et l'indice du pied de page le disent déjà.
       area: {
-        name: area ? area.name : '',
-        desc: area ? area.desc : '',
-        color: area ? area.dimColor : 'transparent',
-        exampleArtifacts: area ? area.exampleArtifacts || [] : [],
-        scoreLabel: stats
-          ? `Objectifs atteints ${stats.goalsDone}/${stats.goalsTotal} · ` +
-            `Pratiques validées ${stats.practicesDone}/${stats.practicesTotal}`
-          : '',
-        hint: stats && stats.acquired ? 'area acquise' : 'tous les objectifs doivent être atteints'
+        name: shown ? shown.name : '',
+        desc: shown ? shown.desc : '',
+        color: shown && !offScopeArea ? shown.dimColor : null,
+        exampleArtifacts: shown ? shown.exampleArtifacts || [] : [],
+        offScope: Boolean(offScopeArea),
+        // Le pied de page n'accuse que la réussite : rien à dire tant que
+        // l'area n'est pas acquise, les carrés des objectifs le montrent déjà.
+        hint: stats && stats.acquired ? 'area acquise' : ''
       },
-      goals: area
-        ? area.goals.map((goal, goalIndex) => ({
-          label: `Objectif ${goalIndex + 1} :`,
-          text: goal.goal,
-          done: goal.practices.every(
-            (practice, practiceIndex) => state.checked[practiceKey(area.id, goalIndex, practiceIndex)]
-          ),
-          practices: goal.practices.map((practice, practiceIndex) => {
+      // `started` et `done` disent deux choses différentes : la première coche
+      // engage l'objectif, la dernière l'atteint. L'écran marque l'un dans la
+      // marge, l'autre par un signe — le verdict n'est plus écrit en toutes
+      // lettres, d'où le libellé accessible qui l'accompagne.
+      goals: area && !offScopeArea
+        ? area.goals.map((goal, goalIndex) => {
+          const practices = goal.practices.map((practice, practiceIndex) => {
             const key = practiceKey(area.id, goalIndex, practiceIndex)
             return { key, text: practice, checked: Boolean(state.checked[key]) }
           })
-        }))
+          const done = practices.every(practice => practice.checked)
+          return {
+            text: goal.goal,
+            done,
+            started: practices.some(practice => practice.checked),
+            stateLabel: done ? 'Objectif atteint' : 'Objectif non atteint',
+            practices
+          }
+        })
         : []
     }
   })

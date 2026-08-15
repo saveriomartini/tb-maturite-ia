@@ -21,6 +21,8 @@
         :vm="cadrage3"
         @select-option="(fieldId, value) => emit('select-option', fieldId, value)"
         @toggle-context="emit('toggle-context')"
+        @select-transformation="emit('select-transformation', $event)"
+        @toggle-transformation="emit('toggle-transformation')"
       />
     </section>
 
@@ -45,7 +47,9 @@ defineProps({
   cadrage3: { type: Object, required: true }
 })
 
-const emit = defineEmits(['select-option', 'toggle-context', 'back', 'next'])
+const emit = defineEmits([
+  'select-option', 'toggle-context', 'select-transformation', 'toggle-transformation', 'back', 'next'
+])
 
 const formSection = ref(null)
 

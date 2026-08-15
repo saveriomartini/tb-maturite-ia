@@ -3,7 +3,7 @@
 Comment l'écran de cadrage 3 déduit un niveau cible recommandé (1 à 5) des attributs de contexte.
 
 Source des données : [`src/data/context-attributes.js`](../src/data/context-attributes.js).
-Calcul : `buildRecommendation()` dans [`src/composables/useMaturityTool.js`](../src/composables/useMaturityTool.js).
+Calcul : `buildRecommendation()` dans [`src/domain/recommendation.js`](../src/domain/recommendation.js).
 
 La recommandation est **indicative** : l'utilisateur reste libre de retenir un autre niveau cible.
 Tant que les 13 attributs ne sont pas tous renseignés, l'encart porte la mention
@@ -26,6 +26,12 @@ Cas particulier de l'approche de développement IA (`devApproach`) : elle est co
 volontairement dans aucun calcul. Elle est destinée à un futur scoping par pratiques, non au niveau
 cible.
 
+Même statut pour le **degré de transformation visé** (`state.transformation`), posé en tête du
+cadrage sous la forme d'une question à cinq réponses — les cinq profils du modèle. Il ne s'agit pas
+d'un attribut de contexte : il exprime une intention, là où les attributs décrivent une situation.
+Il est mémorisé avec la session mais n'entre encore dans aucun calcul ; la façon dont il corrigera
+l'ordre du questionnaire se décide dans un second temps.
+
 ## 2. Score par attribut
 
 Chaque option porte un score normalisé `0..1` (troisième valeur du tuple `opts`).
@@ -43,12 +49,14 @@ Le niveau d'un axe est la moyenne des scores de ses attributs, projetée linéai
 niveau_axe = 1 + moyenne(scores) × 4
 ```
 
-Un attribut **non renseigné** compte pour `NEUTRAL_SCORE = 0.25`, et non zéro. Deux conséquences
-voulues :
+Un attribut **non renseigné** compte pour `UNANSWERED_SCORE = 1`, c'est-à-dire le score maximal.
+Ne rien décrire ne restreint rien. Trois conséquences voulues :
 
-- un formulaire vide donne `1 + 0.25 × 4 = 2.0` sur les deux axes, soit le Level 2 — le niveau
-  d'entrée du modèle, et non le Level 1 ;
-- la recommandation est **progressive** : chaque réponse déplace la moyenne au lieu de faire
+- un formulaire vide donne `1 + 1 × 4 = 5.0` sur les deux axes, soit le Level 5 : le diagnostic
+  porte alors sur **toutes** les areas évaluables du modèle — une évaluation complète ;
+- chaque réponse ne peut que **réduire** le périmètre. La lecture est « on vous propose tout, vos
+  réponses retirent ce qui ne vous concerne pas », et non l'inverse ;
+- la recommandation reste **progressive** : chaque réponse déplace la moyenne au lieu de faire
   basculer le résultat d'un coup.
 
 Ce niveau reste un réel (non arrondi) jusqu'à l'étape suivante.
@@ -122,6 +130,8 @@ réunies :
 - instance de pilotage transverse ;
 - littératie IA avancée du conseil et de la direction.
 
+Une condition n'est comptée comme manquante que si elle est **contredite** par une réponse : un
+attribut laissé vide ne bloque pas l'accès au Level 5, conformément à la règle permissive du § 3.
 S'il en manque une, le niveau recommandé est ramené à 4 et les conditions manquantes sont listées.
 
 ## 7. Facteurs affichés
@@ -140,7 +150,7 @@ cran est donc possible et attendu.
 
 ```text
 scores  →  plafond réglementaire du risque
-        →  moyenne par axe (non renseigné = 0.25)
+        →  moyenne par axe (non renseigné = 1)
         →  min(ambition, capacité + 1)
         →  arrondi, borné [1, 5]
         →  plafonds durs (le plus bas gagne)

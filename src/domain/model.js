@@ -44,15 +44,20 @@ export function levelDescription(n) {
   return level ? level.desc : ''
 }
 
+// Areas effectivement évaluables, dans l'ordre du modèle. C'est cet ordre — et
+// non celui du parcours — qui porte la numérotation de la barre de navigation :
+// une area garde le même numéro d'un bout à l'autre de la session, quel que soit
+// le profil visé.
+export const EVALUABLE_AREAS = AREAS.filter(area => !area.pending)
+
 // Areas ordonnées pour le questionnaire. Le profil visé n'exclut plus personne :
 // il ordonne. Les areas qu'il met en jeu forment la première série (`wave` 1),
 // les autres suivent (`wave` 2) et ne sont proposées que si l'utilisateur
 // choisit de poursuivre. Seules les areas encore à définir (Matrice N2) restent
 // hors du modèle évaluable.
 export function orderedAreas(target) {
-  const evaluable = AREAS.filter(area => !area.pending)
-  const first = evaluable.filter(area => area.level <= target)
-  const rest = evaluable.filter(area => area.level > target)
+  const first = EVALUABLE_AREAS.filter(area => area.level <= target)
+  const rest = EVALUABLE_AREAS.filter(area => area.level > target)
   return [
     ...first.map(area => ({ ...area, wave: 1 })),
     ...rest.map(area => ({ ...area, wave: 2 }))

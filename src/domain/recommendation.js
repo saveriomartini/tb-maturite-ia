@@ -8,11 +8,12 @@ import {
   ALL_FIELDS, LEVEL_CAPS, LEVEL5_REQUIREMENTS, REGULATED_RISK_CEILING
 } from '../data/context-attributes.js'
 
-// Valeur prise par un attribut non renseigné. 0.25 place le formulaire vide
-// exactement au Level 2 sur les deux axes — le niveau d'entrée du modèle — et
-// rend la recommandation progressive : chaque réponse déplace la moyenne au lieu
-// de la faire basculer.
-const NEUTRAL_SCORE = 0.25
+// Valeur prise par un attribut non renseigné. Le score maximal, et non une
+// valeur médiane : ne rien décrire ne restreint rien, donc un formulaire vide
+// place les deux axes au Level 5 et le diagnostic porte sur toutes les areas du
+// modèle. Chaque réponse ne peut alors que réduire le périmètre — « on vous
+// propose tout, vos réponses retirent ce qui ne vous concerne pas ».
+const UNANSWERED_SCORE = 1
 
 const MIN_LEVEL = 1
 const MAX_LEVEL = 5
@@ -38,7 +39,7 @@ function axisLevel(axis, form) {
   if (!fields.length) return null
   const sum = fields.reduce((total, field) => {
     const score = fieldScore(field, form)
-    return total + (score == null ? NEUTRAL_SCORE : score)
+    return total + (score == null ? UNANSWERED_SCORE : score)
   }, 0)
   return levelFromScore(sum / fields.length)
 }
@@ -71,7 +72,12 @@ export function buildRecommendation(form) {
     }
   }
 
-  const level5Missing = LEVEL5_REQUIREMENTS.filter(req => !req.values.includes(form[req.field]))
+  // Une condition n'est « manquante » que si elle est contredite : un attribut
+  // laissé vide ne bloque pas le profil le plus haut, il ne le prouve pas non
+  // plus — même règle permissive que UNANSWERED_SCORE.
+  const level5Missing = LEVEL5_REQUIREMENTS.filter(
+    req => form[req.field] != null && !req.values.includes(form[req.field])
+  )
   const blockedFrom5 = level === MAX_LEVEL && level5Missing.length > 0
   if (blockedFrom5) level = MAX_LEVEL - 1
 

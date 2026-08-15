@@ -177,12 +177,6 @@ h1, h2, h3, h4, h5, h6 {
 button.chip { cursor: pointer; }
 button.chip:disabled { cursor: not-allowed; }
 
-/* niveau courant, affiché en pavé plein (écrans Diagnostic) */
-.level-badge {
-  font-family: var(--font-heading); font-weight: 800; font-size: 13px;
-  background: var(--color-text); color: #fff; padding: 6px 12px;
-}
-
 /* réinitialisation des boutons qui ne doivent pas *ressembler* à des boutons
    (onglets de phase, cartes cliquables) sans cesser d'en être */
 .button-reset {

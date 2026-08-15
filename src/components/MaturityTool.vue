@@ -23,6 +23,8 @@
     :cadrage3="tool.cadrage3"
     @select-option="tool.actions.selectOption"
     @toggle-context="tool.actions.toggleDescriptiveContext"
+    @select-transformation="tool.actions.selectTransformation"
+    @toggle-transformation="tool.actions.toggleTransformation"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
@@ -30,7 +32,8 @@
     v-else-if="screen === 'tool2'"
     :vm="tool.diag"
     @toggle-practice="tool.actions.togglePractice"
-    @go-to-area="tool.actions.goToArea"
+    @open-area="tool.actions.openArea"
+    @close-off-scope="tool.actions.closeOffScope"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />

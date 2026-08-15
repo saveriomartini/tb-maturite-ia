@@ -1,10 +1,14 @@
 <template>
   <div class="goals">
-    <section v-for="(goal, goalIndex) in goals" :key="goalIndex" class="goal" :class="{ 'is-done': goal.done }">
+    <section
+      v-for="(goal, goalIndex) in goals"
+      :key="goalIndex"
+      class="goal"
+      :class="{ 'is-started': goal.started, 'is-done': goal.done }"
+    >
       <header class="goal__head">
-        <h3 class="goal__label">{{ goal.label }}</h3>
         <p class="goal__text">{{ goal.text }}</p>
-        <span class="goal__state">{{ goal.done ? 'atteint' : 'non atteint' }}</span>
+        <span class="goal__mark" role="img" :aria-label="goal.stateLabel" :title="goal.stateLabel" />
       </header>
 
       <div class="practices">
@@ -42,13 +46,15 @@ const emit = defineEmits(['toggle'])
   gap: 18px;
 }
 
+/* la marge s'engage à la première coche : elle dit que l'objectif est entamé,
+   pas qu'il est atteint — ça, c'est l'affaire du signe */
 .goal {
   padding: 2px 0 14px 14px;
   border-left: 3px solid var(--color-neutral-300);
   border-bottom: 1px solid var(--color-divider);
 }
 
-.goal.is-done {
+.goal.is-started {
   border-left-color: var(--color-text);
 }
 
@@ -58,18 +64,6 @@ const emit = defineEmits(['toggle'])
   align-items: flex-start;
 }
 
-.goal__label {
-  width: 74px;
-  flex: none;
-  margin: 0;
-  padding-top: 1px;
-  font-family: var(--font-body);
-  font-size: 11.5px;
-  font-weight: 800;
-  line-height: inherit;
-  letter-spacing: normal;
-}
-
 .goal__text {
   max-width: 760px;
   margin: 0;
@@ -77,22 +71,20 @@ const emit = defineEmits(['toggle'])
   line-height: 1.45;
 }
 
-.goal__state {
+/* même carré que les cartes de pratiques, en plus grand : vide = objectif
+   non atteint, plein = atteint. Il remplace le badge en toutes lettres. */
+.goal__mark {
   margin-left: auto;
   flex: none;
-  padding: 3px 7px;
-  border: 1px solid var(--color-neutral-400);
-  color: var(--color-neutral-600);
-  font-size: 9.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-weight: 800;
+  width: 11px;
+  height: 11px;
+  margin-top: 3px;
+  border: 1px solid var(--color-neutral-600);
 }
 
-.is-done .goal__state {
+.is-done .goal__mark {
   border-color: var(--color-text);
-  color: var(--color-text);
-  background: var(--color-neutral-200);
+  background: var(--color-text);
 }
 
 .practices {
@@ -101,7 +93,6 @@ const emit = defineEmits(['toggle'])
   align-items: stretch;
   gap: 8px;
   margin-top: 12px;
-  padding-left: 86px;
 }
 
 /* validée : la bordure épaissit et le rembourrage compense, la carte ne bouge pas */
@@ -160,30 +151,6 @@ const emit = defineEmits(['toggle'])
 @media (max-width: 1200px) {
   .practices {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    padding-left: 0;
-  }
-}
-
-/* L'énoncé de l'objectif et son verdict ne tiennent plus sur une ligne :
-   le verdict passe dessous, aligné à gauche avec le reste. */
-@media (max-width: 900px) {
-  .goal__head {
-    flex-wrap: wrap;
-    gap: 6px 12px;
-  }
-
-  .goal__label {
-    width: auto;
-  }
-
-  .goal__state {
-    margin-left: 0;
-    order: 3;
-  }
-
-  .goal__text {
-    width: 100%;
-    order: 2;
   }
 }
 </style>

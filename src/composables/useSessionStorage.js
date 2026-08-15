@@ -61,6 +61,11 @@ function sanitize(raw, screens) {
   if (Number.isInteger(raw.target) && raw.target >= 1 && raw.target <= 5) out.target = raw.target
   if (raw.wave === 1 || raw.wave === 2) out.wave = raw.wave
   if (typeof raw.showContext === 'boolean') out.showContext = raw.showContext
+  // Degré de transformation souhaité : un profil du modèle, ou rien.
+  if (Number.isInteger(raw.transformation) && raw.transformation >= 1 && raw.transformation <= 5) {
+    out.transformation = raw.transformation
+  }
+  if (typeof raw.showTransformation === 'boolean') out.showTransformation = raw.showTransformation
   if (typeof raw.session === 'string' && /^[a-z0-9]{4,16}$/.test(raw.session)) out.session = raw.session
   out.checked = boolMap(raw.checked)
   out.openLevels = boolMap(raw.openLevels)
@@ -76,6 +81,8 @@ function snapshot(state) {
     target: state.target,
     wave: state.wave,
     showContext: state.showContext,
+    transformation: state.transformation,
+    showTransformation: state.showTransformation,
     session: state.session,
     checked: boolMap(state.checked),
     openLevels: boolMap(state.openLevels),
