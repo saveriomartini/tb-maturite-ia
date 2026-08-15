@@ -12,7 +12,7 @@
 
     <FrameworkTable :blocks="vm.blocks" />
 
-    <p class="lead">Ainsi que 5 niveaux de maturité qui seront attribués à l'organisation :</p>
+    <p class="lead">Ainsi que 5 profils de maturité d'adoption qui seront attribués à l'organisation :</p>
 
     <MaturityLevelList :levels="vm.levels" @toggle="emit('toggle-level', $event)" />
 

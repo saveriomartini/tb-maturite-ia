@@ -1,7 +1,7 @@
 <template>
   <AppScreen spacing="tight">
     <div class="toolbar">
-      <p class="level-badge">{{ vm.levelLabel }}</p>
+      <p class="level-badge">{{ vm.profileLabel }}</p>
       <nav class="strip" aria-label="Dimensions du modèle">
         <button
           v-for="dimension in vm.dimensions"

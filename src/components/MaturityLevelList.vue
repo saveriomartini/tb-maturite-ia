@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-// Les cinq niveaux de maturité, chacun dépliable sur son exposé long.
+// Les cinq profils du modèle, chacun dépliable sur son exposé long.
 defineProps({
   levels: { type: Array, required: true }
 })

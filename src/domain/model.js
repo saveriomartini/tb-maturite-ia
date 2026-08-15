@@ -24,9 +24,19 @@ export const AREAS = BLOCKS.flatMap(block =>
 
 export const DIMENSION_COUNT = BLOCKS.reduce((n, block) => n + block.dimensions.length, 0)
 
-export function levelLabel(n) {
+// Les niveaux gardent leur numéro dans les données — il ordonne les areas et
+// porte le calcul — mais l'interface ne les nomme que par leur profil : un
+// dirigeant retient « Intégration opérationnelle », pas « Level 2 ».
+export function profileName(n) {
   const level = LEVELS.find(l => l.n === n)
-  return level ? `Level ${n} - ${level.name}` : '—'
+  return level ? level.name : '—'
+}
+
+// L'export est la seule sortie numérotée : c'est une pièce de dossier, relue
+// hors contexte, où le rang doit rester explicite.
+export function profileExportLabel(n) {
+  const level = LEVELS.find(l => l.n === n)
+  return level ? `Niveau ${n} — ${level.name}` : '—'
 }
 
 export function levelDescription(n) {

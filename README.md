@@ -112,9 +112,10 @@ tb-maturite-ia/
 │   │   ├── model-data.json        SOURCE DE VÉRITÉ du modèle (blocs, dimensions, areas, niveaux)
 │   │   ├── model-data.js          export ES module de model-data.json
 │   │   ├── context-attributes.js  attributs de contexte, plafonds, exigences du Level 5
+│   │   ├── preparation.js         profil « Préparation », ajouté hors AIMM sous le profil 1
 │   │   └── journey.js             texte du parcours en quatre phases
 │   ├── domain/                    RÈGLES MÉTIER, fonctions pures, aucune dépendance à Vue
-│   │   ├── model.js               vues dérivées du modèle (areas à plat, libellés de niveau)
+│   │   ├── model.js               vues dérivées du modèle (areas à plat, noms de profil)
 │   │   ├── scoring.js             area acquise, niveau d'un bloc, niveau acquis, gap
 │   │   ├── recommendation.js      niveau cible recommandé (ambition × capacité, plafonds)
 │   │   └── navigation.js          ordre des écrans, phases, enchaînement
@@ -180,10 +181,25 @@ N2 (A5-A7, marquées `pending`) étaient déjà rédigées en français par l'au
 retouchées. Les noms des 4 blocs (Strategy, Stakeholders, Business, Technology) sont volontairement
 laissés en anglais : ce sont des étiquettes de la taxonomie source, pas du texte à lire.
 
-Les cinq niveaux de maturité (`levels`) suivent la même règle. Leur formule courte (`tag`) et leur
-énoncé long (`desc`) sont traduits ; leur nom (`name` : Exploratory, Implemented, Aligned, Scaled,
-Future Ready AI) reste en anglais, au même titre que les noms de blocs, pour honorer la
-nomenclature du modèle source et rendre la correspondance vérifiable. Le vocabulaire est aligné sur
+Les cinq niveaux de maturité (`levels`) font exception à la règle des noms laissés en anglais : ce
+ne sont pas des étiquettes de taxonomie mais le résultat rendu à l'utilisateur, la seule phrase
+qu'il retiendra de l'évaluation. Leur `name` est donc un **profil de maturité d'adoption** en
+français, qui fusionne le terme d'Ozkaya et al. avec le stade correspondant de l'échelle de
+transformation de Venkatraman (1994) — les deux échelles se recouvrent, et leur frontière
+évolutif / révolutionnaire tombe exactement entre Implemented et Aligned :
+
+| # | AIMM | Venkatraman | Profil retenu |
+|---|---|---|---|
+| 0 | — | — | Préparation *(ajout, hors modèles sources)* |
+| 1 | Exploratory AI | Localized Exploitation | Exploration localisée |
+| 2 | Implemented AI | Internal Integration | Intégration opérationnelle |
+| 3 | Aligned AI | Business Process Redesign | Alignement des processus |
+| 4 | Scaled AI | Business Network Redesign | Mise à l'échelle en réseau |
+| 5 | Future Ready AI | Business Scope Redefinition | Redéfinition stratégique du périmètre |
+
+La formule courte (`tag`) est réécrite pour porter la même synthèse ; l'énoncé long (`desc`) et le
+`detail` restent la traduction fidèle de la source et continuent d'y désigner les niveaux par leur
+nom anglais. Le vocabulaire est aligné sur
 celui des areas : `organizational unit` est rendu par « l'entreprise » (le modèle source distingue
 l'unité organisationnelle de l'organisation entière, distinction sans objet dans une PME où les deux
 coïncident), `AI-enabled systems and workflows` par « systèmes et workflows soutenus par l'IA », et

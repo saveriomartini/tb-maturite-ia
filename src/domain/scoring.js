@@ -54,6 +54,20 @@ export function acquiredLevel(scoped, checked, target) {
   return reached
 }
 
+// — profil « Préparation » —
+// Seuil délibérément bas et indépendant du périmètre : il ne mesure pas une
+// capacité, il accuse réception d'un premier effort. Toute pratique validée
+// compte, y compris hors des areas attendues au niveau cible.
+export const PREPARATION_THRESHOLD = 10
+
+export function checkedPracticeCount(checked) {
+  return Object.keys(checked).filter(key => checked[key]).length
+}
+
+export function preparationReached(checked) {
+  return checkedPracticeCount(checked) >= PREPARATION_THRESHOLD
+}
+
 export function blockTotals(scoped, checked, blockId) {
   return scoped
     .filter(area => area.blockId === blockId)

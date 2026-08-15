@@ -8,26 +8,25 @@
 import { computed, reactive } from 'vue'
 import { CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
-import { AREAS, BLOCKS, DIMENSION_COUNT, LEVELS, levelDescription, levelLabel, scopedAreas } from '../domain/model.js'
+import { IN_PROGRESS, PREPARATION } from '../data/preparation.js'
+import {
+  AREAS, BLOCKS, DIMENSION_COUNT, LEVELS, levelDescription, profileExportLabel, profileName, scopedAreas
+} from '../domain/model.js'
 import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, previousScreen } from '../domain/navigation.js'
 import { buildRecommendation } from '../domain/recommendation.js'
 import {
-  acquiredLevel, areaStats, blockTotals, gapGroups, missingPracticeCount, practiceKey
+  acquiredLevel, areaStats, blockTotals, gapGroups, missingPracticeCount, practiceKey, preparationReached
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
 const DEFAULT_TARGET = 2
+// Le profil le plus haut du modèle, nommé plutôt que numéroté dans les textes.
+const MAX_PROFILE = LEVELS[LEVELS.length - 1].n
 const MODEL_VERSION = 'v1'
 const GAP_GROUPS_PER_PAGE = 4
 
 const RESET_CONFIRMATION =
   'Réinitialiser la session ? Les attributs de contexte, le niveau cible et les pratiques validées seront effacés.'
-
-const NO_LEVEL_DESCRIPTION =
-  'Aucun niveau n’est encore acquis : au moins une des areas attendues au Level 1 ' +
-  'n’a pas tous ses objectifs atteints. Un niveau est acquis lorsque toutes les areas ' +
-  'attendues jusqu’à ce niveau le sont, sans exception — un seul objectif inachevé ' +
-  'suffit à retenir l’ensemble. Le détail des pratiques restantes figure à l’écran suivant.'
 
 function defaultState() {
   return {
@@ -74,11 +73,32 @@ export function useMaturityTool() {
       `(sur ${AREAS.length} areas / ${DIMENSION_COUNT} dimensions)`
   })
 
-  const targetLabel = computed(() => levelLabel(state.target))
-  // « Aucun » plutôt que « Non atteint » : le libellé qualifie le niveau acquis,
-  // et voisine le niveau cible — « non atteint » se lisait comme un constat sur
-  // la cible, pas sur l'acquis.
-  const acquiredLabel = computed(() => (acquired.value ? levelLabel(acquired.value) : 'Aucun'))
+  const targetLabel = computed(() => profileName(state.target))
+
+  // Trois états à la restitution, du plus avancé au moins avancé : un profil du
+  // modèle est acquis ; aucun ne l'est mais assez de pratiques sont validées
+  // pour créditer la Préparation ; le diagnostic est trop peu avancé pour
+  // qualifier quoi que ce soit. Aucun de ces états ne dit « aucun » : le
+  // libellé accuse toujours réception de ce qui a été fait.
+  const preparation = computed(() => preparationReached(state.checked))
+  const acquiredProfile = computed(() => {
+    if (acquired.value) {
+      return {
+        label: profileName(acquired.value),
+        desc: levelDescription(acquired.value),
+        exportLabel: profileExportLabel(acquired.value)
+      }
+    }
+    if (preparation.value) {
+      return {
+        label: PREPARATION.name,
+        desc: PREPARATION.desc,
+        exportLabel: `Niveau ${PREPARATION.n} — ${PREPARATION.name}`
+      }
+    }
+    return { label: IN_PROGRESS.name, desc: IN_PROGRESS.desc, exportLabel: IN_PROGRESS.name }
+  })
+  const acquiredLabel = computed(() => acquiredProfile.value.label)
 
   const answeredCount = computed(() => Object.keys(state.form).filter(id => state.form[id] != null).length)
   const hasProgress = computed(() =>
@@ -167,7 +187,7 @@ export function useMaturityTool() {
   // — view-models par écran —
 
   const header = computed(() => ({
-    sessionLabel: `session ${state.session} · ${targetLabel.value} (cible)` +
+    sessionLabel: `session ${state.session} · profil visé : ${targetLabel.value}` +
       (wasRestored && hasProgress.value ? ' · restaurée' : ''),
     hasProgress: hasProgress.value,
     phases: JOURNEY.map((phase, index) => ({
@@ -204,7 +224,7 @@ export function useMaturityTool() {
     })),
     levels: LEVELS.map(level => ({
       n: level.n,
-      label: levelLabel(level.n),
+      label: level.name,
       tag: level.tag,
       detail: level.detail || [],
       open: Boolean(state.openLevels[level.n])
@@ -243,21 +263,27 @@ export function useMaturityTool() {
     if (!rec.empty) {
       factors.push({
         key: 'Ambition',
-        value: `Level ${rec.ambitionLevel}` + (rec.drivers.length ? ` — ${rec.drivers.join(', ')}` : '')
+        value: profileName(rec.ambitionLevel) + (rec.drivers.length ? ` — ${rec.drivers.join(', ')}` : '')
       })
       factors.push({
         key: 'Capacité',
-        value: `Level ${rec.capacityLevel}` + (rec.limits.length ? ` — ${rec.limits.join(', ')}` : '')
+        value: profileName(rec.capacityLevel) + (rec.limits.length ? ` — ${rec.limits.join(', ')}` : '')
       })
     }
     if (rec.cappedByCapacity && !rec.capNotes.length) {
       factors.push({ key: 'Ajustement', value: 'l’ambition dépasse la capacité actuelle de plus d’un niveau' })
     }
     if (rec.capNotes.length) {
-      factors.push({ key: 'Plafond', value: `Level ${rec.level} — ${rec.capNotes.map(cap => cap.why).join(' ; ')}` })
+      factors.push({
+        key: 'Plafond',
+        value: `${profileName(rec.level)} — ${rec.capNotes.map(cap => cap.why).join(' ; ')}`
+      })
     }
     if (rec.level5Missing.length) {
-      factors.push({ key: 'Level 5', value: `exige ${rec.level5Missing.map(req => req.why).join(', ')}` })
+      factors.push({
+        key: 'Profil le plus haut',
+        value: `${profileName(MAX_PROFILE)} exige ${rec.level5Missing.map(req => req.why).join(', ')}`
+      })
     }
     return factors
   }
@@ -275,25 +301,26 @@ export function useMaturityTool() {
       showContext: state.showContext,
       contextToggleLabel: `${state.showContext ? '− masquer' : '+ afficher'} le contexte descriptif`,
       recommendation: {
-        label: levelLabel(rec.level),
+        label: profileName(rec.level),
         why: rec.empty
-          ? 'Renseignez les attributs de contexte : le niveau cible est déduit de votre ambition d’adoption et de la capacité que vous pouvez soutenir.'
+          ? 'Renseignez les attributs de contexte : le profil visé est déduit de votre ambition d’adoption et de la capacité que vous pouvez soutenir.'
           : '',
         factors: recommendationFactors(rec),
         provisional: !rec.complete,
         completenessLabel: `${rec.answered} / ${rec.total} attributs renseignés`,
         completenessPercent: Math.round(rec.answered / rec.total * 100),
         canApply: mismatch,
-        applyLabel: `Appliquer le Level ${rec.level}`
+        applyLabel: `Appliquer : ${profileName(rec.level)}`
       },
       targetOptions: LEVELS.map(level => ({
         n: level.n,
-        label: levelLabel(level.n),
+        label: level.name,
         active: state.target === level.n,
         recommended: level.n === rec.level && !rec.empty
       })),
       mismatchLabel: mismatch
-        ? `Choix manuel : le niveau retenu (Level ${state.target}) diffère de la recommandation (Level ${rec.level}).`
+        ? `Choix manuel : le profil retenu (${profileName(state.target)}) diffère ` +
+          `de la recommandation (${profileName(rec.level)}).`
         : '',
       scopeSummary: scopeSummary.value
     }
@@ -343,7 +370,7 @@ export function useMaturityTool() {
     }
 
     return {
-      levelLabel: area ? levelLabel(area.level) : targetLabel.value,
+      profileLabel: area ? profileName(area.level) : targetLabel.value,
       progress: `Area ${diagIndex.value + 1} / ${scoped.value.length} · ${area ? area.dim : ''}`,
       nextLabel: diagIndex.value + 1 < scoped.value.length ? 'Suivant' : 'Terminer',
       dimensions: BLOCKS.flatMap(block => block.dimensions.map(dimensionLink)),
@@ -379,15 +406,28 @@ export function useMaturityTool() {
   const resti1 = computed(() => ({
     targetLabel: targetLabel.value,
     acquiredLabel: acquiredLabel.value,
-    acquiredDesc: acquired.value ? levelDescription(acquired.value) : NO_LEVEL_DESCRIPTION,
-    ladder: LEVELS.map(level => ({
-      n: level.n,
-      label: levelLabel(level.n),
-      acquired: level.n === acquired.value,
-      isTarget: level.n === state.target,
-      reached: level.n <= acquired.value,
-      beyondTarget: level.n > state.target
-    })),
+    acquiredDesc: acquiredProfile.value.desc,
+    // La Préparation ouvre l'échelle : hors modèle, jamais visée, elle n'est
+    // créditée que tant qu'aucun profil du modèle ne l'est — passé ce point,
+    // elle reste franchie mais cesse d'être le profil courant.
+    ladder: [
+      {
+        n: PREPARATION.n,
+        label: PREPARATION.name,
+        acquired: !acquired.value && preparation.value,
+        isTarget: false,
+        reached: preparation.value || acquired.value > 0,
+        beyondTarget: false
+      },
+      ...LEVELS.map(level => ({
+        n: level.n,
+        label: level.name,
+        acquired: level.n === acquired.value,
+        isTarget: level.n === state.target,
+        reached: level.n <= acquired.value,
+        beyondTarget: level.n > state.target
+      }))
+    ],
     // Le bloc ne porte pas de niveau : il regroupe des areas pour la lecture,
     // l'escalier se joue sur le périmètre entier.
     blocks: BLOCKS.map(block => {
@@ -460,8 +500,10 @@ export function useMaturityTool() {
     if (!pages.length) pages.push([])
     return {
       meta: `Export ${today()} · model: ${MODEL_VERSION} · session: ${state.session}`,
-      targetLabel: targetLabel.value,
-      acquiredLabel: acquiredLabel.value,
+      // Seule sortie numérotée : relue hors de l'outil, elle doit situer le
+      // profil dans l'échelle sans supposer qu'on la connaisse par cœur.
+      targetLabel: profileExportLabel(state.target),
+      acquiredLabel: acquiredProfile.value.exportLabel,
       pages: pages.map((pageGroups, index) => ({
         groups: pageGroups,
         empty: pageGroups.length === 0,

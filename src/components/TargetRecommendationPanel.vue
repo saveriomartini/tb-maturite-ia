@@ -2,7 +2,7 @@
   <div>
     <section class="card">
       <header class="card__head">
-        <h2 class="eyebrow card__title">Niveau cible recommandé</h2>
+        <h2 class="eyebrow card__title">Profil visé recommandé</h2>
         <span v-if="recommendation.provisional" class="tag card__provisional">recommandation indicative</span>
       </header>
 
@@ -42,8 +42,8 @@
     </section>
 
     <section class="target panel">
-      <h2 class="target__title">Niveau cible retenu :</h2>
-      <div class="target__options" role="radiogroup" aria-label="Niveau cible retenu">
+      <h2 class="target__title">Profil visé retenu :</h2>
+      <div class="target__options" role="radiogroup" aria-label="Profil visé retenu">
         <button
           v-for="option in targetOptions"
           :key="option.n"

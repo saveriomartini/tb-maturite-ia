@@ -13,14 +13,14 @@
             <p class="page__meta">{{ vm.meta }}</p>
           </div>
           <div class="page__levels">
-            <p class="page__level">Niveau Cible : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
-            <p class="page__level">Niveau Acquis : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
+            <p class="page__level">Profil visé : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
+            <p class="page__level">Profil actuel : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
           </div>
         </header>
 
         <div class="page__body">
           <p v-if="page.empty" class="page__empty">
-            Aucune pratique manquante — toutes les areas du niveau cible sont acquises.
+            Aucune pratique manquante — toutes les areas du profil visé sont acquises.
           </p>
 
           <section v-for="group in page.groups" :key="group.id" class="group">

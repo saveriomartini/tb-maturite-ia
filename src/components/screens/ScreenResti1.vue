@@ -2,11 +2,11 @@
   <AppScreen>
     <div class="headline">
       <div>
-        <p class="headline__label">Niveau Cible :</p>
+        <p class="headline__label">Profil visé :</p>
         <p class="headline__value heading">{{ vm.targetLabel }}</p>
       </div>
       <div class="headline__acquired">
-        <p class="headline__label headline__label--strong">Niveau Acquis :</p>
+        <p class="headline__label headline__label--strong">Profil actuel :</p>
         <p class="headline__value heading">{{ vm.acquiredLabel }}</p>
       </div>
     </div>
