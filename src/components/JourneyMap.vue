@@ -1,18 +1,6 @@
 <template>
   <div class="map">
-    <div class="journey panel">
-      <div class="persona">
-        <p class="persona__title heading">User</p>
-        <p class="persona__label">Persona :</p>
-        <p class="persona__value">CoDir d'une PME de l'Arc Jurassien</p>
-        <p class="persona__label persona__label--spaced">Attentes :</p>
-        <ul class="persona__list">
-          <li>— comprendre comment évaluer l'adoption de l'IA en entreprise</li>
-          <li>— situer son organisation sur l'échelle des profils d'adoption</li>
-          <li>— générer des projets basés sur des leviers d'action selon priorité</li>
-        </ul>
-      </div>
-
+    <div class="panel">
       <div class="phases">
         <section v-for="phase in phases" :key="phase.n" class="phase">
           <header class="phase__head">
@@ -26,11 +14,8 @@
       </div>
     </div>
 
-    <div class="journey journey--attached panel">
-      <div class="persona persona--compact">
-        <p class="persona__label">Points de friction et opportunités :</p>
-      </div>
-
+    <div class="panel panel--attached">
+      <p class="notes__legend">Points de friction et opportunités</p>
       <div class="phases">
         <section v-for="phase in phases" :key="phase.n" class="phase phase--notes">
           <ul class="notes">
@@ -50,67 +35,31 @@
 </template>
 
 <script setup>
-// Carte du parcours utilisateur, extraite de l'ancien accueil. Elle y retenait
-// le lecteur avant qu'il ait pu commencer ; elle ouvre désormais le cadrage, où
-// elle sert de sommaire aux trois phases qui suivent.
+// Carte du parcours utilisateur : les trois phases du diagnostic, et sous
+// chacune ce qui la rend pénible ou utile. Elle ouvre la page d'information, où
+// elle sert de sommaire à qui veut comprendre où il met les pieds ; elle a quitté
+// le cadrage, qu'elle retardait d'une page de lecture.
+//
+// La colonne persona (user, attentes) a été retirée : elle documentait la
+// conception de l'outil, pas son usage, et n'avait rien à dire au lecteur.
 defineProps({
   phases: { type: Array, required: true }
 })
 </script>
 
 <style scoped>
-.journey {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-}
-
-.journey--attached {
+.panel--attached {
   border-top: 0;
   background: transparent;
 }
 
-.persona {
-  padding: 18px 20px;
-  border-right: 2px solid var(--color-text);
-}
-
-.persona--compact {
-  padding: 14px 20px;
-}
-
-.persona__title {
+.notes__legend {
   margin: 0;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.persona__label {
-  margin: 10px 0 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-divider);
   font-size: 11px;
   font-weight: 700;
   line-height: 1.3;
-}
-
-.persona__label--spaced {
-  margin-top: 16px;
-}
-
-.persona__value {
-  margin: 4px 0 0;
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.persona__list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 6px 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: 12px;
-  line-height: 1.35;
 }
 
 .phases {
@@ -188,14 +137,8 @@ defineProps({
 }
 
 @media (max-width: 900px) {
-  .journey,
   .phases {
     grid-template-columns: 1fr;
-  }
-
-  .persona {
-    border-right: 0;
-    border-bottom: 2px solid var(--color-text);
   }
 
   .phase {

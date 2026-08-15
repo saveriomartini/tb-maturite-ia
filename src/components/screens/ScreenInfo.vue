@@ -10,6 +10,11 @@
     </header>
 
     <section class="zone">
+      <h2 class="zone__title heading">Les trois phases du diagnostic</h2>
+      <JourneyMap :phases="journey.phases" />
+    </section>
+
+    <section class="zone">
       <h2 class="zone__title heading">Le cadre de référence</h2>
       <ScreenCadrage1 :vm="cadrage1" @toggle-level="emit('toggle-level', $event)" />
     </section>
@@ -30,16 +35,18 @@
 </template>
 
 <script setup>
-// Page d'information : le modèle en haut, la carte des areas au centre. Deux
-// sections empilées d'un même défilement, hors du parcours d'évaluation — elles
-// le précédaient et le retardaient. Le bouton de pied de page permet d'attaquer
-// le diagnostic sans repasser par l'accueil.
+// Page d'information : le parcours en haut, puis le modèle, puis la carte des
+// areas. Trois sections empilées d'un même défilement, hors du parcours
+// d'évaluation — elles le précédaient et le retardaient. Le bouton de pied de
+// page permet d'attaquer le diagnostic sans repasser par l'accueil.
 import AppScreen from '../AppScreen.vue'
 import AppScreenNav from '../AppScreenNav.vue'
+import JourneyMap from '../JourneyMap.vue'
 import ScreenCadrage1 from './ScreenCadrage1.vue'
 import ScreenDiagStart from './ScreenDiagStart.vue'
 
 defineProps({
+  journey: { type: Object, required: true },
   cadrage1: { type: Object, required: true },
   scope: { type: Object, required: true }
 })

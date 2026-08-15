@@ -13,46 +13,21 @@
         />
       </div>
     </div>
-
-    <div class="descriptive">
-      <button
-        type="button"
-        class="btn btn-ghost descriptive__toggle"
-        :aria-expanded="showContext"
-        aria-controls="descriptive-fields"
-        @click="emit('toggle-context')"
-      >
-        {{ toggleLabel }}
-      </button>
-      <div v-show="showContext" id="descriptive-fields">
-        <p class="descriptive__intro">
-          Attributs documentaires issus de la Table 1 du modèle. Ils décrivent l’unité évaluée et
-          n’entrent pas dans l’ordre du diagnostic.
-        </p>
-        <div class="descriptive__fields">
-          <ContextField
-            v-for="field in descriptiveFields"
-            :key="field.id"
-            :field="field"
-            @select="emit('select-option', field.id, $event)"
-          />
-        </div>
-      </div>
-    </div>
   </section>
 </template>
 
 <script setup>
+// Le formulaire ne porte plus que les attributs qui pèsent sur le diagnostic.
+// Les attributs documentaires, qui n'y entrent pas, ont leur propre panneau
+// (DescriptiveContext) : les tenir sous un repli au bas de celui-ci les faisait
+// passer pour une suite facultative du même formulaire.
 import ContextField from './ContextField.vue'
 
 defineProps({
-  groups: { type: Array, required: true },
-  descriptiveFields: { type: Array, required: true },
-  showContext: { type: Boolean, required: true },
-  toggleLabel: { type: String, required: true }
+  groups: { type: Array, required: true }
 })
 
-const emit = defineEmits(['select-option', 'toggle-context'])
+const emit = defineEmits(['select-option'])
 </script>
 
 <style scoped>
@@ -82,42 +57,18 @@ const emit = defineEmits(['select-option', 'toggle-context'])
   padding: 12px 20px 20px;
 }
 
-.descriptive {
-  padding: 12px 20px 18px;
-}
-
-.descriptive__toggle {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding-inline: 0;
-}
-
-.descriptive__intro {
-  max-width: 640px;
-  margin: 4px 0 14px;
-  font-size: 10.5px;
-  color: var(--color-neutral-700);
-}
-
-.descriptive__fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 28px;
+/* Le dernier groupe ferme le panneau : son filet doublerait la bordure. */
+.group:last-child {
+  border-bottom: 0;
 }
 
 @media (max-width: 900px) {
-  .group__fields,
-  .descriptive__fields {
-    grid-template-columns: 1fr;
-  }
-
   .group__fields {
+    grid-template-columns: 1fr;
     padding: 12px 16px 18px;
   }
 
-  .group__title,
-  .descriptive {
+  .group__title {
     padding-inline: 16px;
   }
 }

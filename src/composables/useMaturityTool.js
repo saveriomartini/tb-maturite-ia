@@ -55,7 +55,7 @@ function defaultState() {
     offScope: null,
     target: null,
     form: {},
-    showContext: false,
+    showContext: true,
     transformation: null,
     showTransformation: true,
     session: newSessionId()
@@ -448,7 +448,8 @@ export function useMaturityTool() {
     })),
     descriptiveFields: DESCRIPTIVE_FIELDS.map(buildField),
     showContext: state.showContext,
-    contextToggleLabel: `${state.showContext ? '− masquer' : '+ afficher'} le contexte descriptif`
+    // Le panneau nomme lui-même son contenu : le libellé n'a plus à le répéter.
+    contextToggleLabel: state.showContext ? '− replier' : '+ déplier'
   }))
 
   // Areas que le profil détecté met en jeu : ce sont celles du diagnostic, et
