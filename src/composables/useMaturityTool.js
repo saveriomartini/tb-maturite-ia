@@ -8,6 +8,7 @@
 import { computed, reactive, watch } from 'vue'
 import { CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
+import { DEFAULT_INDICATOR_RANK, MATURITY_INDICATORS } from '../data/maturity-indicators.js'
 import { IN_PROGRESS, PREPARATION } from '../data/preparation.js'
 import {
   BLOCKS, EVALUABLE_AREAS, LEVELS, levelDescription, orderedAreas, profileExportLabel, profileName
@@ -26,8 +27,8 @@ const MODEL_VERSION = 'v1'
 const GAP_GROUPS_PER_PAGE = 4
 
 const RESET_CONFIRMATION =
-  'Réinitialiser la session ? Les attributs de contexte, le degré de transformation visé et les ' +
-  'objectifs validés seront effacés.'
+  'Réinitialiser la session ? Les attributs de contexte, le degré de transformation visé, les ' +
+  'objectifs validés et les indicateurs de maturité seront effacés.'
 
 // Question d'intention posée avant le formulaire de contexte. Elle recueille le
 // profil que l'organisation *souhaite* atteindre, là où les attributs décrivent
@@ -42,12 +43,15 @@ const TRANSFORMATION_QUESTION =
 // `seen` retient les areas effectivement présentées — la restitution ne parle
 // que de celles-là. `offScope` désigne l'area hors cadrage consultée depuis la
 // barre : une vue passagère, jamais persistée, qui laisse la position du
-// parcours (`diagIdx`) exactement où elle était.
+// parcours (`diagIdx`) exactement où elle était. `indicators` porte les
+// indicateurs de maturité, une réponse par indicateur et par area — collectés
+// et persistés, mais sans effet sur le calcul, le temps d'éprouver la forme.
 function defaultState() {
   return {
     screen: 'home',
     diagIdx: 0,
     checked: {},
+    indicators: {},
     openLevels: {},
     seen: {},
     wave: 1,
@@ -142,6 +146,7 @@ export function useMaturityTool() {
   const hasProgress = computed(() =>
     answeredCount.value > 0 ||
     Object.keys(state.checked).length > 0 ||
+    Object.keys(state.indicators).length > 0 ||
     state.transformation != null ||
     state.screen !== 'home'
   )
@@ -232,6 +237,17 @@ export function useMaturityTool() {
     // présentées le restent, seul l'ordre des suivantes change.
     selectTransformation(n) {
       state.transformation = state.transformation === n ? null : n
+    },
+    // Indicateur de maturité d'une area : une situation parmi cinq, et la même
+    // convention que partout — recliquer celle qui est retenue l'annule. La
+    // réponse est rangée par area puis par indicateur ; elle ne touche à rien
+    // d'autre, aucun calcul ne la lit.
+    selectIndicator(areaId, indicatorId, value) {
+      const answers = state.indicators[areaId] || {}
+      state.indicators = {
+        ...state.indicators,
+        [areaId]: { ...answers, [indicatorId]: answers[indicatorId] === value ? null : value }
+      }
     },
     // Recliquer sur l'option retenue l'annule : l'attribut redevient non renseigné.
     selectOption(fieldId, value) {
@@ -589,6 +605,28 @@ export function useMaturityTool() {
       // repliable, comme l'aide d'un attribut de contexte. `keys` porte les
       // clés que la validation écrit ; `done` reste vrai au sens du calcul,
       // c'est-à-dire toutes pratiques validées.
+      // Les trois indicateurs de maturité de l'area courante : la grille est
+      // générique, elle est posée sur chaque area évaluable. Rien hors cadrage
+      // — l'area consultée là n'a rien à remplir. L'area est portée jusqu'ici
+      // pour que la réponse sache à laquelle elle s'attache.
+      indicators: area && !offScopeArea
+        ? MATURITY_INDICATORS.map(indicator => {
+          // Faute de réponse explicite, c'est le rang par défaut qui vaut : la
+          // situation d'absence, retenue tant qu'on ne l'a pas contredite.
+          const answer = (state.indicators[area.id] || {})[indicator.id] ?? DEFAULT_INDICATOR_RANK
+          return {
+            id: indicator.id,
+            name: indicator.name,
+            desc: indicator.desc,
+            statements: indicator.statements.map(statement => ({
+              value: statement.n,
+              text: statement.text,
+              active: answer === statement.n
+            }))
+          }
+        })
+        : null,
+      indicatorAreaId: area && !offScopeArea ? area.id : null,
       goals: area && !offScopeArea
         ? area.goals.map((goal, goalIndex) => {
           const keys = goal.practices.map(

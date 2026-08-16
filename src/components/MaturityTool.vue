@@ -31,6 +31,7 @@
     v-else-if="screen === 'tool2'"
     :vm="tool.diag"
     @toggle-goal="tool.actions.toggleGoal"
+    @select-indicator="tool.actions.selectIndicator"
     @open-area="tool.actions.openArea"
     @close-off-scope="tool.actions.closeOffScope"
     @back="tool.nav.back"

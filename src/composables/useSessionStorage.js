@@ -1,7 +1,8 @@
 // Persistance locale de la session d'évaluation.
 //
 // L'état complet (écran courant, attributs de contexte, degré de transformation
-// visé, série ouverte, areas présentées, pratiques validées) est écrit dans
+// visé, série ouverte, areas présentées, pratiques validées, indicateurs de
+// maturité) est écrit dans
 // localStorage sous une clé versionnée. Toute donnée
 // relue est validée avant d'être réinjectée : un payload écrit par une version
 // antérieure du modèle ne doit jamais pouvoir corrompre l'état applicatif —
@@ -9,12 +10,15 @@
 
 import { watch } from 'vue'
 import { ALL_FIELDS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
+import { MATURITY_INDICATORS } from '../data/maturity-indicators.js'
+import { EVALUABLE_AREAS } from '../domain/model.js'
 
 const STORAGE_KEY = 'maia.session'
 const SCHEMA_VERSION = 1
 const WRITE_DELAY = 200
 
 const FORM_FIELDS = ALL_FIELDS.concat(DESCRIPTIVE_FIELDS)
+const AREA_IDS = new Set(EVALUABLE_AREAS.map(area => area.id))
 
 export function newSessionId() {
   return Math.random().toString(16).slice(2, 9)
@@ -51,6 +55,26 @@ function validForm(v) {
   return out
 }
 
+// Indicateurs de maturité : une area connue du modèle, un indicateur connu de
+// la grille, un rang qui existe. Tout le reste tombe — et une area vidée de
+// toute réponse ne laisse pas d'entrée derrière elle.
+function validIndicators(v) {
+  if (!isPlainObject(v)) return {}
+  const out = {}
+  Object.keys(v).forEach(areaId => {
+    if (!AREA_IDS.has(areaId) || !isPlainObject(v[areaId])) return
+    const answers = {}
+    MATURITY_INDICATORS.forEach(indicator => {
+      const n = v[areaId][indicator.id]
+      if (Number.isInteger(n) && indicator.statements.some(statement => statement.n === n)) {
+        answers[indicator.id] = n
+      }
+    })
+    if (Object.keys(answers).length) out[areaId] = answers
+  })
+  return out
+}
+
 function sanitize(raw, screens) {
   if (!isPlainObject(raw)) return null
   const out = {}
@@ -71,6 +95,7 @@ function sanitize(raw, screens) {
   out.openLevels = boolMap(raw.openLevels)
   out.seen = boolMap(raw.seen)
   out.form = validForm(raw.form)
+  out.indicators = validIndicators(raw.indicators)
   return out
 }
 
@@ -85,7 +110,8 @@ function snapshot(state) {
     checked: boolMap(state.checked),
     openLevels: boolMap(state.openLevels),
     seen: boolMap(state.seen),
-    form: validForm(state.form)
+    form: validForm(state.form),
+    indicators: validIndicators(state.indicators)
   }
 }
 

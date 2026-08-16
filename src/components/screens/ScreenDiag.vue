@@ -73,6 +73,12 @@
       <div v-else class="work">
         <GoalChecklist :goals="vm.goals" @toggle="emit('toggle-goal', $event)" />
 
+        <MaturityIndicatorsForm
+          v-if="vm.indicators"
+          :indicators="vm.indicators"
+          @select="(indicatorId, value) => emit('select-indicator', vm.indicatorAreaId, indicatorId, value)"
+        />
+
         <div class="work__nav">
           <button type="button" class="btn btn-ghost" @click="emit('back')">Précédent</button>
           <div class="work__next">
@@ -92,15 +98,23 @@
 // l'aide d'un attribut de contexte : au repos, la colonne ne dit que ce qu'est
 // l'area. L'état est local et suit d'une area à l'autre — qui a demandé les
 // artefacts une fois les veut en général partout.
+//
+// Les indicateurs de maturité suivent les objectifs de chaque area : on valide
+// d'abord ce qui est en place, on qualifie ensuite la façon dont l'area est
+// tenue. Le bloc s'absente hors cadrage, où il n'y a rien à remplir — c'est le
+// view-model qui le dit, l'écran ne fait que suivre.
 import { ref, useId } from 'vue'
 import AppScreen from '../AppScreen.vue'
 import GoalChecklist from '../GoalChecklist.vue'
+import MaturityIndicatorsForm from '../MaturityIndicatorsForm.vue'
 
 defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['toggle-goal', 'open-area', 'close-off-scope', 'back', 'next'])
+const emit = defineEmits([
+  'toggle-goal', 'select-indicator', 'open-area', 'close-off-scope', 'back', 'next'
+])
 
 const artifactsOpen = ref(false)
 const artifactsId = `artifacts-${useId()}`

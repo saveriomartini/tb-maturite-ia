@@ -112,6 +112,7 @@ tb-maturite-ia/
 │   │   ├── model-data.json        SOURCE DE VÉRITÉ du modèle (blocs, dimensions, areas, niveaux)
 │   │   ├── model-data.js          export ES module de model-data.json
 │   │   ├── context-attributes.js  attributs de contexte, plafonds, exigences du Level 5
+│   │   ├── maturity-indicators.js grille des 3 indicateurs transversaux (§5 de la source)
 │   │   ├── preparation.js         profil « Préparation », ajouté hors AIMM sous le profil 1
 │   │   └── journey.js             texte du parcours en quatre phases
 │   ├── domain/                    RÈGLES MÉTIER, fonctions pures, aucune dépendance à Vue
@@ -131,7 +132,8 @@ tb-maturite-ia/
 │   │   ├── MaturityTool.vue       aiguillage vers l'écran courant
 │   │   ├── *.vue                  blocs réutilisés (FrameworkTable, ScopeMap, GoalChecklist,
 │   │   │                          MaturityLevelList, ContextAttributeForm, ContextField,
-│   │   │                          TargetRecommendationPanel, LevelSummary)
+│   │   │                          MaturityIndicatorsForm, TargetRecommendationPanel,
+│   │   │                          LevelSummary)
 │   │   └── screens/               un composant par écran (Home, Cadrage1-3, DiagStart,
 │   │                              Diag, Resti1-3, Export)
 │   └── main.js
