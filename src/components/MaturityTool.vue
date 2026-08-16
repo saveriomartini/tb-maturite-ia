@@ -24,7 +24,6 @@
     @select-option="tool.actions.selectOption"
     @toggle-context="tool.actions.toggleDescriptiveContext"
     @select-transformation="tool.actions.selectTransformation"
-    @toggle-transformation="tool.actions.toggleTransformation"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
@@ -40,7 +39,6 @@
   <ScreenPalier
     v-else-if="screen === 'palier'"
     :vm="tool.palier"
-    @select-profile="tool.actions.selectTarget"
     @continue="tool.actions.continueDiagnostic"
     @skip="tool.nav.skipToRestitution"
     @back="tool.nav.back"

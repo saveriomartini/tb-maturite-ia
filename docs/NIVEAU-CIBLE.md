@@ -5,9 +5,37 @@ Comment l'écran de cadrage 3 déduit un niveau cible recommandé (1 à 5) des a
 Source des données : [`src/data/context-attributes.js`](../src/data/context-attributes.js).
 Calcul : `buildRecommendation()` dans [`src/domain/recommendation.js`](../src/domain/recommendation.js).
 
-La recommandation est **indicative** : l'utilisateur reste libre de retenir un autre niveau cible.
-Tant que les 13 attributs ne sont pas tous renseignés, l'encart porte la mention
-« recommandation indicative ».
+La recommandation n'est pas montrée au cadrage et ne se choisit pas : elle **borne** le degré de
+transformation que l'utilisateur déclare viser (§ 0). Le profil visé qui en résulte n'est nommé
+qu'au palier de fin de diagnostic, où il ne se corrige plus.
+
+## 0. Profil visé : l'intention, bornée par la capacité
+
+```text
+profil visé = intention == null ? recommandation : min(intention, recommandation)
+```
+
+Deux entrées, deux rôles distincts :
+
+- le **degré de transformation visé** (`state.transformation`), première question du cadrage, à
+  cinq réponses — les cinq profils du modèle. C'est une intention : elle dit jusqu'où l'adoption de
+  l'IA doit transformer l'organisation, là où les attributs décrivent ce qu'elle est. Elle fixe le
+  profil visé, donc les areas que le questionnaire présente ;
+- les **attributs de contexte**, dont la recommandation ne peut que **descendre** ce profil, jamais
+  le remonter.
+
+Les deux écarts possibles restent **silencieux au cadrage** et pendant le diagnostic :
+
+| Cas | Ce que fait l'outil | Ce qui sera dit à la restitution |
+|---|---|---|
+| intention < recommandation | parcourt le périmètre demandé, plus étroit | l'organisation a la capacité de viser plus haut |
+| intention > recommandation | parcourt le périmètre soutenable, plus étroit que demandé | la visée dépassait la capacité constatée ; le diagnostic a porté sur ce qui est portable |
+
+Sans intention déclarée, la recommandation décide seule : formulaire vide, elle vaut le profil le
+plus haut (§ 3), donc toutes les areas évaluables du modèle.
+
+Cas particulier au palier : lorsque c'est l'intention, plus basse, qui a fixé le profil, les
+facteurs de plafond ne sont pas affichés — ils motiveraient une limite qui n'a pas joué.
 
 ## 1. Deux axes, pas un score
 
@@ -26,11 +54,9 @@ Cas particulier de l'approche de développement IA (`devApproach`) : elle est co
 volontairement dans aucun calcul. Elle est destinée à un futur scoping par pratiques, non au niveau
 cible.
 
-Même statut pour le **degré de transformation visé** (`state.transformation`), posé en tête du
-cadrage sous la forme d'une question à cinq réponses — les cinq profils du modèle. Il ne s'agit pas
-d'un attribut de contexte : il exprime une intention, là où les attributs décrivent une situation.
-Il est mémorisé avec la session mais n'entre encore dans aucun calcul ; la façon dont il corrigera
-l'ordre du questionnaire se décide dans un second temps.
+Le **degré de transformation visé** n'apparaît pas dans ce tableau : il n'est pas un attribut de
+contexte et n'entre dans aucune moyenne. Il se croise avec le résultat de tout ce qui suit, selon
+la règle du § 0.
 
 ## 2. Score par attribut
 
@@ -136,15 +162,15 @@ S'il en manque une, le niveau recommandé est ramené à 4 et les conditions man
 
 ## 7. Facteurs affichés
 
-L'encart justifie la recommandation par au plus deux attributs par axe, choisis parmi ceux
-effectivement renseignés :
+Le calcul ne s'explique qu'au palier de fin de diagnostic, et seulement par ce qui a **retenu** le
+niveau — jamais par les deux axes, qui décrivent la mécanique interne :
 
-- **moteurs** (`drivers`) — attributs d'ambition de score `≥ 0.6`, les deux plus élevés ;
-- **freins** (`limits`) — attributs de capacité de score `≤ 0.4`, les deux plus bas.
+- **Ajustement** — la capacité a ramené le niveau de plus d'un cran (§ 4) ;
+- **Plafond** — un ou plusieurs plafonds durs ont tranché, avec leur motif (§ 5) ;
+- **Profil le plus haut** — les conditions du Level 5 manquantes (§ 6).
 
-Les niveaux d'ambition et de capacité affichés sont les niveaux d'axe arrondis et bornés à [1, 5],
-alors que le croisement du § 4 travaille sur les valeurs non arrondies. Un écart d'affichage d'un
-cran est donc possible et attendu.
+Ces facteurs sont tus lorsque c'est l'intention déclarée, plus basse que la recommandation, qui a
+fixé le profil visé (§ 0).
 
 ## 8. Ordre d'application, en une ligne
 
@@ -156,6 +182,8 @@ scores  →  plafond réglementaire du risque
         →  plafonds durs (le plus bas gagne)
         →  vérification des conditions du Level 5
         →  niveau recommandé
+        →  min(degré de transformation visé, niveau recommandé)
+        →  profil visé du diagnostic
 ```
 
 ## Exemples

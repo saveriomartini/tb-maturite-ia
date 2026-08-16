@@ -1,7 +1,7 @@
 // Persistance locale de la session d'évaluation.
 //
-// L'état complet (écran courant, attributs de contexte, profil visé retenu,
-// série ouverte, areas présentées, pratiques validées) est écrit dans
+// L'état complet (écran courant, attributs de contexte, degré de transformation
+// visé, série ouverte, areas présentées, pratiques validées) est écrit dans
 // localStorage sous une clé versionnée. Toute donnée
 // relue est validée avant d'être réinjectée : un payload écrit par une version
 // antérieure du modèle ne doit jamais pouvoir corrompre l'état applicatif —
@@ -56,16 +56,16 @@ function sanitize(raw, screens) {
   const out = {}
   if (screens.indexOf(raw.screen) >= 0) out.screen = raw.screen
   if (Number.isInteger(raw.diagIdx) && raw.diagIdx >= 0) out.diagIdx = raw.diagIdx
-  // Un `target` absent ou invalide retombe sur la valeur par défaut (null),
-  // c'est-à-dire sur la recommandation : le choix manuel seul est mémorisé.
-  if (Number.isInteger(raw.target) && raw.target >= 1 && raw.target <= 5) out.target = raw.target
   if (raw.wave === 1 || raw.wave === 2) out.wave = raw.wave
   if (typeof raw.showContext === 'boolean') out.showContext = raw.showContext
-  // Degré de transformation souhaité : un profil du modèle, ou rien.
+  // Degré de transformation visé : un profil du modèle, ou rien. Absent ou
+  // invalide, il retombe sur la valeur par défaut (null), c'est-à-dire sur la
+  // seule recommandation. Un payload écrit par une version antérieure porte
+  // encore un `target` — le choix manuel du palier, qui n'existe plus : les
+  // clés inconnues sont écartées ici, sans invalider le reste de la session.
   if (Number.isInteger(raw.transformation) && raw.transformation >= 1 && raw.transformation <= 5) {
     out.transformation = raw.transformation
   }
-  if (typeof raw.showTransformation === 'boolean') out.showTransformation = raw.showTransformation
   if (typeof raw.session === 'string' && /^[a-z0-9]{4,16}$/.test(raw.session)) out.session = raw.session
   out.checked = boolMap(raw.checked)
   out.openLevels = boolMap(raw.openLevels)
@@ -78,11 +78,9 @@ function snapshot(state) {
   return {
     screen: state.screen,
     diagIdx: state.diagIdx,
-    target: state.target,
     wave: state.wave,
     showContext: state.showContext,
     transformation: state.transformation,
-    showTransformation: state.showTransformation,
     session: state.session,
     checked: boolMap(state.checked),
     openLevels: boolMap(state.openLevels),

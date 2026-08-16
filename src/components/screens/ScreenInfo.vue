@@ -20,7 +20,7 @@
     </section>
 
     <section class="zone">
-      <h2 class="zone__title heading">Les areas retenues pour le diagnostic</h2>
+      <h2 class="zone__title heading">Les areas de compétence du diagnostic</h2>
       <ScreenDiagStart :vm="scope" />
     </section>
 

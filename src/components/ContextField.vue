@@ -56,15 +56,20 @@
 // « + » du libellé, pour n'être déplié que sur l'attribut en discussion.
 // L'état ouvert/fermé est purement local : il ne décrit pas l'évaluation et n'a
 // pas à survivre à la session.
+//
+// `defaultOpen` renverse ce repos pour le seul champ dont les options ne se
+// comprennent pas sans leur définition — le degré de transformation, dont les
+// réponses sont les profils du modèle. Le repli reste offert.
 import { computed, ref, useId } from 'vue'
 
 const props = defineProps({
-  field: { type: Object, required: true }
+  field: { type: Object, required: true },
+  defaultOpen: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['select'])
 
-const open = ref(false)
+const open = ref(props.defaultOpen)
 const uid = useId()
 const detailId = computed(() => `detail-${props.field.id}-${uid}`)
 const hasDetail = computed(() => Boolean(props.field.hint) || props.field.criteria.length > 0)

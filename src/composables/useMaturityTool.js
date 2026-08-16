@@ -26,24 +26,23 @@ const MODEL_VERSION = 'v1'
 const GAP_GROUPS_PER_PAGE = 4
 
 const RESET_CONFIRMATION =
-  'Réinitialiser la session ? Les attributs de contexte, le profil visé et les objectifs validés seront effacés.'
+  'Réinitialiser la session ? Les attributs de contexte, le degré de transformation visé et les ' +
+  'objectifs validés seront effacés.'
 
 // Question d'intention posée avant le formulaire de contexte. Elle recueille le
 // profil que l'organisation *souhaite* atteindre, là où les attributs décrivent
-// ce qu'elle est. La réponse est mémorisée mais n'entre encore dans aucun
-// calcul : l'ordre du questionnaire reste dicté par la recommandation, et la
-// façon dont cette variable le corrigera se décide dans un second temps.
+// ce qu'elle est. C'est elle qui fixe le profil visé, donc les areas parcourues.
 const TRANSFORMATION_QUESTION =
   'Quel degré de transformation l’adoption de l’IA doit-elle déterminer dans votre organisation, ' +
   'selon vous ?'
 
-// `target` à null : le profil visé suit la recommandation, qui se déplace au fil
-// des attributs de contexte. Un entier n'y apparaît qu'après un choix manuel au
-// palier. `wave` dit jusqu'où le questionnaire est ouvert (1 = première série
-// seule), `seen` retient les areas effectivement présentées — la restitution ne
-// parle que de celles-là. `offScope` désigne l'area hors cadrage consultée
-// depuis la barre : une vue passagère, jamais persistée, qui laisse la position
-// du parcours (`diagIdx`) exactement où elle était.
+// `transformation` porte le profil déclaré au cadrage ; à null, le profil visé
+// suit la seule recommandation, qui se déplace au fil des attributs de contexte.
+// `wave` dit jusqu'où le questionnaire est ouvert (1 = première série seule),
+// `seen` retient les areas effectivement présentées — la restitution ne parle
+// que de celles-là. `offScope` désigne l'area hors cadrage consultée depuis la
+// barre : une vue passagère, jamais persistée, qui laisse la position du
+// parcours (`diagIdx`) exactement où elle était.
 function defaultState() {
   return {
     screen: 'home',
@@ -53,11 +52,9 @@ function defaultState() {
     seen: {},
     wave: 1,
     offScope: null,
-    target: null,
     form: {},
     showContext: true,
     transformation: null,
-    showTransformation: true,
     session: newSessionId()
   }
 }
@@ -79,9 +76,18 @@ export function useMaturityTool() {
   // — dérivations communes à plusieurs écrans —
 
   const recommendation = computed(() => buildRecommendation(state.form))
-  // Le profil visé n'est plus une décision demandée d'entrée : il se déduit du
-  // contexte et ne se discute qu'au palier, une fois la première série faite.
-  const target = computed(() => (state.target == null ? recommendation.value.level : state.target))
+  // Le profil visé est celui que l'organisation déclare viser, borné par ce que
+  // son contexte porte : le formulaire ne peut que le descendre, jamais le
+  // remonter. Viser bas avec les moyens de viser haut laisse le diagnostic sur
+  // le périmètre demandé ; viser haut sans les moyens le ramène à ce qui est
+  // soutenable. Dans les deux cas l'écart reste tu jusqu'à la restitution.
+  // Sans intention déclarée, la recommandation décide seule — formulaire vide,
+  // elle vaut le profil le plus haut, donc toutes les areas du modèle.
+  const target = computed(() =>
+    state.transformation == null
+      ? recommendation.value.level
+      : Math.min(state.transformation, recommendation.value.level)
+  )
 
   const ordered = computed(() => orderedAreas(target.value))
   // Ce que le questionnaire propose aujourd'hui, ce qu'il a réellement présenté,
@@ -136,7 +142,6 @@ export function useMaturityTool() {
   const hasProgress = computed(() =>
     answeredCount.value > 0 ||
     Object.keys(state.checked).length > 0 ||
-    state.target != null ||
     state.transformation != null ||
     state.screen !== 'home'
   )
@@ -221,23 +226,16 @@ export function useMaturityTool() {
     toggleDescriptiveContext() {
       state.showContext = !state.showContext
     },
-    toggleTransformation() {
-      state.showTransformation = !state.showTransformation
-    },
     // Même convention que les attributs de contexte : recliquer le profil retenu
-    // annule la réponse.
+    // annule la réponse — le profil visé repasse alors sous la seule
+    // recommandation. L'index n'est pas remis à zéro : les areas déjà
+    // présentées le restent, seul l'ordre des suivantes change.
     selectTransformation(n) {
       state.transformation = state.transformation === n ? null : n
     },
     // Recliquer sur l'option retenue l'annule : l'attribut redevient non renseigné.
     selectOption(fieldId, value) {
       state.form = { ...state.form, [fieldId]: state.form[fieldId] === value ? null : value }
-    },
-    // Recliquer sur le profil retenu annule le choix manuel : la cible repasse
-    // sous la recommandation. L'index n'est pas remis à zéro — les areas déjà
-    // présentées le restent, seul l'ordre des suivantes change.
-    selectTarget(n) {
-      state.target = state.target === n ? null : n
     },
     // Ouvrir la seconde série et reprendre à la première area jamais présentée.
     continueDiagnostic() {
@@ -436,11 +434,7 @@ export function useMaturityTool() {
   // Le cadrage ne montre plus que le formulaire : la recommandation qu'il
   // alimente se calcule en silence et ne s'explique qu'au palier.
   const cadrage3 = computed(() => ({
-    transformation: {
-      field: transformationField.value,
-      open: state.showTransformation,
-      toggleLabel: state.showTransformation ? '− replier' : '+ déplier'
-    },
+    transformationField: transformationField.value,
     groups: CONTEXT_GROUPS.map(group => ({
       id: group.id,
       label: group.label,
@@ -452,25 +446,25 @@ export function useMaturityTool() {
     contextToggleLabel: state.showContext ? '− replier' : '+ déplier'
   }))
 
-  // Areas que le profil détecté met en jeu : ce sont celles du diagnostic, et
-  // les seules qu'on montre. Rien n'annonce qu'il en existe d'autres — la
-  // question ne se pose qu'une fois le parcours terminé.
-  const requiredIds = computed(() => new Set(
-    ordered.value.filter(area => area.wave === 1).map(area => area.id)
-  ))
-
-  // Cette carte a quitté le parcours pour la page d'information : elle peut donc
-  // être lue avant tout cadrage. Le texte ne prétend alors pas décrire une
-  // sélection personnelle — il montre celle d'une organisation type.
+  // Cette carte a quitté le parcours pour la page d'information, et avec lui la
+  // session : elle ne montre plus la sélection du cadrage en cours mais le
+  // modèle évaluable entier, que l'écran laisse filtrer par profil. Le view-model
+  // ne livre donc que des constantes du modèle — quel profil on consulte est une
+  // affaire d'écran, sans effet sur le profil visé du diagnostic.
   const diagStart = computed(() => ({
-    intro: answeredCount.value
-      ? `Le diagnostic porte sur ${requiredIds.value.size} areas de compétence, retenues à partir de ce que ` +
-        `vous avez décrit. Pour chacune, vous validez les objectifs déjà atteints dans votre organisation ; ` +
-        `les pratiques qu'ils recouvrent se déplient sous chaque objectif.`
-      : `Sans cadrage, le diagnostic parcourt les ${requiredIds.value.size} areas de compétence évaluables du ` +
-        `modèle : ne rien décrire n'écarte rien. Décrire votre organisation en retire celles que votre ` +
-        `situation n'appelle pas. Pour chacune, vous validez les objectifs déjà atteints ; les pratiques ` +
-        `qu'ils recouvrent se déplient sous chaque objectif.`,
+    intro: `Le diagnostic parcourt les ${EVALUABLE_AREAS.length} areas de compétence évaluables du modèle. ` +
+      `Pour chacune, vous validez les objectifs déjà atteints dans votre organisation ; les pratiques qu'ils ` +
+      `recouvrent se déplient sous chaque objectif. Aucune n'est retirée d'avance : un profil d'adoption ne ` +
+      `fait que désigner celles qu'il met en jeu.`,
+    total: EVALUABLE_AREAS.length,
+    // Un profil met en jeu les areas de son rang et de tous ceux d'en dessous —
+    // la même règle que la première série du questionnaire.
+    profiles: LEVELS.map(level => ({
+      n: level.n,
+      label: level.name,
+      tag: level.tag,
+      count: EVALUABLE_AREAS.filter(area => area.level <= level.n).length
+    })),
     blocks: BLOCKS
       .map(block => ({
         id: block.id,
@@ -480,9 +474,11 @@ export function useMaturityTool() {
             id: dimension.id,
             name: dimension.name,
             color: dimension.color,
+            // Les areas encore à définir restent hors carte : elles ne sont
+            // évaluables sous aucun profil.
             areas: dimension.areas
-              .filter(area => requiredIds.value.has(area.id))
-              .map(area => ({ id: area.id, label: area.name }))
+              .filter(area => !area.pending)
+              .map(area => ({ id: area.id, label: area.name, level: area.level }))
           }))
           .filter(dimension => dimension.areas.length > 0)
       }))
@@ -491,37 +487,27 @@ export function useMaturityTool() {
 
   // — palier —
   // Diagnostic terminé : c'est ici, et pas avant, qu'on nomme le profil qui a
-  // désigné les areas parcourues, qu'on laisse le corriger s'il ne colle pas,
-  // et qu'on demande s'il faut s'arrêter là ou monter aux profils suivants.
+  // désigné les areas parcourues, et qu'on demande s'il faut s'arrêter là ou
+  // monter aux profils suivants. Le profil ne s'y corrige plus : il a été
+  // déclaré au cadrage.
   const palier = computed(() => {
     const rec = recommendation.value
+    // Le texte nomme le profil sans dire d'où il vient : selon les cas il est
+    // celui qu'on a demandé, ou celui auquel le contexte a ramené la demande.
+    // Distinguer les deux, c'est ouvrir la discussion sur l'écart — elle
+    // appartient à la restitution.
+    const cappedByIntent = state.transformation != null && state.transformation < rec.level
     return {
-      profileLabel: targetLabel.value,
       evaluatedCount: evaluated.value.length,
-      // Deux formulations : tant que le profil suit la recommandation, il
-      // explique exactement la sélection qu'on vient de parcourir. Une fois
-      // corrigé à la main, il ne la décrit plus — le texte cesse alors de le
-      // prétendre.
-      why: state.target == null
-        ? `Vos réponses de cadrage situent votre organisation au profil « ${targetLabel.value} ». Le ` +
-          `diagnostic a porté sur les ${evaluated.value.length} areas de compétence que ce profil met en ` +
-          `jeu : c'est là qu'un écart se traduit le plus vite en action.`
-        : `Vous avez retenu le profil « ${targetLabel.value} ». Le diagnostic a porté jusqu'ici sur ` +
-          `${evaluated.value.length} areas de compétence.`,
+      why: `Le diagnostic a porté sur les ${evaluated.value.length} areas de compétence que met en jeu le ` +
+        `profil « ${targetLabel.value} » : c'est là qu'un écart se traduit le plus vite en action.`,
       question:
         'Vous pouvez vous en tenir là et lire vos résultats, ou continuer avec les areas qu’appellent les ' +
         'profils plus avancés.',
-      factors: recommendationFactors(rec),
-      manual: state.target != null,
-      manualLabel: state.target != null
-        ? `Profil choisi manuellement. Recliquez-le pour revenir à la proposition (${profileName(rec.level)}).`
-        : '',
-      profileOptions: LEVELS.map(level => ({
-        n: level.n,
-        label: level.name,
-        active: target.value === level.n,
-        recommended: level.n === rec.level
-      })),
+      // Les facteurs justifient un plafond de la recommandation : ils n'ont
+      // rien à expliquer quand c'est l'intention déclarée, plus basse, qui a
+      // fixé le profil — les afficher motiverait une limite qui n'a pas joué.
+      factors: cappedByIntent ? [] : recommendationFactors(rec),
       continueLabel: 'Poursuivre avec les profils suivants',
       skipLabel: 'Passer aux résultats'
     }

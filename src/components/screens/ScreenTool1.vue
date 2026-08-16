@@ -5,7 +5,7 @@
       @select-option="(fieldId, value) => emit('select-option', fieldId, value)"
       @toggle-context="emit('toggle-context')"
       @select-transformation="emit('select-transformation', $event)"
-      @toggle-transformation="emit('toggle-transformation')"
+      @next="emit('next')"
     />
 
     <AppScreenNav next-label="Passer à l'évaluation" @back="emit('back')" @next="emit('next')" />
@@ -27,9 +27,7 @@ defineProps({
   cadrage3: { type: Object, required: true }
 })
 
-const emit = defineEmits([
-  'select-option', 'toggle-context', 'select-transformation', 'toggle-transformation', 'back', 'next'
-])
+const emit = defineEmits(['select-option', 'toggle-context', 'select-transformation', 'back', 'next'])
 </script>
 
 <style scoped>

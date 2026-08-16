@@ -12,23 +12,28 @@
           M.A.IA
         </button>
         <div class="header__subtitle heading">
-          — Outil d'auto-évaluation de la maturité d'adoption de l'IA pour PME
+          — Maturité de l'adoption des technologies IA
         </div>
       </div>
 
-      <p v-if="vm.showPhases" class="meta header__model">
-        modèle v1.0 · CMU SEI / Accenture · consolidation Matrice N2
-      </p>
-
       <div class="header__session meta">
         <span>{{ vm.sessionLabel }}</span>
-        <button v-if="vm.hasProgress" type="button" class="header__reset" @click="emit('reset')">
+        <button
+          v-if="vm.hasProgress"
+          type="button"
+          class="header__reset"
+          @click="emit('reset')"
+        >
           réinitialiser
         </button>
       </div>
     </div>
 
-    <nav v-if="vm.showPhases" class="header__phases" aria-label="Phases du parcours">
+    <nav
+      v-if="vm.showPhases"
+      class="header__phases"
+      aria-label="Phases du parcours"
+    >
       <button
         v-for="phase in vm.phases"
         :key="phase.n"
@@ -51,10 +56,10 @@
 
 <script setup>
 defineProps({
-  vm: { type: Object, required: true }
-})
+  vm: { type: Object, required: true },
+});
 
-const emit = defineEmits(['home', 'phase', 'reset'])
+const emit = defineEmits(["home", "phase", "reset"]);
 </script>
 
 <style scoped>
@@ -97,10 +102,10 @@ const emit = defineEmits(['home', 'phase', 'reset'])
   color: var(--color-neutral-800);
 }
 
-.header__model {
-  margin: 0;
-}
-
+/* L'en-tête ne porte plus que l'identifiant de session et sa remise à zéro. La
+   version du modèle et sa provenance — v1.0, CMU SEI / Accenture, consolidation
+   Matrice N2 — relèvent du rapport et de l'export, pas d'un rappel à chaque
+   écran. L'export continue de les dater et de les versionner. */
 .header__session {
   display: flex;
   align-items: baseline;
@@ -179,13 +184,6 @@ const emit = defineEmits(['home', 'phase', 'reset'])
 }
 
 @media (max-width: 1200px) {
-  .header__model {
-    /* la ligne de provenance du modèle passe sous le titre plutôt que de
-       comprimer le libellé de session */
-    order: 3;
-    width: 100%;
-  }
-
   .phase {
     padding: 10px 12px 12px;
   }
