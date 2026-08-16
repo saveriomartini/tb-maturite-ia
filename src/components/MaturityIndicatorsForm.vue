@@ -20,7 +20,7 @@
               type="button"
               role="radio"
               class="button-reset step"
-              :class="{ 'is-active': statement.active }"
+              :class="{ 'is-active': statement.active, 'is-reached': statement.reached }"
               :aria-checked="statement.active"
               :aria-label="`${indicator.name} — ${statement.text}`"
               @click="emit('select', indicator.id, statement.value)"
@@ -50,7 +50,9 @@
 // ne se cache : les trois questions et les trois réponses tiennent sous les
 // yeux. Aucune n'est jamais vide : à défaut de clic, c'est le rang par défaut
 // qui vaut réponse, si bien qu'il n'y a pas d'état « pas encore répondu » à
-// signaler.
+// signaler. Chaque série s'allume jusqu'au rang retenu, la grille étant
+// cumulative : les trois jauges donnent la physionomie de l'area avant même
+// qu'on lise un chiffre.
 //
 // Les énoncés ne disparaissent pas pour autant : chaque série porte sa propre
 // ligne d'aide, sous ses cinq cases. Au survol d'un rang, elle donne l'énoncé
@@ -101,12 +103,6 @@ function hint(indicator) {
 </script>
 
 <style scoped>
-/* Le bloc suit les objectifs sans se confondre avec eux : même largeur, mais
-   encadré, parce qu'il change de question. */
-.indicators {
-  margin-top: 22px;
-}
-
 .indicators__title {
   margin: 0;
 }
@@ -144,18 +140,19 @@ function hint(indicator) {
   gap: 5px;
 }
 
-/* Le rang, et rien d'autre : cases de même taille, creuses au repos, pleines
-   sur la réponse — les cinq se comparent d'un coup d'œil, l'énoncé s'obtient en
-   pointant. Elles se partagent la largeur de leur colonne à parts égales
+/* Le rang, et rien d'autre : cases de même taille, discrètes tant qu'elles ne
+   sont pas atteintes, allumées jusqu'à la réponse — la série se lit comme une
+   jauge, l'énoncé s'obtient en pointant. Elles se partagent la largeur de leur colonne à parts
+   égales
    plutôt que de garder une largeur fixe : la série tient toute la colonne, et
    la cible du clic grandit avec la fenêtre. */
 .step {
   flex: 1 1 0;
   min-width: 0;
   height: 26px;
-  border: 1px solid var(--color-neutral-600);
+  border: 1px solid var(--color-neutral-500);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1;
   text-align: center;
   color: var(--color-neutral-700);
@@ -166,10 +163,26 @@ function hint(indicator) {
   color: var(--color-text);
 }
 
-.step.is-active {
+/* Les rangs au-dessous de la réponse s'allument avec elle : la grille est
+   cumulative — planifier au rang 3 suppose le plan du rang 2 — et la série se
+   lit alors comme une jauge, d'un coup d'œil, sans avoir à repérer quel chiffre
+   porte le cerclage. */
+.step.is-reached {
   border-color: var(--color-text);
-  background: var(--color-text);
-  color: #fff;
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* Le rang retenu s'allume par son trait et son chiffre — bord doublé, chiffre
+   gras — plutôt que par un aplat noir : la série reste une échelle qu'on lit,
+   là où le pavé plein en faisait un jalon franchi. C'est lui qui termine la
+   jauge, d'où le trait plus fort que celui des rangs franchis. */
+.step.is-active {
+  border: 2px solid var(--color-text);
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 /* Quatre lignes réservées : sur un tiers de la largeur du panneau, c'est ce

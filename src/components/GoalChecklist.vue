@@ -1,45 +1,54 @@
 <template>
-  <div class="goals">
-    <section
-      v-for="goal in goals"
-      :key="goal.key"
-      class="goal"
-      :class="{ 'is-done': goal.done }"
-    >
-      <div class="goal__head">
-        <button
-          type="button"
-          class="button-reset goal__check"
-          :aria-pressed="goal.done"
-          @click="emit('toggle', goal.keys)"
-        >
-          <span class="goal__mark" aria-hidden="true" />
-          <span class="goal__text">{{ goal.text }}</span>
-        </button>
-        <button
-          type="button"
-          class="button-reset goal__toggle"
-          :aria-expanded="isOpen(goal)"
-          :aria-controls="detailId(goal)"
-          :aria-label="toggleLabel(goal)"
-          @click="fold(goal)"
-        >
-          {{ isOpen(goal) ? '−' : '+' }}
-        </button>
-      </div>
+  <section class="panel criteria">
+    <h3 class="panel-head criteria__title">Critères d'adoption</h3>
 
-      <ul v-show="isOpen(goal)" :id="detailId(goal)" class="practices">
-        <li v-for="practice in goal.practices" :key="practice" class="practice">
-          <span class="practice__mark" aria-hidden="true" />
-          <span>{{ practice }}</span>
-        </li>
-      </ul>
-    </section>
-  </div>
+    <div class="goals">
+      <section
+        v-for="goal in goals"
+        :key="goal.key"
+        class="goal"
+        :class="{ 'is-done': goal.done }"
+      >
+        <div class="goal__head">
+          <button
+            type="button"
+            class="button-reset goal__check"
+            :aria-pressed="goal.done"
+            @click="emit('toggle', goal.keys)"
+          >
+            <span class="goal__mark" aria-hidden="true" />
+            <span class="goal__text">{{ goal.text }}</span>
+          </button>
+          <button
+            type="button"
+            class="button-reset goal__toggle"
+            :aria-expanded="isOpen(goal)"
+            :aria-controls="detailId(goal)"
+            :aria-label="toggleLabel(goal)"
+            @click="fold(goal)"
+          >
+            {{ isOpen(goal) ? '−' : '+' }}
+          </button>
+        </div>
+
+        <ul v-show="isOpen(goal)" :id="detailId(goal)" class="practices">
+          <li v-for="practice in goal.practices" :key="practice" class="practice">
+            <span class="practice__mark" aria-hidden="true" />
+            <span>{{ practice }}</span>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </section>
 </template>
 
 <script setup>
-// Objectifs de l'area courante. L'objectif est l'unité de réponse : un
+// Les critères d'adoption de l'area courante — les objectifs du modèle, sous
+// le nom que l'outil leur donne à l'écran. Le bloc porte le même cadre et le
+// même bandeau que les indicateurs de maturité qui le suivent : deux questions
+// posées sur la même area, deux panneaux de même facture.
+//
+// L'objectif est l'unité de réponse : un
 // interrupteur oui/non qui vaut pour toutes ses pratiques à la fois. Celles-ci
 // ne se cochent plus — elles disent ce que l'objectif recouvre, et se replient
 // comme l'aide d'un attribut de contexte pour que l'écran ne se lise pas comme
@@ -78,10 +87,15 @@ function toggleLabel(goal) {
 </script>
 
 <style scoped>
+.criteria__title {
+  margin: 0;
+}
+
 .goals {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  padding: 14px 16px 16px;
 }
 
 /* la marge s'allume à la validation : de loin, la colonne des traits dit
@@ -90,6 +104,13 @@ function toggleLabel(goal) {
   padding: 2px 0 14px 14px;
   border-left: 3px solid var(--color-neutral-300);
   border-bottom: 1px solid var(--color-divider);
+}
+
+/* Le filet de séparation ne court qu'entre les objectifs : le dernier bute sur
+   le bord du panneau, qui ferme la liste. */
+.goal:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 .goal.is-done {

@@ -1,14 +1,8 @@
 <template>
   <div class="summary">
     <div class="headline">
-      <div>
-        <p class="headline__label">Profil visé :</p>
-        <p class="headline__value heading">{{ vm.targetLabel }}</p>
-      </div>
-      <div class="headline__acquired">
-        <p class="headline__label headline__label--strong">Profil actuel :</p>
-        <p class="headline__value heading">{{ vm.acquiredLabel }}</p>
-      </div>
+      <p class="headline__label">Votre profil :</p>
+      <p class="headline__value heading">{{ vm.acquiredLabel }}</p>
     </div>
 
     <div class="ladder">
@@ -20,7 +14,7 @@
           :class="{ 'is-reached': level.reached, 'is-beyond': level.beyondTarget }"
         >
           <span class="ladder__label heading">{{ level.label }}</span>
-          <span v-if="level.acquired" class="tag tag--solid ladder__tag">acquis</span>
+          <span v-if="level.acquired" class="tag tag--solid ladder__tag">diagnostic</span>
           <span v-else-if="level.isTarget" class="tag ladder__tag">cible</span>
         </li>
       </ol>
@@ -81,31 +75,25 @@ function stripe(colors) {
 </script>
 
 <style scoped>
+/* une seule ligne : l'intitulé cale à gauche, le profil diagnostiqué à droite,
+   sur la même ligne de base */
 .headline {
   display: flex;
-  gap: 44px;
-  align-items: flex-start;
+  gap: 20px;
+  align-items: baseline;
+  justify-content: space-between;
   flex-wrap: wrap;
-}
-
-.headline__acquired {
-  padding-left: 28px;
-  border-left: 2px solid var(--color-text);
 }
 
 .headline__label {
   margin: 0;
   font-size: 11px;
   font-weight: 700;
-  color: var(--color-neutral-700);
-}
-
-.headline__label--strong {
   color: var(--color-text);
 }
 
 .headline__value {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 22px;
   letter-spacing: normal;
 }
@@ -243,15 +231,6 @@ function stripe(colors) {
 }
 
 @media (max-width: 900px) {
-  .headline {
-    gap: 20px;
-  }
-
-  .headline__acquired {
-    padding-left: 0;
-    border-left: 0;
-  }
-
   .ladder,
   .blocks {
     grid-template-columns: 1fr;

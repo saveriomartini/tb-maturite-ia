@@ -21,8 +21,6 @@ import {
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
-// Le profil le plus haut du modèle, nommé plutôt que numéroté dans les textes.
-const MAX_PROFILE = LEVELS[LEVELS.length - 1].n
 const MODEL_VERSION = 'v1'
 const GAP_GROUPS_PER_PAGE = 4
 
@@ -396,33 +394,6 @@ export function useMaturityTool() {
     }
   }
 
-  // Facteurs affichés sous la recommandation : uniquement ce qui a retenu le
-  // profil. Les deux axes du calcul — ambition et capacité — ne sont plus
-  // exposés : ils décrivent la mécanique interne, pas une information dont
-  // l'utilisateur ait besoin pour lire le résultat.
-  function recommendationFactors(rec) {
-    const factors = []
-    if (rec.cappedByCapacity && !rec.capNotes.length) {
-      factors.push({
-        key: 'Ajustement',
-        value: 'le profil est ramené à ce que l’organisation peut soutenir aujourd’hui'
-      })
-    }
-    if (rec.capNotes.length) {
-      factors.push({
-        key: 'Plafond',
-        value: `${profileName(rec.level)} — ${rec.capNotes.map(cap => cap.why).join(' ; ')}`
-      })
-    }
-    if (rec.level5Missing.length) {
-      factors.push({
-        key: 'Profil le plus haut',
-        value: `${profileName(MAX_PROFILE)} exige ${rec.level5Missing.map(req => req.why).join(', ')}`
-      })
-    }
-    return factors
-  }
-
   // La question d'intention prend la forme d'un attribut de contexte — même
   // libellé, mêmes options cliquables, même aide dépliable — pour n'introduire
   // aucune mécanique nouvelle dans le cadrage. Ses options sont les cinq profils
@@ -507,23 +478,20 @@ export function useMaturityTool() {
   // monter aux profils suivants. Le profil ne s'y corrige plus : il a été
   // déclaré au cadrage.
   const palier = computed(() => {
-    const rec = recommendation.value
     // Le texte nomme le profil sans dire d'où il vient : selon les cas il est
     // celui qu'on a demandé, ou celui auquel le contexte a ramené la demande.
     // Distinguer les deux, c'est ouvrir la discussion sur l'écart — elle
-    // appartient à la restitution.
-    const cappedByIntent = state.transformation != null && state.transformation < rec.level
+    // appartient à la restitution, et les facteurs qui motivaient le plafond
+    // l'ouvraient ici. Le palier n'annonce plus que le périmètre parcouru.
+    // Le compteur annonce le périmètre, pas l'assiduité : ce sont les areas que
+    // la série met en jeu, qu'on les ait ouvertes une à une ou survolées. Compter
+    // `evaluated` ferait dépendre le chiffre du chemin parcouru et contredirait
+    // la phrase qui suit, laquelle parle bien du cadrage.
+    const scopeCount = presented.value.length
     return {
-      evaluatedCount: evaluated.value.length,
-      why: `Le diagnostic a porté sur les ${evaluated.value.length} areas de compétence que met en jeu le ` +
+      scopeCount,
+      why: `Le diagnostic a porté sur les ${scopeCount} areas de compétence que met en jeu le ` +
         `profil « ${targetLabel.value} » : c'est là qu'un écart se traduit le plus vite en action.`,
-      question:
-        'Vous pouvez vous en tenir là et lire vos résultats, ou continuer avec les areas qu’appellent les ' +
-        'profils plus avancés.',
-      // Les facteurs justifient un plafond de la recommandation : ils n'ont
-      // rien à expliquer quand c'est l'intention déclarée, plus basse, qui a
-      // fixé le profil — les afficher motiverait une limite qui n'a pas joué.
-      factors: cappedByIntent ? [] : recommendationFactors(rec),
       continueLabel: 'Poursuivre avec les profils suivants',
       skipLabel: 'Passer aux résultats'
     }
@@ -618,10 +586,14 @@ export function useMaturityTool() {
             id: indicator.id,
             name: indicator.name,
             desc: indicator.desc,
+            // `reached` porte la progression : les rangs inférieurs à la
+            // réponse sont tenus pour franchis, la grille étant cumulative —
+            // planifier au rang 3 suppose le plan du rang 2.
             statements: indicator.statements.map(statement => ({
               value: statement.n,
               text: statement.text,
-              active: answer === statement.n
+              active: answer === statement.n,
+              reached: statement.n < answer
             }))
           }
         })

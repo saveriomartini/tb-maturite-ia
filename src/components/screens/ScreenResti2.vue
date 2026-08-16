@@ -124,7 +124,7 @@ defineProps({
 }
 
 /* colonne de marquage : le carré plein reprend le noir de .tag--solid, qui dit
-   déjà « acquis » dans l'escalier de la restitution 1 */
+   déjà « diagnostic » dans l'escalier de la restitution 1 */
 .col-mark {
   width: 22px;
 }

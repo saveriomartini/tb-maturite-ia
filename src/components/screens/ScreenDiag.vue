@@ -29,7 +29,7 @@
       <p class="toolbar__progress">{{ vm.progress }}</p>
     </div>
 
-    <div class="workspace panel">
+    <div class="workspace">
       <!-- Hors cadrage, la colonne de rappel garde tout son contenu — l'area
            existe, elle se lit — mais s'éteint pour dire qu'elle ne se remplit pas. -->
       <aside class="context" :class="{ 'context--off-scope': vm.area.offScope }">
@@ -211,27 +211,37 @@ const artifactsId = `artifacts-${useId()}`
   color: var(--color-neutral-800);
 }
 
+/* Le plan de travail n'est plus une boîte : la colonne de rappel se lit à nu à
+   gauche, et les blocs de saisie s'encadrent eux-mêmes à droite. Un cadre de
+   plus autour d'eux ne délimiterait rien qu'ils ne délimitent déjà. */
 .workspace {
   display: grid;
   grid-template-columns: 250px 1fr;
+  gap: 22px;
   margin-top: 18px;
 }
 
 .context {
-  padding: 16px;
-  border-right: 2px solid var(--color-text);
+  min-width: 0;
 }
 
 .context__band {
   height: 8px;
-  margin: -16px -16px 14px;
+  margin: 0 0 14px;
 }
 
 /* La bande éteinte : même géométrie, couleur neutre. La colonne pâlit d'un cran
-   sans devenir illisible — on doit pouvoir lire l'area qu'on est venu voir. */
+   sans devenir illisible — on doit pouvoir lire l'area qu'on est venu voir.
+   Elle reprend alors un fond, donc une gouttière : hors cadrage, la colonne
+   redevient un bloc, ce qui est précisément ce qu'on veut dire. */
 .context--off-scope {
+  padding: 14px;
   background: var(--color-neutral-200);
   color: var(--color-neutral-700);
+}
+
+.context--off-scope .context__band {
+  margin: -14px -14px 14px;
 }
 
 .context--off-scope .context__band {
@@ -300,8 +310,13 @@ const artifactsId = `artifacts-${useId()}`
   margin-top: 4px;
 }
 
+/* Les deux panneaux de saisie et le pied de navigation, empilés à intervalle
+   constant : c'est la gouttière qui les sépare, plus un trait. */
 .work {
-  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
 }
 
 /* Le cadre du questionnaire, vide : le trait discontinu dit qu'il n'y a rien à
@@ -339,7 +354,7 @@ const artifactsId = `artifacts-${useId()}`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 26px;
+  margin-top: 8px;
   padding-top: 16px;
   border-top: 2px solid var(--color-text);
 }
@@ -369,10 +384,7 @@ const artifactsId = `artifacts-${useId()}`
 @media (max-width: 1200px) {
   .workspace {
     grid-template-columns: 210px 1fr;
-  }
-
-  .work {
-    padding: 16px;
+    gap: 16px;
   }
 }
 
@@ -398,9 +410,11 @@ const artifactsId = `artifacts-${useId()}`
     grid-template-columns: 1fr;
   }
 
+  /* Empilé, le rappel n'a plus de voisin à sa droite pour marquer la limite :
+     un filet la reprend sous lui, avant le premier panneau de saisie. */
   .context {
-    border-right: 0;
-    border-bottom: 2px solid var(--color-text);
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-divider);
   }
 
   .work__nav {
