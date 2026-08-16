@@ -12,7 +12,7 @@
           M.A.IA
         </button>
         <div class="header__subtitle heading">
-          — Maturité de l'adoption des technologies IA
+          Maturité de l'adoption des technologies IA
         </div>
       </div>
 

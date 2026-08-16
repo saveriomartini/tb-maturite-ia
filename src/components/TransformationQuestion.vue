@@ -3,7 +3,7 @@
     <h2 class="panel-head transformation__title">Degré de transformation visé</h2>
 
     <div class="transformation__body">
-      <ContextField :field="field" default-open @select="emit('select', $event)" />
+      <ContextField :field="field" pin-active @select="emit('select', $event)" />
     </div>
   </section>
 </template>
@@ -19,10 +19,10 @@
 // qui seront parcourues. Ce qui décide du diagnostic reste sous les yeux
 // pendant qu'on remplit le formulaire qui, lui, ne fait que le restreindre.
 //
-// Les définitions des cinq profils sont dépliées d'emblée, à l'inverse des
-// attributs de contexte : « Alignement des processus » ou « Mise à l'échelle en
-// réseau » ne se choisissent pas sur leur nom seul, et c'est la seule réponse
-// du cadrage qui décide du périmètre.
+// Au repos, la question se réduit à ses cinq options : c'est le choix, et rien
+// d'autre. La définition du profil retenu s'affiche dès qu'il est cliqué, et le
+// « + » du libellé donne les cinq d'un coup — « Alignement des processus » ou
+// « Mise à l'échelle en réseau » ne se départagent pas sur leur nom seul.
 import ContextField from './ContextField.vue'
 
 defineProps({

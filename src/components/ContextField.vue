@@ -29,11 +29,11 @@
       </button>
     </div>
 
-    <div v-show="open" :id="detailId" class="field__detail">
-      <p v-if="field.hint" class="field__hint">{{ field.hint }}</p>
-      <dl v-if="field.criteria.length" class="criteria">
+    <div v-show="open || visibleCriteria.length" :id="detailId" class="field__detail">
+      <p v-if="field.hint && open" class="field__hint">{{ field.hint }}</p>
+      <dl v-if="visibleCriteria.length" class="criteria">
         <div
-          v-for="criterion in field.criteria"
+          v-for="criterion in visibleCriteria"
           :key="criterion.value"
           class="criteria__row"
           :class="{ 'is-active': criterion.active }"
@@ -57,22 +57,28 @@
 // L'état ouvert/fermé est purement local : il ne décrit pas l'évaluation et n'a
 // pas à survivre à la session.
 //
-// `defaultOpen` renverse ce repos pour le seul champ dont les options ne se
-// comprennent pas sans leur définition — le degré de transformation, dont les
-// réponses sont les profils du modèle. Le repli reste offert.
+// `pinActive` nuance ce repos pour le seul champ dont la réponse ne se relit pas
+// sans sa définition — le degré de transformation, dont les options sont les
+// profils du modèle. Replié, il montre la définition du profil retenu, et rien
+// tant qu'aucun ne l'est ; le « + » donne les cinq d'un coup, pour comparer
+// avant de choisir.
 import { computed, ref, useId } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
-  defaultOpen: { type: Boolean, default: false }
+  pinActive: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['select'])
 
-const open = ref(props.defaultOpen)
+const open = ref(false)
 const uid = useId()
 const detailId = computed(() => `detail-${props.field.id}-${uid}`)
 const hasDetail = computed(() => Boolean(props.field.hint) || props.field.criteria.length > 0)
+const visibleCriteria = computed(() => {
+  if (open.value) return props.field.criteria
+  return props.pinActive ? props.field.criteria.filter(criterion => criterion.active) : []
+})
 const toggleLabel = computed(() =>
   `${open.value ? 'Masquer' : 'Afficher'} l’aide et les critères — ${props.field.label}`
 )

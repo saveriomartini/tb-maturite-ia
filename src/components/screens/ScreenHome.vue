@@ -14,7 +14,6 @@
         class="door panel"
         :class="{ 'door--primary': block.primary, 'is-pending': !block.ready }"
       >
-        <p class="door__letter heading" aria-hidden="true">{{ block.letter }}</p>
         <h2 class="door__name heading">{{ block.name }}</h2>
         <p class="door__desc">{{ block.desc }}</p>
         <span v-if="!block.ready" class="tag tag--muted door__tag">à venir</span>
@@ -91,19 +90,8 @@ const emit = defineEmits(['open'])
   opacity: 0.62;
 }
 
-.door__letter {
-  margin: 0;
-  font-size: 40px;
-  line-height: 1;
-  color: var(--color-neutral-500);
-}
-
-.door--primary .door__letter {
-  color: var(--color-text);
-}
-
 .door__name {
-  margin: 10px 0 0;
+  margin: 0;
   font-size: 20px;
   letter-spacing: normal;
 }

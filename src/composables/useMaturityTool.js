@@ -296,7 +296,6 @@ export function useMaturityTool() {
     blocks: [
       {
         id: 'info',
-        letter: 'i',
         name: 'Information',
         desc: 'Le modèle, ses 4 blocs et ses profils d’adoption, et ce que le diagnostic mesure.',
         action: 'En savoir plus',
@@ -305,7 +304,6 @@ export function useMaturityTool() {
       },
       {
         id: 'tool',
-        letter: 't',
         name: 'Outil',
         desc: 'Décrivez votre organisation, validez les objectifs atteints, obtenez vos écarts.',
         action: 'Démarrer le diagnostic',
@@ -315,7 +313,6 @@ export function useMaturityTool() {
       },
       {
         id: 'demo',
-        letter: 'd',
         name: 'Démonstration',
         desc: 'Un parcours pré-rempli pour voir les résultats sans rien saisir.',
         action: 'Voir une démonstration',
@@ -423,6 +420,9 @@ export function useMaturityTool() {
       label: level.name,
       active: state.transformation === level.n
     })),
+    // Les cinq définitions sont fournies ; laquelle s'affiche est une décision
+    // d'écran (voir `pinActive` dans ContextField) : la seule retenue au repos,
+    // les cinq derrière le « + ».
     criteria: LEVELS.map(level => ({
       value: level.n,
       label: level.name,
