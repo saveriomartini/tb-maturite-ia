@@ -15,6 +15,7 @@ import {
   BLOCKS, EVALUABLE_AREAS, LEVELS, levelDescription, orderedAreas, profileExportLabel, profileName
 } from '../domain/model.js'
 import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, isToolScreen, previousScreen } from '../domain/navigation.js'
+import { buildDemoSession, demoScenarios } from '../domain/demo-session.js'
 import { buildRecommendation } from '../domain/recommendation.js'
 import {
   acquiredLevel, areaIndicatorRanks, areaStats, blockIndicatorAverage, blockTotals, gapGroups,
@@ -47,6 +48,21 @@ const SKIP_DIALOG = {
   actions: [
     { id: 'describe', label: 'Décrire mon organisation', arrow: '↓' },
     { id: 'skip', label: 'Ignorer et continuer', arrow: '→' }
+  ]
+}
+
+// Charger une démonstration écrase ce qui est en cours, comme la remise à zéro
+// — et la même modale le demande, avec le même ordre de sorties. Elle ne
+// s'ouvre que s'il y a quelque chose à perdre : sur une session vierge, le clic
+// est sans conséquence et n'a rien à confirmer.
+const DEMO_DIALOG = {
+  eyebrow: 'Remplacer la session en cours',
+  text: 'La démonstration écrit une session complète : les attributs de contexte, les critères ' +
+    'd’adoption validés et les indicateurs de maturité déjà saisis seront remplacés par ceux de ' +
+    'l’exemple.',
+  actions: [
+    { id: 'cancel', label: 'Annuler' },
+    { id: 'load', label: 'Charger la démonstration', arrow: '→' }
   ]
 }
 
@@ -84,6 +100,7 @@ function defaultState() {
     form: {},
     transformation: null,
     contextWarned: false,
+    demo: null,
     session: newSessionId()
   }
 }
@@ -460,6 +477,19 @@ export function useMaturityTool() {
       clearSession()
       Object.assign(state, defaultState())
       scrollToTop()
+    },
+    // Charger une démonstration, c'est repartir d'une session neuve — nouvel
+    // identifiant compris — puis y écrire l'exemple. Passer par `defaultState`
+    // plutôt que par les seules clés du scénario garantit qu'aucun reste de la
+    // session précédente ne subsiste : une clé cochée oubliée fausserait le
+    // profil atteint, et la démonstration montrerait un résultat que le scénario
+    // ne produit pas.
+    loadDemo(id) {
+      const session = buildDemoSession(id)
+      if (!session) return
+      clearSession()
+      Object.assign(state, defaultState(), session)
+      scrollToTop()
     }
   }
 
@@ -469,7 +499,12 @@ export function useMaturityTool() {
   // fois la première série faite, et pas avant. Les phases ne s'affichent que
   // dans la branche outil — ailleurs elles ne désignent aucune progression.
   const header = computed(() => ({
+    // Une session de démonstration ne se distingue d'une vraie par rien de ce
+    // qui s'affiche : mêmes écrans, mêmes calculs. L'en-tête est le seul endroit
+    // où le dire, et il doit le dire — on n'exporte pas une PME fictive en
+    // croyant exporter la sienne.
     sessionLabel: `session ${state.session}` +
+      (state.demo ? ' · démonstration' : '') +
       (wasRestored && hasProgress.value ? ' · restaurée' : ''),
     hasProgress: hasProgress.value,
     resetDialog: RESET_DIALOG,
@@ -511,9 +546,22 @@ export function useMaturityTool() {
         desc: 'Un parcours pré-rempli pour voir les résultats sans rien saisir.',
         action: 'Voir une démonstration',
         target: 'demo',
-        ready: false
+        ready: true
       }
     ]
+  }))
+
+  // La démonstration ne se raconte pas, elle se charge : l'écran ne montre que
+  // les organisations disponibles et ce que chacune donne à voir. Le scénario
+  // reste muet sur ses résultats — les nommer ici les figerait dans un texte que
+  // le modèle pourrait démentir demain ; il dit ce qu'il illustre, la
+  // restitution dit ce qu'il vaut.
+  const demo = computed(() => ({
+    scenarios: demoScenarios(),
+    action: 'Voir les résultats',
+    // La confirmation ne se pose que s'il y a quelque chose à écraser.
+    confirm: hasProgress.value,
+    dialog: DEMO_DIALOG
   }))
 
   // La carte du parcours ouvre le cadrage : elle situe les trois phases avant la
@@ -960,6 +1008,7 @@ export function useMaturityTool() {
     actions,
     header,
     home,
+    demo,
     journey,
     cadrage1,
     cadrage3,

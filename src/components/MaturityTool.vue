@@ -15,6 +15,8 @@
   />
   <ScreenDemo
     v-else-if="screen === 'demo'"
+    :vm="tool.demo"
+    @load="tool.actions.loadDemo"
     @start="tool.nav.start"
     @back="tool.nav.home"
   />

@@ -114,11 +114,13 @@ tb-maturite-ia/
 │   │   ├── context-attributes.js  attributs de contexte, plafonds, exigences du Level 5
 │   │   ├── maturity-indicators.js grille des 3 indicateurs transversaux (§5 de la source)
 │   │   ├── preparation.js         profil « Préparation », ajouté hors AIMM sous le profil 1
+│   │   ├── demo-sessions.js       PME fictives de la démonstration (contexte, critères validés)
 │   │   └── journey.js             texte du parcours en quatre phases
 │   ├── domain/                    RÈGLES MÉTIER, fonctions pures, aucune dépendance à Vue
 │   │   ├── model.js               vues dérivées du modèle (areas à plat, noms de profil)
 │   │   ├── scoring.js             area acquise, niveau d'un bloc, niveau acquis, gap
 │   │   ├── recommendation.js      niveau cible recommandé (ambition × capacité, plafonds)
+│   │   ├── demo-session.js        traduit une PME fictive en état de session complet
 │   │   └── navigation.js          ordre des écrans, phases, enchaînement
 │   ├── composables/               ÉTAT réactif
 │   │   ├── useMaturityTool.js     session, actions, un view-model par écran
@@ -134,8 +136,8 @@ tb-maturite-ia/
 │   │   │                          MaturityLevelList, ContextAttributeForm, ContextField,
 │   │   │                          MaturityIndicatorsForm, TargetRecommendationPanel,
 │   │   │                          LevelSummary)
-│   │   └── screens/               un composant par écran (Home, Cadrage1-3, DiagStart,
-│   │                              Diag, Resti1-3, Export)
+│   │   └── screens/               un composant par écran (Home, Info, Demo, Cadrage1-3,
+│   │                              DiagStart, Diag, Palier, Resti1-3, Export)
 │   └── main.js
 ├── index.html                     charge la police Archivo (preconnect) et monte l'application
 ├── eslint.config.js               règles de code = Style Guide officiel de Vue

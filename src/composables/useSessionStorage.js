@@ -10,6 +10,7 @@
 
 import { watch } from 'vue'
 import { ALL_FIELDS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
+import { DEMO_SESSIONS } from '../data/demo-sessions.js'
 import { MATURITY_INDICATORS } from '../data/maturity-indicators.js'
 import { EVALUABLE_AREAS } from '../domain/model.js'
 
@@ -19,6 +20,7 @@ const WRITE_DELAY = 200
 
 const FORM_FIELDS = ALL_FIELDS.concat(DESCRIPTIVE_FIELDS)
 const AREA_IDS = new Set(EVALUABLE_AREAS.map(area => area.id))
+const DEMO_IDS = new Set(DEMO_SESSIONS.map(scenario => scenario.id))
 
 export function newSessionId() {
   return Math.random().toString(16).slice(2, 9)
@@ -92,6 +94,11 @@ function sanitize(raw, screens) {
     out.transformation = raw.transformation
   }
   if (typeof raw.session === 'string' && /^[a-z0-9]{4,16}$/.test(raw.session)) out.session = raw.session
+  // Provenance de la session : le scénario de démonstration qui l'a écrite, ou
+  // rien. Un scénario retiré du fichier laisse la session intacte et lui rend
+  // seulement son anonymat — l'en-tête cesse d'annoncer une démonstration dont
+  // plus rien ne dit ce qu'elle était.
+  if (typeof raw.demo === 'string' && DEMO_IDS.has(raw.demo)) out.demo = raw.demo
   out.checked = boolMap(raw.checked)
   out.openLevels = boolMap(raw.openLevels)
   out.seen = boolMap(raw.seen)
@@ -108,6 +115,7 @@ function snapshot(state) {
     transformation: state.transformation,
     contextWarned: state.contextWarned,
     session: state.session,
+    demo: state.demo,
     checked: boolMap(state.checked),
     openLevels: boolMap(state.openLevels),
     seen: boolMap(state.seen),
