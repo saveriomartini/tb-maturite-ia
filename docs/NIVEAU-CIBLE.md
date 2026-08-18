@@ -124,6 +124,23 @@ retenue sont affichés à l'utilisateur avec leur motif.
 Noter que le périmètre et la réglementation n'ont pas d'`axis` mais agissent ici : ils ne
 contribuent pas à une moyenne, ils bornent.
 
+### Le périmètre a un second rôle, hors calcul
+
+`scope` est le seul attribut de contexte qui ressorte ailleurs que dans le calcul : il nomme
+l'**unité évaluée** en tête de la restitution et de l'en-tête de chaque page de l'export
+(`src/domain/scope.js`). Ce second rôle est purement déclaratif — il ne modifie ni le niveau cible,
+ni les domaines parcourus, ni la mesure.
+
+Le motif est de lecture. Le modèle source évalue une *organizational unit* et non nécessairement
+l'entreprise entière (« for the selected organizational scope », `docs/MODEL_EXTRAS.md` § 4.4) ;
+deux organisations peuvent s'arrêter au même profil pour des raisons opposées, l'une ayant
+délibérément restreint son adoption à une fonction, l'autre ayant visé large sans y parvenir. Le
+rang ne les distingue pas, le périmètre déclaré si.
+
+Le périmètre restant facultatif au cadrage, l'absence de réponse est déclarée comme telle et
+accompagnée de la lecture par défaut — la même que celle du calcul, où un attribut vide vaut le
+score maximal (`UNANSWERED_SCORE`).
+
 ### Critères d'acceptation
 
 Un plafond dur décide du niveau cible à lui seul : il ne se compense pas. La réponse ne peut donc

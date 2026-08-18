@@ -1,5 +1,13 @@
 <template>
   <div class="summary">
+    <div class="unit">
+      <p class="unit__line">
+        <span class="unit__label eyebrow">{{ vm.unit.label }}</span>
+        <span class="unit__value">{{ vm.unit.value }}</span>
+      </p>
+      <p v-if="vm.unit.note" class="unit__note">{{ vm.unit.note }}</p>
+    </div>
+
     <div class="headline">
       <p class="headline__label">Votre profil :</p>
       <p class="headline__value heading">{{ vm.acquiredLabel }}</p>
@@ -56,16 +64,6 @@
             <p class="stat__figure heading"><span class="stat__done">{{ block.indicators.done }}</span><span v-if="block.indicators.total" class="stat__total">/{{ block.indicators.total }}</span></p>
           </div>
         </div>
-        <div
-          class="block__track"
-          role="progressbar"
-          :aria-valuenow="block.percent"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          :aria-label="`Avancement — ${block.name}`"
-        >
-          <div class="block__bar" :style="{ width: `${block.percent}%` }" />
-        </div>
       </section>
     </div>
   </div>
@@ -77,6 +75,13 @@
 // détail par area la suit sans changer d'écran, et la navigation appartient à
 // la page.
 //
+// L'unité évaluée ouvre la page, avant le profil. Le modèle source évalue une
+// organizational unit et non forcément l'entreprise entière : une restitution
+// qui ne nomme pas son périmètre se lit comme un verdict sur tout. Déclarée,
+// elle se nomme sans commentaire — la conséquence de lecture se tire d'elle-
+// même ; non déclarée, elle dit la lecture par défaut, seul cas où le silence
+// tromperait.
+//
 // L'escalier situe, il n'explique pas : il montre deux étiquettes sur une
 // échelle sans dire ce qui les sépare. Le texte d'écart le dit et nomme les
 // areas qui retiennent le rang suivant — c'est la seule chose de cette page sur
@@ -85,11 +90,14 @@
 // Le bloc se lit sur trois chiffres, du plus haut au plus fin : les areas
 // acquises — c'est sur cette unité, et elle seule, que se joue le profil —, les
 // objectifs validés qui les composent, et le rang moyen des indicateurs de
-// maturité rapporté au rang du profil visé, qui dit comment c'est tenu. Le
-// compteur de pratiques a quitté cette synthèse — l'objectif valide toutes ses
-// pratiques d'un coup, le chiffre ne faisait plus que répéter celui des
-// objectifs à une échelle près. La barre, elle, les suit toujours : c'est la
-// mesure la plus fine du bloc, mais elle en donne la longueur sans la nommer.
+// maturité rapporté au rang du profil visé, qui dit comment c'est tenu.
+//
+// Trois chiffres et rien d'autre : la barre de progression a été retirée avec
+// l'unité qui la portait. Elle mesurait des pratiques validées sur pratiques
+// attendues, c'est-à-dire un ratio agrégé — la seule chose de cette page qui
+// laissait croire à une progression continue, quand l'acquisition d'un domaine
+// est un seuil qu'on franchit ou non. La convertir en objectifs n'aurait
+// changé que son unité.
 //
 // Les trois se lisent « atteint sur total ». Le total n'est pas un résultat :
 // il donne son échelle au nombre qui en est un, et l'affichage le dit — le
@@ -109,6 +117,42 @@ function stripe(colors) {
 </script>
 
 <style scoped>
+/* L'unité évaluée précède le profil et se tient au-dessus de lui : même
+   alignement à gauche, un cran de gris en dessous. Elle cadre la page sans lui
+   disputer la première lecture — ce n'est pas un résultat, c'est ce sur quoi
+   les résultats portent. */
+.unit {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.unit__line {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.unit__label {
+  color: var(--color-neutral-700);
+}
+
+.unit__value {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Le périmètre non déclaré est le seul cas commenté : la note dit la lecture
+   par défaut, et reste dans le registre du hors-texte — corps réduit, gris. */
+.unit__note {
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-neutral-700);
+}
+
 /* une seule ligne : l'intitulé cale à gauche, le profil diagnostiqué à droite,
    sur la même ligne de base */
 .headline {
@@ -295,17 +339,6 @@ function stripe(colors) {
 .stat__total {
   font-size: 13px;
   color: var(--color-neutral-700);
-}
-
-.block__track {
-  height: 6px;
-  margin-top: 14px;
-  background: var(--color-neutral-300);
-}
-
-.block__bar {
-  height: 100%;
-  background: var(--color-text);
 }
 
 @media (max-width: 1200px) {

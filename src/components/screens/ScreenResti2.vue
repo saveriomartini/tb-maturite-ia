@@ -9,7 +9,6 @@
             <th class="col-dimension">Dimension</th>
             <th>Domaine</th>
             <th class="col-score">Critères</th>
-            <th class="col-score">Pratiques</th>
             <th class="col-group" :colspan="vm.indicatorCount">Indicateurs</th>
             <th class="col-mark" />
           </tr>
@@ -25,7 +24,6 @@
             </td>
             <td class="cell-area">{{ row.area }}</td>
             <td class="cell-goals">{{ row.goals }}</td>
-            <td class="cell-practices">{{ row.practices }}</td>
             <td v-for="(rank, index) in row.ranks" :key="index" class="cell-rank">{{ rank }}</td>
             <td class="cell-mark">
               <span
@@ -48,9 +46,14 @@
 // tête de page, il n'y répétait qu'une information à l'écran.
 //
 // Les colonnes chiffrées vont du plus agrégé au plus fin : objectifs validés,
-// pratiques validées, puis les trois rangs d'indicateurs de maturité. La
-// synthèse par bloc en donne la moyenne ; ici ils restent séparés, c'est le
-// seul endroit où l'on voit lequel des trois retient une area.
+// puis les trois rangs d'indicateurs de maturité. La synthèse par bloc en donne
+// la moyenne ; ici ils restent séparés, c'est le seul endroit où l'on voit
+// lequel des trois retient une area.
+//
+// La colonne des pratiques validées est tombée avec l'unité : l'objectif est
+// désormais ce qui se compte, et la ligne annonçait deux fois le même état à
+// deux échelles — la seconde ne pouvant que suivre la première, puisqu'une
+// pratique ne se valide plus seule.
 //
 // Ces trois colonnes sont nues. Les coiffer chacune d'une abréviation de deux
 // lettres obligeait à une légende sous le titre de section pour la décoder :
@@ -79,7 +82,7 @@ defineProps({
 
 /* le cadre appartenait au bloc ; il passe à la liste, qui est désormais le seul
    objet de la section. Le défilement horizontal est une sécurité : sur un
-   écran étroit, les sept colonnes chiffrées ne se compriment pas jusqu'à
+   écran étroit, les colonnes chiffrées ne se compriment pas jusqu'à
    l'illisible, elles glissent. */
 .list {
   border: 2px solid var(--color-text);
@@ -132,10 +135,6 @@ defineProps({
 .cell-goals {
   font-size: 11px;
   font-weight: 700;
-}
-
-.cell-practices {
-  font-size: 11px;
 }
 
 /* colonne de marquage : le carré plein reprend le noir de .tag--solid, qui dit

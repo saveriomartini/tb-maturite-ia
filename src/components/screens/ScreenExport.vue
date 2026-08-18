@@ -9,19 +9,21 @@
       <article v-for="page in vm.pages" :key="page.label" class="page">
         <header class="page__head">
           <div>
-            <h1 class="page__title heading">Liste des Pratiques manquantes (Gap)</h1>
+            <h1 class="page__title heading">Liste des critères d’adoption manquants (Gap)</h1>
             <p class="page__meta">{{ vm.meta }}</p>
           </div>
           <div class="page__levels">
+            <p class="page__level">{{ vm.unit.label }} : <span class="page__level-value">{{ vm.unit.value }}</span></p>
             <p class="page__level">Profil visé : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
             <p class="page__level">Profil actuel : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
             <p class="page__coverage">{{ vm.coverage }}</p>
+            <p v-if="vm.unit.note" class="page__coverage">{{ vm.unit.note }}</p>
           </div>
         </header>
 
         <div class="page__body">
           <p v-if="page.empty" class="page__empty">
-            Aucune pratique manquante — tous les domaines évalués sont acquis.
+            Aucun critère manquant — tous les domaines évalués sont acquis.
           </p>
 
           <section v-for="group in page.groups" :key="group.id" class="group">
@@ -54,6 +56,13 @@
 </template>
 
 <script setup>
+// L'en-tête de page nomme d'abord l'unité évaluée, puis les deux profils, puis
+// la couverture : du plus englobant au plus fin, chaque ligne bornant celles
+// qui la suivent. L'unité vient en premier parce que c'est la seule qui puisse
+// invalider la lecture des autres — un document relu hors de l'outil, sans
+// personne pour préciser le périmètre, se prend sinon pour un bilan de
+// l'entreprise entière. Elle est répétée sur chaque page : une page détachée du
+// dossier reste rattachée à son périmètre.
 import AppScreen from '../AppScreen.vue'
 
 defineProps({
@@ -117,7 +126,11 @@ const emit = defineEmits(['back'])
   color: var(--color-neutral-700);
 }
 
+/* La page A4 a une largeur fixe : la colonne de droite est bornée en dur pour
+   que la note du périmètre non déclaré revienne à la ligne au lieu de repousser
+   le titre. */
 .page__levels {
+  max-width: 300px;
   text-align: right;
 }
 

@@ -20,6 +20,10 @@
 //   — `organizational unit sub-components` est rendu par « les services », dans
 //     la même logique que le reste du modèle, où l'unité organisationnelle est
 //     rendue par « l'entreprise » : dans une PME, la sous-unité est le service.
+//     Ce raccourci de traduction ne dit pas que l'unité évaluée et l'entreprise
+//     se confondent — elles ne se confondent pas, et l'outil repose sur leur
+//     distinction, qu'il porte une fois en nommant l'unité en tête de la
+//     restitution (voir domain/scope.js) plutôt qu'à chaque énoncé.
 //
 // Ce fichier ne porte que du contenu. La réponse est collectée et persistée,
 // mais n'entre dans aucun calcul : domain/scoring.js l'ignore entièrement.

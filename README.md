@@ -211,10 +211,25 @@ transformation de Venkatraman (1994) — les deux échelles se recouvrent, et le
 La formule courte (`tag`) est réécrite pour porter la même synthèse ; l'énoncé long (`desc`) et le
 `detail` restent la traduction fidèle de la source et continuent d'y désigner les niveaux par leur
 nom anglais. Le vocabulaire est aligné sur
-celui des areas : `organizational unit` est rendu par « l'entreprise » (le modèle source distingue
-l'unité organisationnelle de l'organisation entière, distinction sans objet dans une PME où les deux
-coïncident), `AI-enabled systems and workflows` par « systèmes et workflows soutenus par l'IA », et
-ROI, sandbox et workflow sont conservés.
+celui des areas : `organizational unit` est rendu par « l'entreprise », `AI-enabled systems and
+workflows` par « systèmes et workflows soutenus par l'IA », et ROI, sandbox et workflow sont
+conservés.
+
+Le premier de ces choix demande une justification à part, parce qu'il porte sur une distinction dont
+l'outil dépend. Le modèle source distingue l'unité organisationnelle évaluée de l'organisation
+entière, et cette distinction n'est **pas** sans objet dans une PME : c'est elle qui autorise une
+entreprise à déclarer son seul service après-vente comme unité évaluée au lieu de recevoir un verdict
+sur l'ensemble de ses activités (entrée du 18.08.2026 de `docs/DECISIONS.md`). Elle n'est simplement
+pas portée par les énoncés. La rendre dans 271 pratiques par « l'unité organisationnelle évaluée »
+alourdirait chaque phrase d'un rappel que l'attribut de contexte `scope` fait une fois pour toutes :
+le périmètre est déclaré au cadrage, puis nommé en tête de la restitution et de chaque page de
+l'export. Sous cette ligne, « l'entreprise » d'un énoncé se lit comme l'unité déclarée.
+
+Le décalage qui subsiste est assumé : une organisation qui a déclaré « un département » lit des
+énoncés qui disent « l'entreprise ». Il est borné par la déclaration en tête, et le corriger
+supposerait de reprendre la traduction occurrence par occurrence contre le PDF source — les 75
+occurrences de « l'entreprise » dans `model-data.json` ne traduisent pas toutes `organizational
+unit`, et rien dans le fichier français ne permet de trancher lesquelles.
 
 Chaque niveau porte en outre un `detail` : un exposé long, découpé en paragraphes, traduit des
 sections 3.1 à 3.5 du document source (`docs/The_AI_Adoption_Maturity_Model_v1.0.pdf`), une section

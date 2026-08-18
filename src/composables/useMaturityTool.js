@@ -17,9 +17,10 @@ import {
 import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, isToolScreen, previousScreen } from '../domain/navigation.js'
 import { buildDemoSession, demoScenarios } from '../domain/demo-session.js'
 import { buildRecommendation } from '../domain/recommendation.js'
+import { evaluationUnit } from '../domain/scope.js'
 import {
   acquiredLevel, areaIndicatorRanks, areaStats, blockIndicatorAverage, blockTotals, gapGroups,
-  goalKey, missingPracticeCount, practiceKey, preparationReached
+  goalKey, missingGoalCount, practiceKey, preparationReached
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
@@ -186,12 +187,23 @@ export function useMaturityTool() {
 
   const targetLabel = computed(() => profileName(target.value))
 
+  // L'unité sur laquelle porte l'évaluation. Elle ne pèse sur aucun calcul —
+  // `scope` continue de n'agir que comme plafond dans la recommandation — mais
+  // elle se nomme en tête de la restitution et de l'export : sans elle, le document se
+  // lit comme un verdict sur l'entreprise entière, et une organisation qui a
+  // répondu pour sa seule fonction support se verrait reprocher en séance des
+  // domaines qu'elle n'a jamais prétendu couvrir. Voir domain/scope.js.
+  const unit = computed(() => evaluationUnit(state.form))
+
   // Trois états à la restitution, du plus avancé au moins avancé : un profil du
   // modèle est acquis ; aucun ne l'est mais assez de pratiques sont validées
   // pour créditer la Préparation ; le diagnostic est trop peu avancé pour
   // qualifier quoi que ce soit. Aucun de ces états ne dit « aucun » : le
   // libellé accuse toujours réception de ce qui a été fait.
-  const preparation = computed(() => preparationReached(state.checked))
+  // Le seuil de la Préparation se compte en objectifs et hors périmètre : il
+  // accuse réception d'un premier effort, où qu'il ait porté — d'où toutes les
+  // areas évaluables en argument, et non celles du profil visé.
+  const preparation = computed(() => preparationReached(EVALUABLE_AREAS, state.checked))
   const acquiredProfile = computed(() => {
     if (acquired.value) {
       return {
@@ -301,15 +313,25 @@ export function useMaturityTool() {
     }
 
     const nextRank = Math.min(...missing.map(entry => entry.area.level))
+    // Les plus proches d'être acquis en tête : à rang égal, c'est là que
+    // l'effort se convertit le plus vite en profil. Le reste se compte en
+    // objectifs, comme toute la mesure — mais un domaine n'en porte que deux ou
+    // trois, si bien que l'égalité est ici la règle et non l'exception. Le
+    // départage est donc explicite plutôt que laissé à la stabilité du tri :
+    // à reste égal, l'ordre du questionnaire, qui est celui dans lequel
+    // l'utilisateur a rencontré les domaines. Sans cette seconde clé, l'ordre
+    // d'affichage dépendrait de la position dans le tableau — vrai aujourd'hui,
+    // fortuit, et invérifiable en relecture.
     const blockers = missing
       .filter(entry => entry.area.level <= nextRank)
-      // Les plus proches d'être acquis en tête : à rang égal, c'est là que
-      // l'effort se convertit le plus vite en profil.
-      .sort((a, b) =>
-        (a.stats.practicesTotal - a.stats.practicesDone) -
-        (b.stats.practicesTotal - b.stats.practicesDone)
-      )
-      .map(entry => entry.area.name)
+      .map((entry, order) => ({ entry, order }))
+      .sort((a, b) => {
+        const remaining =
+          (a.entry.stats.goalsTotal - a.entry.stats.goalsDone) -
+          (b.entry.stats.goalsTotal - b.entry.stats.goalsDone)
+        return remaining !== 0 ? remaining : a.order - b.order
+      })
+      .map(({ entry }) => entry.area.name)
 
     const named = blockers.slice(0, GAP_NAMED_DOMAINS)
     const more = blockers.length - named.length
@@ -856,6 +878,7 @@ export function useMaturityTool() {
   })
 
   const resti1 = computed(() => ({
+    unit: unit.value,
     targetLabel: targetLabel.value,
     acquiredLabel: acquiredLabel.value,
     acquiredDesc: acquiredProfile.value.desc,
@@ -895,15 +918,16 @@ export function useMaturityTool() {
         // les domaines acquis — l'unité sur laquelle se joue le profil —, les
         // critères validés qui les composent, et le rang moyen des indicateurs
         // rapporté au rang du profil visé.
+        //
+        // La barre de progression a été retirée avec l'unité qui la portait.
+        // Convertie en critères, elle serait restée ce qu'elle était : un ratio
+        // agrégé qui donne à voir une progression continue là où l'acquisition
+        // est un seuil — un domaine dont tous les critères sauf un sont validés
+        // ne vaut pas « presque acquis », il n'est pas acquis. C'est la règle du
+        // minimum, et le modèle refuse le score global qui la contredirait.
         areas: { done: totals.areasDone, total: totals.areasTotal },
         goals: { done: totals.goalsDone, total: totals.goalsTotal },
-        indicators: indicatorRatio(average, target.value),
-        // La barre continue de suivre les pratiques validées, mais sans le
-        // dire : plus de chiffre ni d'intitulé qui les nomme, seulement la
-        // longueur. C'est la mesure qui fonde le profil acquis — la montrer
-        // garde la synthèse honnête, la taire évite de remettre à l'écran une
-        // unité que la saisie n'utilise plus.
-        percent: totals.practicesTotal ? Math.round(totals.practicesDone / totals.practicesTotal * 100) : 0
+        indicators: indicatorRatio(average, target.value)
       }
     })
   }))
@@ -933,7 +957,6 @@ export function useMaturityTool() {
               color: dimension.color,
               area: area.name,
               goals: `${stats.goalsDone}/${stats.goalsTotal}`,
-              practices: `${stats.practicesDone}/${stats.practicesTotal}`,
               // Le détail par area montre les trois rangs plutôt que leur
               // moyenne : à cette échelle, savoir lequel des trois retient
               // l'area vaut mieux qu'un chiffre qui les confond. L'ordre est
@@ -954,7 +977,7 @@ export function useMaturityTool() {
     return {
       targetLabel: targetLabel.value,
       acquiredLabel: acquiredLabel.value,
-      gapSummary: `${missingPracticeCount(groups)} pratiques manquantes réparties sur ` +
+      gapSummary: `${missingGoalCount(groups)} critères d'adoption manquants répartis sur ` +
         `${groups.length} domaines de capacité, sur ${evaluated.value.length} évalués`,
       blocks: BLOCKS
         .map(block => ({
@@ -988,6 +1011,9 @@ export function useMaturityTool() {
     if (!pages.length) pages.push([])
     return {
       meta: `Export ${today()} · model: ${MODEL_VERSION} · session: ${state.session}`,
+      // Ce que l'export nomme avant tout autre chose : l'unité sur laquelle il
+      // porte. Relu hors de l'outil, il n'a personne pour le préciser.
+      unit: unit.value,
       // Seule sortie numérotée : relue hors de l'outil, elle doit situer le
       // profil dans l'échelle sans supposer qu'on la connaisse par cœur.
       targetLabel: profileExportLabel(target.value),

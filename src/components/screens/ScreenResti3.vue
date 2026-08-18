@@ -2,7 +2,7 @@
   <AppScreen>
     <LevelSummary :target-label="vm.targetLabel" :acquired-label="vm.acquiredLabel" />
 
-    <h1 class="title">Liste des Pratiques manquantes (Gap)</h1>
+    <h1 class="title">Liste des critères d’adoption manquants (Gap)</h1>
     <p class="summary">{{ vm.gapSummary }}</p>
 
     <div class="blocks">
