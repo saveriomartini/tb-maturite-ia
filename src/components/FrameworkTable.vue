@@ -2,7 +2,7 @@
   <div class="framework">
     <div class="framework__head eyebrow">blocs</div>
     <div class="framework__head eyebrow">dimensions</div>
-    <div class="framework__head framework__head--last eyebrow">areas</div>
+    <div class="framework__head framework__head--last eyebrow">domaines</div>
 
     <template v-for="(block, blockIndex) in blocks" :key="block.id">
       <div

@@ -13,14 +13,14 @@ export const JOURNEY = [
     name: 'Cadrage',
     steps: [
       'vous décrivez votre organisation en quelques attributs',
-      'l’outil en déduit les areas de compétence à évaluer en priorité'
+      'l’outil en déduit les domaines de capacité à évaluer en priorité'
     ],
     frictions: [
       'décrire son organisation avant d’avoir commencé peut sembler fastidieux',
       'difficulté à percevoir la vue d’ensemble et les détails en même temps'
     ],
     opps: [
-      'la sélection des areas est faite pour vous : rien à trancher soi-même',
+      'la sélection des domaines est faite pour vous : rien à trancher soi-même',
       's’approprier un vocabulaire commun sur l’adoption de l’IA'
     ]
   },
@@ -28,7 +28,7 @@ export const JOURNEY = [
     n: '2',
     name: 'Évaluation',
     steps: [
-      'vous validez, area par area, les pratiques déjà en place',
+      'vous validez, domaine par domaine, les pratiques déjà en place',
       'seules les pratiques que votre situation appelle vous sont présentées'
     ],
     frictions: ['valider une pratique demande parfois de vérifier auprès d’un collègue'],
@@ -41,7 +41,7 @@ export const JOURNEY = [
       'vous situez votre organisation sur l’échelle des profils d’adoption',
       'vous obtenez la liste des pratiques manquantes, prête à exporter'
     ],
-    frictions: ['frustration de voir un objectif non atteint pour une seule pratique manquante'],
+    frictions: ['frustration de voir un critère non atteint pour une seule pratique manquante'],
     opps: [
       'les écarts regroupés par bloc se lisent d’un coup d’œil',
       'une liste d’actions concrètes pour engager la suite'

@@ -1,6 +1,20 @@
 // Lecture du modèle AIMM : listes dérivées et libellés partagés.
 // model-data.json reste la source de vérité ; ce module n'en expose que des
 // vues pratiques, sans jamais réécrire son contenu.
+// — glossaire code ↔ interface —
+// Le vocabulaire affiché a été refondu le 18.08.2026 ; celui du code ne l’a
+// pas suivi, pour que model-data.json reste le report littéral de la source
+// AIMM anglaise. La correspondance vaut pour tout libellé écrit ici ou
+// ailleurs : aucun texte visible ne doit repartir des mots de gauche.
+//
+//   area  →  « domaine de capacité », « domaine » en forme courte. Attention
+//            au genre : l’area était féminine, le domaine est masculin.
+//   goal  →  « critère d’adoption », « critère » en forme courte.
+//
+// bloc, dimension, pratique et artefact gardent le même mot des deux côtés.
+// Reste à faire : propager area→domain et goal→criterion jusqu’aux
+// identifiants, aux clés de model-data.json et à celles de la session — voir
+// l’entrée du 18.08.2026 de docs/DECISIONS.md.
 
 import { AIMM } from '../data/model-data.js'
 

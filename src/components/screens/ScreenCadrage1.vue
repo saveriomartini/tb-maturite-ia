@@ -2,8 +2,8 @@
   <div class="framework">
     <p class="intro">
       Le modèle est proposé en 4 blocs-thématiques où ses 9 dimensions sont organisées ; à l'intérieur
-      de chaque dimension on retrouve des areas de compétence, pour un total de 28 areas. Pour
-      considérer une area de compétence acquise, il faut avoir accompli tous les objectifs
+      de chaque dimension on retrouve des domaines de capacité, pour un total de 28 domaines. Pour
+      considérer un domaine de capacité acquis, il faut avoir satisfait tous les critères d'adoption
       correspondants. Le parcours d'évaluation est guidé par des pratiques à valider si mises en place
       par l'organisation.
     </p>

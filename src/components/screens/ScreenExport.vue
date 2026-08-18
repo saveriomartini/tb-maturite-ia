@@ -21,7 +21,7 @@
 
         <div class="page__body">
           <p v-if="page.empty" class="page__empty">
-            Aucune pratique manquante — toutes les areas évaluées sont acquises.
+            Aucune pratique manquante — tous les domaines évalués sont acquis.
           </p>
 
           <section v-for="group in page.groups" :key="group.id" class="group">

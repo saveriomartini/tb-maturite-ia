@@ -2,7 +2,7 @@
   <AppScreen class="palier">
     <div class="lead">
       <p class="eyebrow lead__eyebrow">Diagnostic terminé</p>
-      <h1 class="lead__title heading">{{ vm.scopeCount }} areas de compétence couvertes</h1>
+      <h1 class="lead__title heading">{{ vm.scopeCount }} domaines de capacité couverts</h1>
       <p class="lead__why">{{ vm.why }}</p>
     </div>
 

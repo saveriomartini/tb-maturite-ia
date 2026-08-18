@@ -1,46 +1,43 @@
 <template>
   <div class="detail">
-    <div class="details-head">
-      <p class="section-title">Par area de compétence :</p>
-    </div>
+    <p class="section-title">Par domaine de capacité :</p>
 
-    <div class="blocks">
-      <section v-for="block in vm.blocks" :key="block.id" class="block">
-        <h2 class="block__name heading">{{ block.name }}</h2>
-        <table class="table">
-          <thead>
-            <tr>
-              <th class="col-dimension">Dimension</th>
-              <th>Area</th>
-              <th class="col-score">Objectifs</th>
-              <th class="col-score">Pratiques</th>
-              <th class="col-mark" />
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in block.rows" :key="row.id">
-              <td
-                class="cell-dimension"
-                :class="{ 'is-first': row.firstOfDimension }"
-                :style="{ '--dimension-color': row.color }"
-              >
-                {{ row.dim }}
-              </td>
-              <td class="cell-area">{{ row.area }}</td>
-              <td class="cell-goals">{{ row.goals }}</td>
-              <td class="cell-practices">{{ row.practices }}</td>
-              <td class="cell-mark">
-                <span
-                  class="mark"
-                  :class="{ 'mark--acquired': row.acquired }"
-                  role="img"
-                  :aria-label="row.acquired ? 'Area acquise' : 'Area non acquise'"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+    <div class="list">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="col-dimension">Dimension</th>
+            <th>Domaine</th>
+            <th class="col-score">Critères</th>
+            <th class="col-score">Pratiques</th>
+            <th class="col-group" :colspan="vm.indicatorCount">Indicateurs</th>
+            <th class="col-mark" />
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in vm.rows" :key="row.id">
+            <td
+              class="cell-dimension"
+              :class="{ 'is-first': row.firstOfDimension }"
+              :style="{ '--dimension-color': row.color }"
+            >
+              {{ row.dim }}
+            </td>
+            <td class="cell-area">{{ row.area }}</td>
+            <td class="cell-goals">{{ row.goals }}</td>
+            <td class="cell-practices">{{ row.practices }}</td>
+            <td v-for="(rank, index) in row.ranks" :key="index" class="cell-rank">{{ rank }}</td>
+            <td class="cell-mark">
+              <span
+                class="mark"
+                :class="{ 'mark--acquired': row.acquired }"
+                role="img"
+                :aria-label="row.acquired ? 'Domaine acquis' : 'Domaine non acquis'"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -49,50 +46,68 @@
 // Détail par area de compétence. Le rappel « profil visé / profil actuel » a été
 // retiré : cette section suit immédiatement la synthèse qui l'affiche déjà en
 // tête de page, il n'y répétait qu'une information à l'écran.
+//
+// Les colonnes chiffrées vont du plus agrégé au plus fin : objectifs validés,
+// pratiques validées, puis les trois rangs d'indicateurs de maturité. La
+// synthèse par bloc en donne la moyenne ; ici ils restent séparés, c'est le
+// seul endroit où l'on voit lequel des trois retient une area.
+//
+// Ces trois colonnes sont nues. Les coiffer chacune d'une abréviation de deux
+// lettres obligeait à une légende sous le titre de section pour la décoder :
+// deux lignes d'appareillage pour trois chiffres, quand le questionnaire vient
+// de nommer chaque indicateur en toutes lettres au moment d'y répondre. Seul
+// « Indicateurs » subsiste, qui dit ce que le groupe mesure ; leur ordre est
+// celui du modèle, le même que celui des rangs de chaque ligne, puisque les
+// deux viennent du view-model.
+//
+// Un seul tableau, et non plus un par bloc : sur quatre tableaux côte à côte,
+// les colonnes ne s'alignaient pas d'un bloc à l'autre et deux areas ne se
+// comparaient qu'en changeant de regard. À plat, l'œil descend une colonne. Le
+// bloc n'est pas perdu pour autant — il ordonne les lignes, et la couleur de
+// dimension le redit sur le bord gauche.
 defineProps({
   vm: { type: Object, required: true }
 })
 </script>
 
 <style scoped>
-.details-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-}
-
 .section-title {
   margin: 18px 0 10px;
   font-size: 11px;
   font-weight: 700;
 }
 
-.blocks {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.block {
+/* le cadre appartenait au bloc ; il passe à la liste, qui est désormais le seul
+   objet de la section. Le défilement horizontal est une sécurité : sur un
+   écran étroit, les sept colonnes chiffrées ne se compriment pas jusqu'à
+   l'illisible, elles glissent. */
+.list {
   border: 2px solid var(--color-text);
+  overflow-x: auto;
 }
 
-.block__name {
-  margin: 0;
-  padding: 10px 14px;
-  border-bottom: 2px solid var(--color-text);
-  font-size: 14px;
-  letter-spacing: normal;
-}
-
+/* pleine largeur, la Dimension peut reprendre de la place sans que l'intitulé
+   de domaine — le plus long de la ligne — en manque */
 .col-dimension {
-  width: 33%;
+  width: 22%;
 }
 
 .col-score {
   width: 78px;
+}
+
+/* l'en-tête qui coiffe les trois rangs : centré sur eux, et non sur la première
+   des trois colonnes qu'il occupe */
+.col-group {
+  text-align: center;
+}
+
+/* un rang tient en un caractère : la colonne n'a pas à être plus large, et rien
+   ne l'élargit plus depuis que son intitulé a disparu */
+.cell-rank {
+  width: 34px;
+  font-size: 11px;
+  text-align: center;
 }
 
 /* la première ligne d'une dimension porte son nom et sa couleur pleine ;
@@ -146,24 +161,5 @@ defineProps({
 
 .mark--acquired {
   background: var(--color-text);
-}
-
-@media (max-width: 1200px) {
-  .blocks {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 900px) {
-  .details-head {
-    flex-wrap: wrap;
-    gap: 0 16px;
-  }
-
-  /* la colonne Dimension cesse d'occuper un tiers de la largeur : les intitulés
-     d'area, plus longs, en ont davantage besoin */
-  .col-dimension {
-    width: 26%;
-  }
 }
 </style>

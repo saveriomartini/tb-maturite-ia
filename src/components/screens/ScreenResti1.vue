@@ -32,13 +32,17 @@
       >
         <h2 class="block__name heading">{{ block.name }}</h2>
         <div class="block__stats">
-          <div>
-            <p class="stat__label">Objectifs :</p>
-            <p class="stat__value heading">{{ block.goals }}</p>
+          <div class="stat">
+            <p class="stat__label">Domaines :</p>
+            <p class="stat__figure heading"><span class="stat__done">{{ block.areas.done }}</span><span class="stat__total">/{{ block.areas.total }}</span></p>
           </div>
-          <div>
-            <p class="stat__label">Pratiques :</p>
-            <p class="stat__value heading">{{ block.practices }}</p>
+          <div class="stat">
+            <p class="stat__label">Critères :</p>
+            <p class="stat__figure heading"><span class="stat__done">{{ block.goals.done }}</span><span class="stat__total">/{{ block.goals.total }}</span></p>
+          </div>
+          <div class="stat">
+            <p class="stat__label">Indicateurs :</p>
+            <p class="stat__figure heading"><span class="stat__done">{{ block.indicators.done }}</span><span v-if="block.indicators.total" class="stat__total">/{{ block.indicators.total }}</span></p>
           </div>
         </div>
         <div
@@ -47,7 +51,7 @@
           :aria-valuenow="block.percent"
           aria-valuemin="0"
           aria-valuemax="100"
-          :aria-label="`Pratiques validées — ${block.name}`"
+          :aria-label="`Avancement — ${block.name}`"
         >
           <div class="block__bar" :style="{ width: `${block.percent}%` }" />
         </div>
@@ -60,6 +64,19 @@
 // Synthèse des résultats : profil atteint, escalier des profils, avancement par
 // bloc. Section haute de la page de résultats — le détail par area la suit sans
 // changer d'écran, et la navigation appartient à la page.
+//
+// Le bloc se lit sur trois chiffres, du plus haut au plus fin : les areas
+// acquises — c'est sur cette unité, et elle seule, que se joue le profil —, les
+// objectifs validés qui les composent, et le rang moyen des indicateurs de
+// maturité rapporté au rang du profil visé, qui dit comment c'est tenu. Le
+// compteur de pratiques a quitté cette synthèse — l'objectif valide toutes ses
+// pratiques d'un coup, le chiffre ne faisait plus que répéter celui des
+// objectifs à une échelle près. La barre, elle, les suit toujours : c'est la
+// mesure la plus fine du bloc, mais elle en donne la longueur sans la nommer.
+//
+// Les trois se lisent « atteint sur total ». Le total n'est pas un résultat :
+// il donne son échelle au nombre qui en est un, et l'affichage le dit — le
+// chiffre atteint porte la taille, le total suit en petit.
 defineProps({
   vm: { type: Object, required: true }
 })
@@ -187,9 +204,12 @@ function stripe(colors) {
   letter-spacing: normal;
 }
 
+/* trois compteurs sur une ligne, qui passent à la ligne plutôt que de se
+   comprimer quand le bloc se rétrécit */
 .block__stats {
   display: flex;
-  gap: 24px;
+  flex-wrap: wrap;
+  gap: 10px 20px;
   margin-top: 16px;
 }
 
@@ -199,10 +219,23 @@ function stripe(colors) {
   color: var(--color-neutral-700);
 }
 
-.stat__value {
+/* le rapport se lit en deux temps : le nombre atteint est le résultat et porte
+   la lecture, le total ne fait que lui donner son échelle. Moitié moins haut et
+   en gris, il dit « sur combien » sans disputer la place au chiffre qui compte.
+   Insécable : « 3 » et « /7 » ne se séparent jamais en fin de ligne. */
+.stat__figure {
   margin: 0;
-  font-size: 24px;
   letter-spacing: normal;
+  white-space: nowrap;
+}
+
+.stat__done {
+  font-size: 24px;
+}
+
+.stat__total {
+  font-size: 13px;
+  color: var(--color-neutral-700);
 }
 
 .block__track {

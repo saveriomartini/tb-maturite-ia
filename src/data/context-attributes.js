@@ -87,7 +87,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'devApproach', short: 'Développement IA', label: 'Approche de développement IA', aimm: 'Primary AI development approach', axis: null,
-        hint: 'Oriente les areas techniques à prioriser, sans modifier le profil visé',
+        hint: 'Oriente les domaines techniques à prioriser, sans modifier le profil visé',
         opts: [
           ['buy', 'Acheter sur étagère', 0],
           ['customize', 'Personnaliser', 0.33],
@@ -181,7 +181,7 @@ export const CONTEXT_GROUPS = [
 // intervenir dans le calcul du niveau cible.
 export const DESCRIPTIVE_FIELDS = [
   {
-    id: 'domain', label: 'Domaine d’activité', aimm: 'Domain', axis: null, hint: '',
+    id: 'domain', label: 'Secteur d’activité', aimm: 'Domain', axis: null, hint: '',
     opts: [
       ['finance', 'Finance', 0], ['health', 'Santé', 0], ['industry', 'Industrie', 0],
       ['public', 'Secteur public', 0], ['tech', 'Technologie', 0], ['other', 'Autre', 0]

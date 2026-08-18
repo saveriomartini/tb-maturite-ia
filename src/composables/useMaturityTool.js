@@ -16,8 +16,8 @@ import {
 import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, isToolScreen, previousScreen } from '../domain/navigation.js'
 import { buildRecommendation } from '../domain/recommendation.js'
 import {
-  acquiredLevel, areaStats, blockTotals, gapGroups, goalKey, missingPracticeCount, practiceKey,
-  preparationReached
+  acquiredLevel, areaIndicatorRanks, areaStats, blockIndicatorAverage, blockTotals, gapGroups,
+  goalKey, missingPracticeCount, practiceKey, preparationReached
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
@@ -30,7 +30,7 @@ const GAP_GROUPS_PER_PAGE = 4
 // second : la première est toujours celle qui ramène en arrière.
 const RESET_DIALOG = {
   eyebrow: 'Réinitialiser la session',
-  text: 'Les attributs de contexte, le degré de transformation visé, les objectifs validés et ' +
+  text: 'Les attributs de contexte, le degré de transformation visé, les critères d’adoption validés et ' +
     'les indicateurs de maturité seront effacés.',
   actions: [
     { id: 'cancel', label: 'Annuler' },
@@ -41,7 +41,7 @@ const RESET_DIALOG = {
 const SKIP_DIALOG = {
   eyebrow: 'Cadrage incomplet',
   text: 'Décrire son organisation AVANT l’évaluation change tout : l’outil s’en sert pour vous ' +
-    'proposer d’abord les areas de compétence qui comptent le plus pour vous, et vous n’avez ' +
+    'proposer d’abord les domaines de capacité qui comptent le plus pour vous, et vous n’avez ' +
     'pas à trancher vous-même par où commencer.',
   actions: [
     { id: 'describe', label: 'Décrire mon organisation', arrow: '↓' },
@@ -93,6 +93,24 @@ function scrollToTop() {
 
 function today() {
   return new Intl.DateTimeFormat('fr-CH', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date())
+}
+
+// Le rang moyen des indicateurs d'un bloc, tel qu'il se lit dans la synthèse :
+// une décimale, virgule décimale, rapporté au rang du profil visé et non au 5
+// de l'échelle. C'est ce rang-là que le diagnostic demande d'atteindre — s'y
+// mesurer dit en un coup d'œil s'il est tenu, ce que « 2,7 / 5 » laissait
+// calculer au lecteur. Un périmètre vide n'a pas de rang : un tiret le dit
+// mieux qu'un zéro, qui se lirait comme une mesure — et un rang absent n'a pas
+// de total à rapporter, d'où le `null` que la vue lit pour ne rien afficher.
+//
+// Les deux nombres sont rendus séparément, comme les deux autres compteurs de
+// la synthèse : c'est la vue qui décide de la place et de la graisse de
+// chacun, pas une chaîne déjà assemblée ici.
+function indicatorRatio(average, targetRank) {
+  if (average === null) return { done: '—', total: null }
+  const rank = new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+    .format(average)
+  return { done: rank, total: targetRank }
 }
 
 export function useMaturityTool() {
@@ -359,7 +377,7 @@ export function useMaturityTool() {
       {
         id: 'tool',
         name: 'Outil',
-        desc: 'Décrivez votre organisation, validez les objectifs atteints, obtenez vos écarts.',
+        desc: 'Décrivez votre organisation, validez les critères atteints, obtenez vos écarts.',
         action: 'Démarrer le diagnostic',
         target: 'tool',
         ready: true,
@@ -487,10 +505,10 @@ export function useMaturityTool() {
   // ne livre donc que des constantes du modèle — quel profil on consulte est une
   // affaire d'écran, sans effet sur le profil visé du diagnostic.
   const diagStart = computed(() => ({
-    intro: `Le diagnostic parcourt les ${EVALUABLE_AREAS.length} areas de compétence évaluables du modèle. ` +
-      `Pour chacune, vous validez les objectifs déjà atteints dans votre organisation ; les pratiques qu'ils ` +
-      `recouvrent se déplient sous chaque objectif. Aucune n'est retirée d'avance : un profil d'adoption ne ` +
-      `fait que désigner celles qu'il met en jeu.`,
+    intro: `Le diagnostic parcourt les ${EVALUABLE_AREAS.length} domaines de capacité évaluables du modèle. ` +
+      `Pour chacun, vous validez les critères d'adoption déjà atteints dans votre organisation ; les ` +
+      `pratiques qu'ils recouvrent se déplient sous chaque critère. Aucun n'est retiré d'avance : un ` +
+      `profil d'adoption ne fait que désigner ceux qu'il met en jeu.`,
     total: EVALUABLE_AREAS.length,
     // Un profil met en jeu les areas de son rang et de tous ceux d'en dessous —
     // la même règle que la première série du questionnaire.
@@ -538,7 +556,7 @@ export function useMaturityTool() {
     const scopeCount = presented.value.length
     return {
       scopeCount,
-      why: `Le diagnostic a porté sur les ${scopeCount} areas de compétence que met en jeu le ` +
+      why: `Le diagnostic a porté sur les ${scopeCount} domaines de capacité que met en jeu le ` +
         `profil « ${targetLabel.value} » : c'est là qu'un écart se traduit le plus vite en action.`,
       continueLabel: 'Poursuivre avec les profils suivants',
       skipLabel: 'Passer aux résultats'
@@ -588,7 +606,7 @@ export function useMaturityTool() {
     return {
       // Hors cadrage, le compteur cesse de situer : l'area consultée n'occupe
       // aucun rang dans le parcours, en annoncer un mentirait.
-      progress: offScopeArea ? 'Area hors cadrage' : `Area ${diagIndex.value + 1} / ${presented.value.length}`,
+      progress: offScopeArea ? 'Domaine hors cadrage' : `Domaine ${diagIndex.value + 1} / ${presented.value.length}`,
       nextLabel: diagIndex.value + 1 < presented.value.length ? 'Suivant' : 'Terminer',
       blockGroups,
       // Ce que le questionnaire affiche à la place des objectifs quand l'area
@@ -597,9 +615,9 @@ export function useMaturityTool() {
       offScope: offScopeArea
         ? {
           message: `« ${offScopeArea.name} » et ses pratiques ne sont pas applicables selon le profil ` +
-            'visé : cette area est sortie du cadrage.',
-          note: 'Elle reste consultable, mais rien n’y est à valider. En fin de série, le palier propose ' +
-            'de poursuivre avec les profils plus avancés : elle rejoindra alors le questionnaire.',
+            'visé : ce domaine est sorti du cadrage.',
+          note: 'Il reste consultable, mais rien n’y est à valider. En fin de série, le palier propose ' +
+            'de poursuivre avec les profils plus avancés : il rejoindra alors le questionnaire.',
           backLabel: 'Revenir au questionnaire'
         }
         : null,
@@ -614,7 +632,7 @@ export function useMaturityTool() {
         offScope: Boolean(offScopeArea),
         // Le pied de page n'accuse que la réussite : rien à dire tant que
         // l'area n'est pas acquise, les carrés des objectifs le montrent déjà.
-        hint: stats && stats.acquired ? 'area acquise' : ''
+        hint: stats && stats.acquired ? 'domaine acquis' : ''
       },
       // L'objectif est l'unité de réponse : une case, un verdict. Ses pratiques
       // ne sont plus des interrupteurs mais le détail de ce qu'il recouvre —
@@ -694,12 +712,23 @@ export function useMaturityTool() {
     // l'escalier se joue sur le périmètre entier.
     blocks: BLOCKS.map(block => {
       const totals = blockTotals(evaluated.value, state.checked, block.id)
+      const average = blockIndicatorAverage(evaluated.value, state.indicators, block.id)
       return {
         id: block.id,
         name: block.name,
         dimensionColors: block.dimensions.map(dimension => dimension.color),
-        goals: `${totals.goalsDone}/${totals.goalsTotal}`,
-        practices: `${totals.practicesDone}/${totals.practicesTotal}`,
+        // Trois lectures du même périmètre, de la plus haute à la plus fine :
+        // les domaines acquis — l'unité sur laquelle se joue le profil —, les
+        // critères validés qui les composent, et le rang moyen des indicateurs
+        // rapporté au rang du profil visé.
+        areas: { done: totals.areasDone, total: totals.areasTotal },
+        goals: { done: totals.goalsDone, total: totals.goalsTotal },
+        indicators: indicatorRatio(average, target.value),
+        // La barre continue de suivre les pratiques validées, mais sans le
+        // dire : plus de chiffre ni d'intitulé qui les nomme, seulement la
+        // longueur. C'est la mesure qui fonde le profil acquis — la montrer
+        // garde la synthèse honnête, la taire évite de remettre à l'écran une
+        // unité que la saisie n'utilise plus.
         percent: totals.practicesTotal ? Math.round(totals.practicesDone / totals.practicesTotal * 100) : 0
       }
     })
@@ -708,10 +737,17 @@ export function useMaturityTool() {
   const resti2 = computed(() => ({
     targetLabel: targetLabel.value,
     acquiredLabel: acquiredLabel.value,
-    blocks: BLOCKS.map(block => ({
-      id: block.id,
-      name: block.name,
-      rows: block.dimensions.flatMap(dimension =>
+    // Le nombre de colonnes de rangs vient du modèle et non du template : les
+    // trois cellules d'une ligne et l'en-tête qui les coiffe comptent la même
+    // grille, quelle que soit sa taille.
+    indicatorCount: MATURITY_INDICATORS.length,
+    // Une seule liste, dans l'ordre du modèle : bloc, puis dimension, puis
+    // area. Le bloc ne découpe plus la vue — il la coupait en quatre tableaux
+    // de hauteurs inégales, alors que comparer une ligne à l'autre est tout
+    // l'intérêt de ce détail. Il reste porté par l'ordre des lignes et par les
+    // couleurs de dimension, qui ne se répètent pas d'un bloc à l'autre.
+    rows: BLOCKS.flatMap(block =>
+      block.dimensions.flatMap(dimension =>
         evaluated.value
           .filter(area => area.dimId === dimension.id)
           .map((area, indexInDimension) => {
@@ -724,11 +760,16 @@ export function useMaturityTool() {
               area: area.name,
               goals: `${stats.goalsDone}/${stats.goalsTotal}`,
               practices: `${stats.practicesDone}/${stats.practicesTotal}`,
+              // Le détail par area montre les trois rangs plutôt que leur
+              // moyenne : à cette échelle, savoir lequel des trois retient
+              // l'area vaut mieux qu'un chiffre qui les confond. L'ordre est
+              // celui du modèle, donc celui des colonnes.
+              ranks: areaIndicatorRanks(area.id, state.indicators),
               acquired: stats.acquired
             }
           })
       )
-    }))
+    )
   }))
 
   // Le gap ne parle que des areas parcourues. Celles jamais présentées sont
@@ -740,7 +781,7 @@ export function useMaturityTool() {
       targetLabel: targetLabel.value,
       acquiredLabel: acquiredLabel.value,
       gapSummary: `${missingPracticeCount(groups)} pratiques manquantes réparties sur ` +
-        `${groups.length} areas de compétence, sur ${evaluated.value.length} évaluées`,
+        `${groups.length} domaines de capacité, sur ${evaluated.value.length} évalués`,
       blocks: BLOCKS
         .map(block => ({
           id: block.id,
@@ -750,9 +791,9 @@ export function useMaturityTool() {
         .filter(block => block.groups.length > 0),
       deferred: deferredCount
         ? {
-          summary: `${deferredCount} areas de compétence n'ont pas été évaluées`,
-          note: 'Elles relèvent de profils plus avancés et ne comptent ni comme acquises ni comme ' +
-            'manquantes : les pratiques correspondantes ne vous ont pas été présentées.',
+          summary: `${deferredCount} domaines de capacité n'ont pas été évalués`,
+          note: 'Ils relèvent de profils plus avancés et ne comptent ni comme acquis ni comme ' +
+            'manquants : les pratiques correspondantes ne vous ont pas été présentées.',
           resumeLabel: 'Poursuivre le diagnostic'
         }
         : null
@@ -779,8 +820,8 @@ export function useMaturityTool() {
       acquiredLabel: acquiredProfile.value.exportLabel,
       // Le document dit sur quoi il porte : sans cette ligne, un lecteur
       // extérieur prendrait la liste pour un bilan complet du modèle.
-      coverage: `${evaluated.value.length} areas de compétence évaluées sur ${ordered.value.length}` +
-        (deferred.value.length ? ` · ${deferred.value.length} non évaluées` : ''),
+      coverage: `${evaluated.value.length} domaines de capacité évalués sur ${ordered.value.length}` +
+        (deferred.value.length ? ` · ${deferred.value.length} non évalués` : ''),
       pages: pages.map((pageGroups, index) => ({
         groups: pageGroups,
         empty: pageGroups.length === 0,

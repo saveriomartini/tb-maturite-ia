@@ -1,7 +1,7 @@
 <template>
   <AppScreen spacing="tight">
     <div class="toolbar">
-      <nav class="strip" aria-label="Areas du diagnostic">
+      <nav class="strip" aria-label="Domaines de capacité du diagnostic">
         <div
           v-for="group in vm.blockGroups"
           :key="group.key"
@@ -18,7 +18,7 @@
               :class="{ 'is-active': area.active, 'is-off-scope': !area.inScope }"
               :style="area.color ? { background: area.color } : null"
               :title="area.inScope ? area.name : `${area.name} — hors cadrage`"
-              :aria-label="`Area ${area.number} — ${area.name}${area.inScope ? '' : ', hors cadrage'}`"
+              :aria-label="`Domaine ${area.number} — ${area.name}${area.inScope ? '' : ', hors cadrage'}`"
               @click="emit('open-area', area.id)"
             >
               {{ area.number }}

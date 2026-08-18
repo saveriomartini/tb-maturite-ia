@@ -38,12 +38,18 @@ export const MATURITY_INDICATORS = [
   {
     id: 'accountability',
     name: 'Responsabilité',
+    // Abréviation de deux lettres. Elle coiffait les sous-colonnes du détail
+    // par domaine, où le nom entier tenait trois fois la largeur du rang qu'il
+    // annonçait ; ces colonnes ont été retirées et plus rien ne l'affiche
+    // aujourd'hui. Elle reste ici parce qu'elle décrit l'indicateur, pas la vue
+    // qui s'en servait — la restitution la retrouvera si elle en a besoin.
+    short: 'Re',
     // La définition de l'indicateur, telle que la source l'introduit : de quoi
     // parle-t-on quand on demande de choisir un énoncé.
-    desc: 'Qui, dans l’entreprise, répond de cette area et fait progresser ses processus.',
+    desc: 'Qui, dans l’entreprise, répond de ce domaine et fait progresser ses processus.',
     statements: [
       { n: 1, text: 'Personne n’en porte formellement la responsabilité.' },
-      { n: 2, text: 'Des rôles sont désignés pour atteindre les objectifs de l’area.' },
+      { n: 2, text: 'Des rôles sont désignés pour atteindre les critères du domaine.' },
       { n: 3, text: 'Des objectifs et des indicateurs (KPI, ROI) sont définis et rapportés à la direction.' },
       { n: 4, text: 'Les processus sont mesurés et pilotés de la même façon dans tous les services.' },
       { n: 5, text: 'Les améliorations des processus sont choisies et menées selon la stratégie long terme.' }
@@ -52,10 +58,11 @@ export const MATURITY_INDICATORS = [
   {
     id: 'planning',
     name: 'Planification',
-    desc: 'Les plans et les règles qui rendent l’atteinte des objectifs constante et prévisible.',
+    short: 'Pl',
+    desc: 'Les plans et les règles qui rendent l’atteinte des critères constante et prévisible.',
     statements: [
       { n: 1, text: 'Rien n’est planifié de façon régulière.' },
-      { n: 2, text: 'Un plan existe pour atteindre les objectifs et nomme les parties prenantes.' },
+      { n: 2, text: 'Un plan existe pour atteindre les critères et nomme les parties prenantes.' },
       { n: 3, text: 'Le plan est actualisé périodiquement au vu des résultats mesurés.' },
       { n: 4, text: 'Les plans et politiques définissent des processus communs, que chaque service adapte.' },
       { n: 5, text: 'La planification anticipe les évolutions possibles : réglementaires, sociétales, technologiques.' }
@@ -64,10 +71,11 @@ export const MATURITY_INDICATORS = [
   {
     id: 'resourcing',
     name: 'Ressources',
+    short: 'Rs',
     desc: 'Les moyens — personnes, budget, technologie — mis à disposition pour faire tourner les processus.',
     statements: [
       { n: 1, text: 'Les moyens sont alloués au coup par coup.' },
-      { n: 2, text: 'Le processus budgétaire alloue des moyens suffisants à l’area.' },
+      { n: 2, text: 'Le processus budgétaire alloue des moyens suffisants au domaine.' },
       { n: 3, text: 'Les moyens sont alloués au vu de la performance mesurée.' },
       { n: 4, text: 'Les moyens sont alloués et gérés de la même façon dans tous les services.' },
       { n: 5, text: 'Les moyens servent la stratégie long terme, quels que soient les scénarios d’avenir.' }
