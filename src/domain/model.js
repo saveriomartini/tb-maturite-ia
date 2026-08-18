@@ -62,13 +62,18 @@ export function levelDescription(n) {
 // non celui du parcours — qui porte la numérotation de la barre de navigation :
 // une area garde le même numéro d'un bout à l'autre de la session, quel que soit
 // le profil visé.
+//
+// Depuis le 18.08.2026, les 28 areas du modèle sont évaluables : A5-A7, les
+// trois de la neuvième dimension, portent leurs critères et leurs pratiques
+// (voir docs/DECISIONS.md). Le drapeau `pending` reste néanmoins lu ici : c'est
+// la couture qui permet de déclarer une area dans le modèle avant qu'elle soit
+// rédigée, sans qu'elle pollue la mesure. Aucune ne le porte aujourd'hui.
 export const EVALUABLE_AREAS = AREAS.filter(area => !area.pending)
 
 // Areas ordonnées pour le questionnaire. Le profil visé n'exclut plus personne :
 // il ordonne. Les areas qu'il met en jeu forment la première série (`wave` 1),
 // les autres suivent (`wave` 2) et ne sont proposées que si l'utilisateur
-// choisit de poursuivre. Seules les areas encore à définir (Matrice N2) restent
-// hors du modèle évaluable.
+// choisit de poursuivre.
 export function orderedAreas(target) {
   const first = EVALUABLE_AREAS.filter(area => area.level <= target)
   const rest = EVALUABLE_AREAS.filter(area => area.level > target)

@@ -697,8 +697,10 @@ export function useMaturityTool() {
             id: dimension.id,
             name: dimension.name,
             color: dimension.color,
-            // Les areas encore à définir restent hors carte : elles ne sont
-            // évaluables sous aucun profil.
+            // Une area non évaluable resterait hors carte : rien ne sert de
+            // montrer ce qu'aucun profil ne met en jeu. Aucune ne l'est depuis
+            // que la neuvième dimension est rédigée (18.08.2026), mais le
+            // filtre reste la garde de ce cas.
             areas: dimension.areas
               .filter(area => !area.pending)
               .map(area => ({ id: area.id, label: area.name, level: area.level }))
@@ -746,7 +748,7 @@ export function useMaturityTool() {
     const stats = area && !offScopeArea ? areaStats(area, state.checked) : null
 
     // La barre de parcours ne connaît que deux termes : le bloc, qui coiffe, et
-    // l'area, numérotée dans l'ordre du modèle. Elle montre toujours les 25
+    // l'area, numérotée dans l'ordre du modèle. Elle montre toujours les 28
     // areas évaluables, quel que soit le profil visé : celui-ci n'en retire
     // aucune de la barre, il éteint seulement celles qu'il ne met pas en jeu.
     // Les numéros suivent donc le modèle et non le parcours — changer de profil

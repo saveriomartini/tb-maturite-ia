@@ -24,14 +24,21 @@
 //   `bias`      domaine ici : ils se déduisent de l'état du domaine — maîtrisé,
 //               entamé, intact — puis se décalent par indicateur. Une
 //               organisation qui nomme des responsables sans jamais doter les
-//               initiatives le montre sur les 25 domaines à la fois, ce qu'une
-//               saisie manuelle de 75 rangs rendrait illisible à écrire comme à
+//               initiatives le montre sur les 28 domaines à la fois, ce qu'une
+//               saisie manuelle de 84 rangs rendrait illisible à écrire comme à
 //               relire.
 //
-// Les identifiants de domaine (`mastered`, `partial`) sont ceux du modèle
-// AIMM — A1 à A28. `partial` compte des critères d'adoption validés, jamais des
+// Les identifiants de domaine (`mastered`, `partial`) sont ceux du modèle — A1 à
+// A28, les vingt-cinq d'Ozkaya et al. (2026) et les trois de la neuvième
+// dimension. `partial` compte des critères d'adoption validés, jamais des
 // pratiques : c'est l'unité de saisie du questionnaire, et une démonstration ne
 // doit pas produire un état que l'utilisateur ne pourrait pas atteindre lui-même.
+//
+// A5, A6 et A7 sont entrés dans la mesure le 18.08.2026 (voir docs/DECISIONS.md).
+// Les trois scénarios les portent désormais : A6 relève du premier rang, A5 et A7
+// du deuxième, et une PME fictive qui ne les aurait pas validés retomberait au
+// profil « Préparation » — ce que ni son récit ni ce qu'elle est censée démontrer
+// ne diraient plus.
 
 export const DEMO_SESSIONS = [
   {
@@ -57,7 +64,9 @@ export const DEMO_SESSIONS = [
       domain: 'industry', size: 'xs', footprint: 'regional'
     },
     wave: 1,
-    mastered: ['A8', 'A13'],
+    // L'atelier sait pourquoi il s'y met — ses clients le lui demandent — mais
+    // n'a ni enveloppe (A5) ni examen de ce que la solution suppose (A7).
+    mastered: ['A6', 'A8', 'A13'],
     partial: { A1: 1, A11: 1, A17: 1, A24: 1 },
     ranks: { mastered: 3, partial: 2, untouched: 1 },
     bias: { accountability: 0, planning: 0, resourcing: -1 }
@@ -85,8 +94,8 @@ export const DEMO_SESSIONS = [
     },
     wave: 1,
     mastered: [
-      'A8', 'A13',
-      'A1', 'A10', 'A11', 'A12', 'A17', 'A18', 'A19', 'A20', 'A23', 'A24', 'A26'
+      'A6', 'A8', 'A13',
+      'A1', 'A5', 'A7', 'A10', 'A11', 'A12', 'A17', 'A18', 'A19', 'A20', 'A23', 'A24', 'A26'
     ],
     partial: { A9: 1, A14: 1, A16: 1, A21: 1, A25: 1 },
     ranks: { mastered: 3, partial: 2, untouched: 1 },
@@ -119,8 +128,8 @@ export const DEMO_SESSIONS = [
     // Les trois premiers rangs du modèle, au complet : c'est ce qu'« Alignement
     // des processus » met en jeu, et rien de moins ne l'acquiert.
     mastered: [
-      'A8', 'A13',
-      'A1', 'A10', 'A11', 'A12', 'A17', 'A18', 'A19', 'A20', 'A23', 'A24', 'A26',
+      'A6', 'A8', 'A13',
+      'A1', 'A5', 'A7', 'A10', 'A11', 'A12', 'A17', 'A18', 'A19', 'A20', 'A23', 'A24', 'A26',
       'A2', 'A3', 'A9', 'A14', 'A15', 'A16', 'A21', 'A22', 'A25', 'A27'
     ],
     // Au-delà du profil visé, le travail est entamé sans être poursuivi : c'est

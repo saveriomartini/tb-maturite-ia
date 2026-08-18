@@ -182,26 +182,118 @@
             {
               "id": "A5",
               "name": "Gestion du budget et des investissements IA",
-              "pending": true,
               "level": 2,
-              "desc": "Area issue de la consolidation des modèles (Matrice N2) — objectifs et pratiques à définir.",
-              "goals": []
+              "desc": "La capacité de l'entreprise à engager sur l'IA des moyens proportionnés à ce qu'elle peut immobiliser, par paliers dont chacun se décide au vu du précédent, et à traiter l'arrêt ou le report comme des issues légitimes plutôt que comme des échecs.",
+              "goals": [
+                {
+                  "goal": "Une enveloppe est affectée à l'adoption de l'IA, distincte du budget informatique courant.",
+                  "practices": [
+                    "Déterminer le montant que l'entreprise peut engager sur l'IA sans compromettre son exploitation courante.",
+                    "Distinguer dans cette enveloppe l'investissement initial des coûts récurrents — abonnements, consommation à l'usage, maintenance, accompagnement externe.",
+                    "Désigner qui décide de l'engagement des montants, et à partir de quel seuil la décision remonte à la direction.",
+                    "Suivre les dépenses réellement engagées au regard de l'enveloppe, selon la même périodicité que le reste du suivi budgétaire."
+                  ]
+                },
+                {
+                  "goal": "L'engagement se fait par paliers, chacun décidé au vu des résultats du précédent.",
+                  "practices": [
+                    "Définir, avant d'engager un palier, le montant qu'il mobilise et ce qu'il doit avoir démontré à son terme.",
+                    "Établir les critères qui, au terme d'un palier, conduisent à poursuivre, à réorienter ou à arrêter.",
+                    "Statuer explicitement au terme de chaque palier, y compris lorsque la décision est de poursuivre à l'identique."
+                  ]
+                },
+                {
+                  "goal": "L'arrêt, le report et l'adoption partielle sont décidés et consignés au même titre que la poursuite.",
+                  "practices": [
+                    "Consigner les décisions de ne pas adopter, de différer, ou de limiter l'adoption à un seul processus, avec le motif qui les fonde.",
+                    "Fixer à l'avance l'échéance à laquelle ces décisions seront réexaminées, plutôt que de les rouvrir à l'occasion d'une sollicitation externe.",
+                    "Rendre compte des moyens engagés sur les initiatives arrêtées et de ce que l'entreprise en a retiré."
+                  ]
+                }
+              ],
+              "exampleArtifacts": [
+                "enveloppe budgétaire IA distincte, datée et validée",
+                "distinction entre investissement initial et coûts récurrents (abonnements, consommation à l'usage, maintenance)",
+                "seuils de délégation et de remontée des décisions d'engagement",
+                "fiche de palier : montant mobilisé, résultat attendu, critères de poursuite ou d'arrêt",
+                "procès-verbal de décision de poursuite, de réorientation ou d'arrêt",
+                "registre des décisions de report ou de non-adoption, avec leur échéance de réexamen",
+                "suivi budgétaire périodique des dépenses IA engagées"
+              ]
             },
             {
               "id": "A6",
               "name": "Pressions et motivations externes",
-              "pending": true,
               "level": 1,
-              "desc": "Area issue de la consolidation des modèles (Matrice N2) — objectifs et pratiques à définir.",
-              "goals": []
+              "desc": "La capacité de l'entreprise à identifier ce qui, dans son environnement — clients, donneurs d'ordre, concurrents, cadre réglementaire, dispositifs de soutien —, la pousse à adopter l'IA, et à distinguer ces pressions de ses propres besoins avant de décider.",
+              "goals": [
+                {
+                  "goal": "Les pressions et incitations externes à l'adoption de l'IA sont identifiées et nommées.",
+                  "practices": [
+                    "Recenser les attentes exprimées par les clients et les donneurs d'ordre en matière d'IA, y compris lorsqu'elles arrivent par les cahiers des charges et les appels d'offres.",
+                    "Identifier les obligations et incitations qui viennent du cadre réglementaire, des normes sectorielles et des dispositifs de soutien accessibles à l'entreprise.",
+                    "Situer les usages de l'IA observables chez les concurrents et les partenaires du même secteur, en distinguant ce qui est effectivement déployé de ce qui est annoncé.",
+                    "Documenter le poids des principaux donneurs d'ordre dans l'activité et ce qu'il implique pour la marge de décision de l'entreprise sur l'IA."
+                  ]
+                },
+                {
+                  "goal": "L'entreprise distingue ses motivations propres des pressions qu'elle subit, et fonde sa décision sur cette distinction.",
+                  "practices": [
+                    "Formuler, pour chaque motivation recensée, le besoin métier propre à l'entreprise qu'elle recouvre — ou constater qu'elle n'en recouvre aucun.",
+                    "Confronter les bénéfices annoncés par les fournisseurs et par le discours ambiant aux résultats effectivement constatés dans des entreprises comparables.",
+                    "Décider et consigner la suite donnée à chaque pression identifiée : y répondre, la différer, ou ne pas y donner suite."
+                  ]
+                }
+              ],
+              "exampleArtifacts": [
+                "revue des exigences relatives à l'IA figurant dans les cahiers des charges et appels d'offres reçus",
+                "répartition du chiffre d'affaires par donneur d'ordre",
+                "veille concurrentielle et sectorielle sur les usages de l'IA",
+                "recensement des dispositifs de soutien et de financement accessibles à l'entreprise",
+                "analyse comparative des bénéfices annoncés et des résultats constatés",
+                "compte rendu de direction consignant la suite donnée à chaque sollicitation"
+              ]
             },
             {
               "id": "A7",
               "name": "Adéquation et proportionnalité de la solution (right-sizing)",
-              "pending": true,
               "level": 2,
-              "desc": "Area issue de la consolidation des modèles (Matrice N2) — objectifs et pratiques à définir.",
-              "goals": []
+              "desc": "La capacité de l'entreprise à retenir des solutions d'IA dimensionnées à sa taille, à ses compétences internes et à ses obligations de confidentialité, plutôt qu'à l'état de l'art ou à ce que fait une grande organisation.",
+              "goals": [
+                {
+                  "goal": "Le besoin métier est établi avant la solution, et la pertinence même du recours à l'IA est examinée.",
+                  "practices": [
+                    "Décrire le processus métier visé, son volume et sa fréquence, avant d'examiner toute solution.",
+                    "Examiner les réponses sans IA — réorganisation, automatisation classique, meilleur usage des outils déjà en place — et dire pourquoi elles ne suffisent pas.",
+                    "Vérifier que le volume, la régularité et l'accessibilité des données disponibles justifient le recours envisagé."
+                  ]
+                },
+                {
+                  "goal": "Les solutions envisagées sont filtrées par ce que l'entreprise peut réellement mettre en œuvre et maintenir.",
+                  "practices": [
+                    "Confronter chaque solution envisagée aux compétences disponibles en interne et à celles qu'il faudrait acquérir ou sous-traiter.",
+                    "Évaluer la charge d'exploitation courante que la solution imposera une fois en service, et désigner qui l'assumera.",
+                    "Écarter les solutions dont la mise en œuvre suppose une taille d'organisation, une équipe dédiée ou une infrastructure dont l'entreprise ne dispose pas.",
+                    "Retenir, à besoin couvert équivalent, la solution la plus simple à exploiter et à remplacer."
+                  ]
+                },
+                {
+                  "goal": "Les obligations de confidentialité et la souveraineté des données bornent le choix de la solution.",
+                  "practices": [
+                    "Identifier, parmi les données que la solution traiterait, celles qui relèvent du secret de fabrication, d'un engagement de confidentialité envers un donneur d'ordre, ou de la protection des données personnelles.",
+                    "Vérifier, pour chaque solution envisagée, où les données sont traitées et conservées, et si les engagements pris envers les clients et les donneurs d'ordre le permettent.",
+                    "Retenir une option qui maintienne l'entreprise en mesure de récupérer ses données et de changer de fournisseur."
+                  ]
+                }
+              ],
+              "exampleArtifacts": [
+                "description du processus métier visé, avec ses volumes et sa fréquence",
+                "comparatif des réponses envisagées, avec et sans IA, à besoin couvert équivalent",
+                "grille de filtrage des solutions : compétences requises, charge d'exploitation, dépendances",
+                "inventaire des données concernées et de leur régime de confidentialité (secret de fabrication, engagements envers les donneurs d'ordre, données personnelles)",
+                "localisation de traitement et d'hébergement des données déclarée par le fournisseur",
+                "conditions de réversibilité et de restitution des données figurant au contrat"
+              ]
             }
           ],
           "color": "#fe9f4d"
