@@ -6,7 +6,7 @@
 // l'écran affiché est évalué.
 
 import { computed, reactive, watch } from 'vue'
-import { CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
+import { ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
 import { DEFAULT_INDICATOR_RANK, MATURITY_INDICATORS } from '../data/maturity-indicators.js'
 import { IN_PROGRESS, PREPARATION } from '../data/preparation.js'
@@ -24,9 +24,30 @@ import { clearSession, loadSession, newSessionId, persistSession } from './useSe
 const MODEL_VERSION = 'v1'
 const GAP_GROUPS_PER_PAGE = 4
 
-const RESET_CONFIRMATION =
-  'Réinitialiser la session ? Les attributs de contexte, le degré de transformation visé, les ' +
-  'objectifs validés et les indicateurs de maturité seront effacés.'
+// Les deux modales de l'outil ont la même forme — un motif, ce qui se joue, deux
+// sorties — et leurs textes vivent donc ici, au même titre que les libellés de
+// boutons des autres écrans. La sortie qui poursuit ce qui a été cliqué vient en
+// second : la première est toujours celle qui ramène en arrière.
+const RESET_DIALOG = {
+  eyebrow: 'Réinitialiser la session',
+  text: 'Les attributs de contexte, le degré de transformation visé, les objectifs validés et ' +
+    'les indicateurs de maturité seront effacés.',
+  actions: [
+    { id: 'cancel', label: 'Annuler' },
+    { id: 'reset', label: 'Réinitialiser', arrow: '→' }
+  ]
+}
+
+const SKIP_DIALOG = {
+  eyebrow: 'Cadrage incomplet',
+  text: 'Décrire son organisation AVANT l’évaluation change tout : l’outil s’en sert pour vous ' +
+    'proposer d’abord les areas de compétence qui comptent le plus pour vous, et vous n’avez ' +
+    'pas à trancher vous-même par où commencer.',
+  actions: [
+    { id: 'describe', label: 'Décrire mon organisation', arrow: '↓' },
+    { id: 'skip', label: 'Ignorer et continuer', arrow: '→' }
+  ]
+}
 
 // Question d'intention posée avant le formulaire de contexte. Elle recueille le
 // profil que l'organisation *souhaite* atteindre, là où les attributs décrivent
@@ -35,6 +56,11 @@ const TRANSFORMATION_QUESTION =
   'Quel degré de transformation l’adoption de l’IA doit-elle déterminer dans votre organisation, ' +
   'selon vous ?'
 
+// `contextWarned` retient que l'avertissement de saut a été montré : ce qu'on
+// perd à partir sans avoir décrit son organisation se dit une fois, à la
+// première tentative, et ne se répète pas ensuite. Il suit la session, sans
+// quoi un simple rechargement le reposerait.
+//
 // `transformation` porte le profil déclaré au cadrage ; à null, le profil visé
 // suit la seule recommandation, qui se déplace au fil des attributs de contexte.
 // `wave` dit jusqu'où le questionnaire est ouvert (1 = première série seule),
@@ -55,8 +81,8 @@ function defaultState() {
     wave: 1,
     offScope: null,
     form: {},
-    showContext: true,
     transformation: null,
+    contextWarned: false,
     session: newSessionId()
   }
 }
@@ -89,6 +115,15 @@ export function useMaturityTool() {
     state.transformation == null
       ? recommendation.value.level
       : Math.min(state.transformation, recommendation.value.level)
+  )
+
+  // Le cadrage est dit complet quand l'intention est posée et que chacun des
+  // attributs qui nourrissent la recommandation a une réponse — ce sont les deux
+  // entrées de `target`, et donc des areas parcourues. Les champs descriptifs
+  // n'en sont pas : ils documentent l'évaluation sans peser sur elle, et les
+  // laisser vides ne fait rien perdre au diagnostic.
+  const contextComplete = computed(() =>
+    state.transformation != null && ALL_FIELDS.every(field => state.form[field.id] != null)
   )
 
   const ordered = computed(() => orderedAreas(target.value))
@@ -226,9 +261,6 @@ export function useMaturityTool() {
     toggleLevelDetail(n) {
       state.openLevels[n] = !state.openLevels[n]
     },
-    toggleDescriptiveContext() {
-      state.showContext = !state.showContext
-    },
     // Même convention que les attributs de contexte : recliquer le profil retenu
     // annule la réponse — le profil visé repasse alors sous la seule
     // recommandation. L'index n'est pas remis à zéro : les areas déjà
@@ -276,8 +308,15 @@ export function useMaturityTool() {
       state.offScope = null
       scrollToTop()
     },
+    // L'avertissement de saut est consommé dès qu'il a été lu, quelle que soit
+    // la sortie choisie : il dit ce que coûte un formulaire vide, pas ce que
+    // coûte chaque clic sur « Passer à l'évaluation ».
+    dismissContextWarning() {
+      state.contextWarned = true
+    },
+    // La confirmation est une affaire d'écran : elle se demande dans la modale
+    // que porte App, et l'action ne s'exécute qu'une fois la réponse obtenue.
     resetSession() {
-      if (!window.confirm(RESET_CONFIRMATION)) return
       clearSession()
       Object.assign(state, defaultState())
       scrollToTop()
@@ -293,6 +332,7 @@ export function useMaturityTool() {
     sessionLabel: `session ${state.session}` +
       (wasRestored && hasProgress.value ? ' · restaurée' : ''),
     hasProgress: hasProgress.value,
+    resetDialog: RESET_DIALOG,
     showPhases: isToolScreen(state.screen),
     phases: JOURNEY.map((phase, index) => ({
       n: phase.n,
@@ -420,17 +460,25 @@ export function useMaturityTool() {
 
   // Le cadrage ne montre plus que le formulaire : la recommandation qu'il
   // alimente se calcule en silence et ne s'explique qu'au palier.
+  //
+  // Ce qu'on gagne à décrire son organisation ne s'affiche plus dans la page :
+  // rien n'y étant bloquant, l'argument n'a lieu d'être qu'au moment où l'on
+  // s'apprête à partir sans avoir répondu — et une seule fois.
   const cadrage3 = computed(() => ({
     transformationField: transformationField.value,
+    // Le degré de transformation est la seule réponse exigée du cadrage : il
+    // décide des areas parcourues, et rien en aval ne peut le déduire. Le reste
+    // du formulaire ne fait qu'affiner, et reste donc facultatif.
+    canContinue: state.transformation != null,
+    blockedReason: 'Répondez au degré de transformation visé pour continuer.',
+    warnOnSkip: !contextComplete.value && !state.contextWarned,
+    skipDialog: SKIP_DIALOG,
     groups: CONTEXT_GROUPS.map(group => ({
       id: group.id,
       label: group.label,
       fields: group.fields.map(buildField)
     })),
-    descriptiveFields: DESCRIPTIVE_FIELDS.map(buildField),
-    showContext: state.showContext,
-    // Le panneau nomme lui-même son contenu : le libellé n'a plus à le répéter.
-    contextToggleLabel: state.showContext ? '− replier' : '+ déplier'
+    descriptiveFields: DESCRIPTIVE_FIELDS.map(buildField)
   }))
 
   // Cette carte a quitté le parcours pour la page d'information, et avec lui la

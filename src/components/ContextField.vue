@@ -14,7 +14,12 @@
         {{ open ? '−' : '+' }}
       </button>
     </legend>
-    <div class="field__options" role="radiogroup" :aria-label="field.label">
+    <div
+      class="field__options"
+      role="radiogroup"
+      :aria-label="field.label"
+      :aria-required="required ? 'true' : undefined"
+    >
       <button
         v-for="option in field.options"
         :key="option.value"
@@ -64,9 +69,13 @@
 // avant de choisir.
 import { computed, ref, useId } from 'vue'
 
+// `required` ne fait qu'annoncer l'exigence aux technologies d'assistance : la
+// contrainte elle-même est tenue par l'écran, qui garde sa sortie fermée tant
+// que la réponse manque. Le champ, lui, ne refuse rien.
 const props = defineProps({
   field: { type: Object, required: true },
-  pinActive: { type: Boolean, default: false }
+  pinActive: { type: Boolean, default: false },
+  required: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['select'])
@@ -122,6 +131,19 @@ const toggleLabel = computed(() =>
 .field__option {
   --chip-padding: 7px 11px;
   --chip-font-size: 11px;
+}
+
+/* L'option retenue s'allume comme un rang d'indicateur — bord doublé, fond à
+   peine teinté, libellé gras — plutôt que par l'aplat noir de la pastille
+   ordinaire : le contexte est une réponse qu'on relit et qu'on corrige, pas un
+   jalon franchi. Le retrait rendu au bord garde la pastille à sa taille : sans
+   lui, chaque clic décalerait les options suivantes de deux pixels. */
+.field__option.is-active {
+  --chip-padding: 6px 10px;
+  border: 2px solid var(--color-text);
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 .field__detail {

@@ -81,7 +81,8 @@ function sanitize(raw, screens) {
   if (screens.indexOf(raw.screen) >= 0) out.screen = raw.screen
   if (Number.isInteger(raw.diagIdx) && raw.diagIdx >= 0) out.diagIdx = raw.diagIdx
   if (raw.wave === 1 || raw.wave === 2) out.wave = raw.wave
-  if (typeof raw.showContext === 'boolean') out.showContext = raw.showContext
+  // Avertissement de saut déjà lu : il ne se repose pas après un rechargement.
+  if (typeof raw.contextWarned === 'boolean') out.contextWarned = raw.contextWarned
   // Degré de transformation visé : un profil du modèle, ou rien. Absent ou
   // invalide, il retombe sur la valeur par défaut (null), c'est-à-dire sur la
   // seule recommandation. Un payload écrit par une version antérieure porte
@@ -104,8 +105,8 @@ function snapshot(state) {
     screen: state.screen,
     diagIdx: state.diagIdx,
     wave: state.wave,
-    showContext: state.showContext,
     transformation: state.transformation,
+    contextWarned: state.contextWarned,
     session: state.session,
     checked: boolMap(state.checked),
     openLevels: boolMap(state.openLevels),

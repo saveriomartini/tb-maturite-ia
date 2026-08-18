@@ -1,21 +1,11 @@
 <template>
   <section class="panel descriptive">
-    <button
-      type="button"
-      class="button-reset descriptive__head"
-      :aria-expanded="open"
-      :aria-controls="bodyId"
-      @click="emit('toggle')"
-    >
-      <span>Contexte descriptif — facultatif</span>
-      <span class="descriptive__toggle">{{ toggleLabel }}</span>
-    </button>
+    <h2 class="panel-head descriptive__head">
+      <span>Établissement</span>
+      <span class="descriptive__hint">purement statistique</span>
+    </h2>
 
-    <div v-show="open" :id="bodyId" class="descriptive__body">
-      <p class="descriptive__intro">
-        Attributs documentaires issus de la Table 1 du modèle. Ils décrivent l’unité évaluée,
-        n’entrent pas dans l’ordre du diagnostic et ne servent qu’aux statistiques comparatives.
-      </p>
+    <div class="descriptive__body">
       <div class="descriptive__fields">
         <ContextField
           v-for="field in fields"
@@ -32,22 +22,20 @@
 // Attributs documentaires. Ils vivaient au bas du formulaire de contexte, sous
 // un bouton fantôme qui les faisait passer pour un repli de ce formulaire ; ils
 // n'en sont pourtant pas : rien de ce qu'on répond ici ne touche au diagnostic.
-// Le panneau autonome le dit par sa forme, et l'en-tête le dit par ses mots.
+// Le panneau autonome le dit par sa forme, son en-tête par ses mots — « purement
+// statistique » tient en trois mots ce qu'un paragraphe d'introduction disait en
+// trois lignes, et le dit avant qu'on lise les champs plutôt qu'après.
 //
-// Même gabarit pliable que TransformationQuestion : la page de cadrage n'a que
-// deux façons de se replier, pas trois.
-import { useId } from 'vue'
+// Le panneau ne se replie plus. Trois champs sous un en-tête ne valent pas le
+// pli, et le repli faisait de ces attributs une annexe qu'on n'ouvre pas : ils
+// ne pèsent sur rien, mais ils se remplissent.
 import ContextField from './ContextField.vue'
 
 defineProps({
-  fields: { type: Array, required: true },
-  open: { type: Boolean, required: true },
-  toggleLabel: { type: String, required: true }
+  fields: { type: Array, required: true }
 })
 
-const emit = defineEmits(['select-option', 'toggle'])
-
-const bodyId = `descriptive-body-${useId()}`
+const emit = defineEmits(['select-option'])
 </script>
 
 <style scoped>
@@ -55,49 +43,30 @@ const bodyId = `descriptive-body-${useId()}`
   margin-top: 22px;
 }
 
-/* L'en-tête est la commande de repli : elle tient toute la largeur du panneau
-   plutôt que d'exposer un bouton séparé à côté du titre. Les traits de
-   `.panel-head` sont repris ici plutôt que par la classe utilitaire, que
-   `.button-reset` écraserait — il la suit dans la feuille de tokens. */
+/* Même partage que les deux autres en-têtes du cadrage : le titre à gauche, ce
+   qu'il en est de ces réponses au bout de la même barre. */
 .descriptive__head {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 8px 14px;
-  border-bottom: 2px solid var(--color-text);
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  gap: 6px 14px;
+  margin: 0;
+  font-family: var(--font-body);
+  line-height: inherit;
 }
 
-/* Replié, le panneau se réduit à son en-tête : le filet ne sépare plus rien. */
-.descriptive__head[aria-expanded='false'] {
-  border-bottom: 0;
-}
-
-.descriptive__head:hover {
-  background: var(--color-neutral-200);
-}
-
-.descriptive__toggle {
-  flex: none;
-  font-size: 9.5px;
-  font-weight: 800;
+/* La glose n'est pas un second titre : elle abandonne les capitales et la
+   graisse de la barre. */
+.descriptive__hint {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
   color: var(--color-neutral-700);
 }
 
 .descriptive__body {
   padding: 14px 20px 18px;
-}
-
-.descriptive__intro {
-  max-width: 640px;
-  margin: 0 0 14px;
-  font-size: 10.5px;
-  color: var(--color-neutral-700);
 }
 
 .descriptive__fields {

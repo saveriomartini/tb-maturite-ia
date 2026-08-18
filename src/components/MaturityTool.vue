@@ -22,8 +22,8 @@
     v-else-if="screen === 'tool1'"
     :cadrage3="tool.cadrage3"
     @select-option="tool.actions.selectOption"
-    @toggle-context="tool.actions.toggleDescriptiveContext"
     @select-transformation="tool.actions.selectTransformation"
+    @dismiss-warning="tool.actions.dismissContextWarning"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
