@@ -10,6 +10,7 @@ import { ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-
 import { JOURNEY } from '../data/journey.js'
 import { DEFAULT_INDICATOR_RANK, MATURITY_INDICATORS } from '../data/maturity-indicators.js'
 import { IN_PROGRESS, PREPARATION } from '../data/preparation.js'
+import { PASSAGES, REVOLUTIONARY_FROM, transformationDegree } from '../data/transformation.js'
 import {
   BLOCKS, EVALUABLE_AREAS, LEVELS, levelDescription, orderedAreas, profileExportLabel, profileName
 } from '../domain/model.js'
@@ -192,6 +193,127 @@ export function useMaturityTool() {
     return { label: IN_PROGRESS.name, desc: IN_PROGRESS.desc, exportLabel: IN_PROGRESS.name }
   })
   const acquiredLabel = computed(() => acquiredProfile.value.label)
+
+  // — écart avec le profil visé —
+  // L'escalier montre où l'on est et où l'on visait ; il ne dit pas ce qui
+  // sépare les deux. Ce texte le dit, et nomme par quoi commencer.
+  //
+  // La règle d'agrégation désigne ce « par quoi » sans arbitraire : un rang est
+  // acquis quand *tous* les domaines de ce rang et des rangs inférieurs le sont
+  // — pas de compensation. Le rang le plus bas où il manque un domaine retient
+  // donc toute la montée, et les domaines non acquis de ce rang et d'en dessous
+  // sont exactement ceux qu'il faut lever pour avancer d'un cran. Les nommer,
+  // c'est nommer le chemin le plus court, pas une sélection d'opportunité.
+  //
+  // Au-delà du premier rang manquant, on ne promet rien : les domaines des rangs
+  // suivants sont connus, mais l'ordre dans lequel ils se lèveront dépend de ce
+  // qu'on aura trouvé en montant.
+  //
+  // Seuls les domaines réellement évalués entrent ici. Ceux jamais présentés ne
+  // sont pas un manque — l'écran des écarts les annonce déjà à part, et les
+  // compter comme retenant le rang accuserait l'utilisateur de questions qu'on
+  // ne lui a pas posées.
+  const GAP_NAMED_DOMAINS = 3
+  const RANK_WORDS = ['', 'un', 'deux', 'trois', 'quatre', 'cinq']
+
+  // Énumération après deux-points, séparée par des virgules seulement. La
+  // liaison française par « et » final était à écarter ici : plusieurs intitulés
+  // de domaine en contiennent déjà un — « Sécurité des modèles et agents IA »,
+  // « Politiques et conformité », « Alignement stratégique et Structure de
+  // l'organisation » — et « … agents IA et Infrastructure technologique » ne
+  // laisse plus voir où finit le premier. Le compte annoncé juste avant la liste
+  // dit combien d'intitulés y chercher.
+  //
+  // Au-delà de ce qu'on nomme, le reste est compté plutôt qu'énuméré : une
+  // phrase de synthèse qui déroulerait treize intitulés redeviendrait la liste
+  // qu'elle résume.
+  function listDomains(names, more) {
+    const named = names.join(', ')
+    return more ? `${named} — et ${more} ${more > 1 ? 'autres' : 'autre'}` : named
+  }
+
+  // Le profil atteint, situé sur l'échelle de transformation. La description que
+  // l'AIMM donne d'un niveau dit ce que l'organisation y sait faire ; elle ne dit
+  // pas quel degré de transformation ce niveau représente, ni pourquoi le
+  // suivant coûte ce qu'il coûte. Venkatraman le dit, et c'est cette phrase-là
+  // qui rend l'escalier lisible autrement que comme une note.
+  //
+  // Hors du modèle — Préparation créditée, ou diagnostic trop peu avancé — il n'y
+  // a pas de degré à nommer : on ne situe pas ce qui n'est pas encore un profil.
+  const acquiredPosition = computed(() => {
+    const degree = transformationDegree(acquired.value)
+    return degree ? degree.position : null
+  })
+
+  // La nature du passage tient à la seule position de l'écart par rapport à la
+  // ligne : ni le nombre de domaines qui manquent ni leur contenu n'y changent
+  // rien. C'est ce qui la rend utile — elle dit ce qu'on s'apprête à entreprendre
+  // avant de dire par quoi commencer, et distingue le seul passage de l'échelle
+  // qui ne se rattrape pas en faisant davantage de la même chose.
+  const passageNature = computed(() => {
+    if (acquired.value >= target.value) return PASSAGES.reached
+    if (acquired.value >= REVOLUTIONARY_FROM) {
+      const degree = transformationDegree(target.value)
+      return PASSAGES.revolutionary.replace('{reach}', degree ? degree.reach : 'plus loin')
+    }
+    return target.value >= REVOLUTIONARY_FROM ? PASSAGES.crossing : PASSAGES.evolutionary
+  })
+
+  const gapToTarget = computed(() => {
+    const targetName = targetLabel.value
+    const missing = evaluated.value
+      .filter(area => area.level <= target.value)
+      .map(area => ({ area, stats: areaStats(area, state.checked) }))
+      .filter(entry => !entry.stats.acquired)
+
+    // Rien à lever : soit la cible est tenue, soit rien n'a encore été vu. Les
+    // deux se disent, et aucun des deux ne se dit comme un écart.
+    if (!missing.length) {
+      return acquired.value >= target.value
+        ? {
+          eyebrow: 'Profil visé atteint',
+          passage: passageNature.value,
+          domains: `Tous les domaines de capacité que « ${targetName} » met en jeu sont acquis.`
+        }
+        : {
+          eyebrow: 'Écart avec le profil visé',
+          passage: passageNature.value,
+          domains: `Le profil visé est « ${targetName} ». Aucun domaine de capacité n'a encore ` +
+            `été évalué : l'écart reste à mesurer.`
+        }
+    }
+
+    const nextRank = Math.min(...missing.map(entry => entry.area.level))
+    const blockers = missing
+      .filter(entry => entry.area.level <= nextRank)
+      // Les plus proches d'être acquis en tête : à rang égal, c'est là que
+      // l'effort se convertit le plus vite en profil.
+      .sort((a, b) =>
+        (a.stats.practicesTotal - a.stats.practicesDone) -
+        (b.stats.practicesTotal - b.stats.practicesDone)
+      )
+      .map(entry => entry.area.name)
+
+    const named = blockers.slice(0, GAP_NAMED_DOMAINS)
+    const more = blockers.length - named.length
+    const ranks = target.value - acquired.value
+    const plural = blockers.length > 1 ? 's' : ''
+
+    const distance = ranks === 1
+      ? `Le profil visé, « ${targetName} », est un rang plus haut.`
+      : `Le profil visé, « ${targetName} », est ${RANK_WORDS[ranks] || ranks} rangs plus haut.`
+    const which = nextRank === target.value
+      ? 'Il se joue sur'
+      : `Le premier, « ${profileName(nextRank)} », se joue sur`
+
+    return {
+      eyebrow: 'Écart avec le profil visé',
+      passage: passageNature.value,
+      domains: `${distance} ${which} ${blockers.length} domaine${plural} de capacité que le ` +
+        `diagnostic n'a pas trouvé${plural} acquis : ${listDomains(named, more)}. Y valider tous ` +
+        `les critères d'adoption suffit à franchir le rang.`
+    }
+  })
 
   const answeredCount = computed(() => Object.keys(state.form).filter(id => state.form[id] != null).length)
   const hasProgress = computed(() =>
@@ -687,6 +809,8 @@ export function useMaturityTool() {
     targetLabel: targetLabel.value,
     acquiredLabel: acquiredLabel.value,
     acquiredDesc: acquiredProfile.value.desc,
+    acquiredPosition: acquiredPosition.value,
+    gap: gapToTarget.value,
     // La Préparation ouvre l'échelle : hors modèle, jamais visée, elle n'est
     // créditée que tant qu'aucun profil du modèle ne l'est — passé ce point,
     // elle reste franchie mais cesse d'être le profil courant.

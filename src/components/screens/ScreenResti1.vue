@@ -18,7 +18,18 @@
           <span v-else-if="level.isTarget" class="tag ladder__tag">cible</span>
         </li>
       </ol>
-      <p class="ladder__desc">{{ vm.acquiredDesc }}</p>
+      <div class="ladder__body">
+        <p class="ladder__desc">{{ vm.acquiredDesc }}</p>
+        <p v-if="vm.acquiredPosition" class="ladder__desc ladder__position">
+          {{ vm.acquiredPosition }}
+        </p>
+
+        <div class="gap">
+          <p class="gap__eyebrow eyebrow">{{ vm.gap.eyebrow }}</p>
+          <p class="gap__text">{{ vm.gap.passage }}</p>
+          <p class="gap__text gap__domains">{{ vm.gap.domains }}</p>
+        </div>
+      </div>
     </div>
 
     <p class="section-title">Par bloc :</p>
@@ -61,9 +72,15 @@
 </template>
 
 <script setup>
-// Synthèse des résultats : profil atteint, escalier des profils, avancement par
-// bloc. Section haute de la page de résultats — le détail par area la suit sans
-// changer d'écran, et la navigation appartient à la page.
+// Synthèse des résultats : profil atteint, escalier des profils, écart avec le
+// profil visé, avancement par bloc. Section haute de la page de résultats — le
+// détail par area la suit sans changer d'écran, et la navigation appartient à
+// la page.
+//
+// L'escalier situe, il n'explique pas : il montre deux étiquettes sur une
+// échelle sans dire ce qui les sépare. Le texte d'écart le dit et nomme les
+// areas qui retiennent le rang suivant — c'est la seule chose de cette page sur
+// laquelle on puisse agir dès demain.
 //
 // Le bloc se lit sur trois chiffres, du plus haut au plus fin : les areas
 // acquises — c'est sur cette unité, et elle seule, que se joue le profil —, les
@@ -158,14 +175,56 @@ function stripe(colors) {
   border-color: var(--color-text);
 }
 
-.ladder__desc {
+.ladder__body {
   max-width: 760px;
-  margin: 0;
   padding: 20px 24px;
   background: var(--color-neutral-100);
+}
+
+.ladder__desc {
+  margin: 0;
   font-size: 14px;
   line-height: 1.5;
   text-wrap: pretty;
+}
+
+/* L'écart suit la description du profil atteint, séparé par un filet et non par
+   un second panneau : les deux textes sont du même registre et se lisent à la
+   suite — l'un décrit la situation, l'autre le chemin qui reste. Les encadrer
+   séparément en ferait deux informations concurrentes. */
+.gap {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.gap__eyebrow {
+  margin: 0 0 6px;
+}
+
+.gap__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Deux paragraphes de registres différents : le premier dit la nature du
+   passage, le second ce par quoi le commencer. Le second est le seul de la page
+   sur lequel on puisse agir dès demain — il se détache donc, sans changer de
+   corps ni de couleur, par le seul filet vertical qui le tient. */
+.gap__domains {
+  margin-top: 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-text);
+}
+
+/* le positionnement suit la description AIMM comme une seconde voix : même
+   corps, couleur légèrement retirée, pour qu'on voie qu'il ne vient pas de la
+   même source sans avoir à le dire */
+.ladder__position {
+  margin-top: 12px;
+  color: var(--color-neutral-700);
 }
 
 .section-title {
