@@ -7,6 +7,7 @@
       @reset="resetting = true"
     />
     <MaturityTool :tool="tool" />
+    <AppFooter :attribution="ATTRIBUTION" />
 
     <AppDialog
       :open="resetting"
@@ -28,10 +29,16 @@
 // Tant qu'on n'a pas répondu, rien n'est effacé : `resetSession` n'est appelé
 // que sur la sortie qui le demande, et toutes les autres — annulation, Échap —
 // referment la boîte sans rien toucher.
+//
+// L'attribution est posée ici, sous le routeur d'écrans, pour la même raison :
+// elle vaut pour tous les écrans, et un pied de page recopié dans chacun d'eux
+// finirait par manquer au prochain.
 import { ref } from 'vue'
 import AppDialog from './components/AppDialog.vue'
+import AppFooter from './components/AppFooter.vue'
 import AppHeader from './components/AppHeader.vue'
 import MaturityTool from './components/MaturityTool.vue'
+import { ATTRIBUTION } from './data/attribution.js'
 import { useMaturityTool } from './composables/useMaturityTool.js'
 
 const tool = useMaturityTool()
@@ -45,9 +52,10 @@ function answerReset(action) {
 </script>
 
 <style scoped>
+/* La respiration de fin de page appartient désormais au pied de page
+   d'attribution, qui ferme tous les écrans. */
 .app {
   min-height: 100vh;
-  padding-bottom: 64px;
   background: var(--color-bg);
 }
 </style>

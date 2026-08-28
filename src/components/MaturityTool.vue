@@ -7,6 +7,7 @@
   <ScreenInfo
     v-else-if="screen === 'info'"
     :journey="tool.journey"
+    :info="tool.info"
     :cadrage1="tool.cadrage1"
     :scope="tool.diagStart"
     @toggle-level="tool.actions.toggleLevelDetail"

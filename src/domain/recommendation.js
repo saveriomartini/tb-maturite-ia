@@ -5,7 +5,7 @@
 // Le raisonnement complet est documenté dans docs/NIVEAU-CIBLE.md.
 
 import {
-  ALL_FIELDS, LEVEL_CAPS, LEVEL5_REQUIREMENTS, REGULATED_RISK_CEILING
+  ALL_FIELDS, LEVEL_CAPS, LEVEL5_REQUIREMENTS
 } from '../data/context-attributes.js'
 
 // Valeur prise par un attribut non renseigné. Le score maximal, et non une
@@ -23,10 +23,11 @@ function fieldScore(field, form) {
   if (value == null) return null
   const option = field.opts.find(opt => opt[0] === value)
   if (!option) return null
-  // Un cadre réglementaire fort borne l'appétit au risque effectivement retenu.
-  if (field.id === 'risk' && form.regulatory === 'regulated') {
-    return Math.min(option[2], REGULATED_RISK_CEILING)
-  }
+  // L'appétit au risque se prend tel qu'il est déclaré. Il était naguère borné
+  // quand la posture réglementaire valait « fortement régulé » ; cet attribut a
+  // été retiré (voir context-attributes.js), et avec lui la correction qu'il
+  // portait — la contrainte légale vaut pour toutes les organisations visées et
+  // ne distingue donc plus personne.
   return option[2]
 }
 

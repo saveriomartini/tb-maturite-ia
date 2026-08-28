@@ -56,9 +56,9 @@
 </template>
 
 <script setup>
-// L'en-tête de page nomme d'abord l'unité évaluée, puis les deux profils, puis
-// la couverture : du plus englobant au plus fin, chaque ligne bornant celles
-// qui la suivent. L'unité vient en premier parce que c'est la seule qui puisse
+// L'en-tête de page nomme d'abord l'organisation évaluée, puis les deux profils,
+// puis la couverture : du plus englobant au plus fin, chaque ligne bornant celles
+// qui la suivent. Elle vient en premier parce que c'est la seule qui puisse
 // invalider la lecture des autres — un document relu hors de l'outil, sans
 // personne pour préciser le périmètre, se prend sinon pour un bilan de
 // l'entreprise entière. Elle est répétée sur chaque page : une page détachée du

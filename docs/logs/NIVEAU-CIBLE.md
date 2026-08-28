@@ -43,9 +43,9 @@ Chaque attribut de contexte porte un `axis` :
 
 | axis | sens | attributs |
 |---|---|---|
-| `ambition` | ce que l'organisation **veut** atteindre | horizon, risque, déploiement, ROI, ambition d'adoption |
-| `capacity` | ce qu'elle est **en mesure de soutenir** | digitalisation, données, littératie, ressources, pilotage |
-| `null` | cadrage : ne score pas, mais peut plafonner | périmètre, réglementation, approche de développement IA |
+| `ambition` | ce que l'organisation **veut** atteindre | horizon, risque, déploiement, ROI, rythme d'adoption |
+| `capacity` | ce qu'elle est **en mesure de soutenir** | digitalisation, données, connaissances, ressources, pilotage |
+| `null` | cadrage : ne score pas, mais peut plafonner | périmètre, approche de développement IA |
 
 Séparer les deux axes est le cœur de la logique : une organisation peut viser haut sans avoir les
 moyens de suivre, et le modèle refuse de recommander un niveau que la capacité ne porte pas.
@@ -60,12 +60,14 @@ la règle du § 0.
 
 ## 2. Score par attribut
 
-Chaque option porte un score normalisé `0..1` (troisième valeur du tuple `opts`).
-Une seule correction est appliquée à ce stade :
+Chaque option porte un score normalisé `0..1` (troisième valeur du tuple `opts`), et ce score est
+pris tel quel : aucune correction ne s'applique à ce stade.
 
-> **Plafond réglementaire** — si la posture réglementaire vaut « fortement régulé », le score de
-> l'appétit au risque est borné à `0.5` (`REGULATED_RISK_CEILING`). Un cadre réglementaire fort
-> borne le risque effectivement assumable, quelle que soit la réponse donnée.
+> L'appétit au risque était naguère borné à `0.5` lorsque la posture réglementaire valait
+> « fortement régulé ». Cet attribut a été retiré le 28.08.2026 — une PME de l'arc jurassien relève
+> de toute façon de la nLPD, et souvent du règlement européen sur l'IA par ses clients, de sorte que
+> l'option « non régulé » ne décrivait personne. La contrainte légale ne distingue plus les
+> organisations visées : elle ne corrige donc plus aucun score.
 
 ## 3. Niveau par axe
 
@@ -109,7 +111,7 @@ dans `LEVEL_CAPS` et s'appliquent **après** l'arrondi.
 | Attribut | Valeur déclenchante | Plafond |
 |---|---|---|
 | Ressources affectées à l'IA | aucun rôle IA | 2 |
-| Littératie du conseil et de la direction | faible | 2 |
+| Connaissances IA du conseil et de la direction | faibles | 2 |
 | Préparation des données | non préparées | 2 |
 | Niveau de digitalisation | faible | 2 |
 | Périmètre de l'évaluation | une équipe | 3 |
@@ -121,13 +123,13 @@ Si plusieurs plafonds s'appliquent, **le plus bas gagne**. Le plafond n'est rete
 effectivement le niveau ; il ne remonte jamais un niveau bas. Les plafonds à l'origine de la valeur
 retenue sont affichés à l'utilisateur avec leur motif.
 
-Noter que le périmètre et la réglementation n'ont pas d'`axis` mais agissent ici : ils ne
-contribuent pas à une moyenne, ils bornent.
+Noter que le périmètre n'a pas d'`axis` mais agit ici : il ne contribue pas à une moyenne,
+il borne.
 
 ### Le périmètre a un second rôle, hors calcul
 
 `scope` est le seul attribut de contexte qui ressorte ailleurs que dans le calcul : il nomme
-l'**unité évaluée** en tête de la restitution et de l'en-tête de chaque page de l'export
+l'**organisation évaluée** en tête de la restitution et de l'en-tête de chaque page de l'export
 (`src/domain/scope.js`). Ce second rôle est purement déclaratif — il ne modifie ni le niveau cible,
 ni les domaines parcourus, ni la mesure.
 
@@ -155,10 +157,10 @@ comme un niveau à estimer.
 
 À l'écran de cadrage 3, un attribut au repos ne montre que son libellé et ses options. L'aide et
 les critères sont dépliés par le « + » qui suit le libellé, un attribut à la fois : c'est ce qui
-permet de rédiger des critères longs sans encombrer un formulaire de treize attributs.
+permet de rédiger des critères longs sans encombrer un formulaire de douze attributs.
 
 Sont rédigés à ce jour les quatre attributs dont le libellé seul restait interprétable :
-préparation des données, niveau de digitalisation, littératie du conseil et de la direction,
+préparation des données, niveau de digitalisation, connaissances IA du conseil et de la direction,
 pilotage de l'adoption. Les autres attributs à plafond — ressources affectées à l'IA, périmètre,
 horizon, approche de déploiement — ont des libellés qui se suffisent, et n'en portent pas.
 
@@ -171,7 +173,7 @@ réunies :
 - horizon supérieur à 3 ans ;
 - équipe IA interne dédiée ;
 - instance de pilotage transverse ;
-- littératie IA avancée du conseil et de la direction.
+- connaissances IA avancées du conseil et de la direction.
 
 Une condition n'est comptée comme manquante que si elle est **contredite** par une réponse : un
 attribut laissé vide ne bloque pas l'accès au Level 5, conformément à la règle permissive du § 3.
@@ -192,8 +194,7 @@ fixé le profil visé (§ 0).
 ## 8. Ordre d'application, en une ligne
 
 ```text
-scores  →  plafond réglementaire du risque
-        →  moyenne par axe (non renseigné = 1)
+scores  →  moyenne par axe (non renseigné = 1)
         →  min(ambition, capacité + 1)
         →  arrondi, borné [1, 5]
         →  plafonds durs (le plus bas gagne)
@@ -205,15 +206,16 @@ scores  →  plafond réglementaire du risque
 
 ## Exemples
 
-**A — PME sans facteur bloquant.** Digitalisation moyenne (0,5), données partiellement prêtes (0,5),
-littératie intermédiaire (0,5), rôles internes partagés (0,67), coordination légère (0,5) →
+**A — PME sans facteur bloquant.** Digitalisation moyenne (0,5), données partiellement prêtes à
+l'emploi (0,5), connaissances intermédiaires (0,5), rôles internes partagés (0,67), coordination
+légère (0,5) →
 capacité `1 + 0,534 × 4 = 3,14`. Horizon 1 à 3 ans (0,67), risque modéré (0,5), déploiement par
-vagues (0,5), ROI qualitatif (0,5), adopteur précoce (0,75) → ambition `1 + 0,584 × 4 = 3,34`.
-Croisement : `min(3,34 ; 4,14) = 3,34` → arrondi à 3. Aucun plafond dur ne se déclenche :
+vagues (0,5), ROI qualitatif (0,5), une longueur d'avance (0,67) → ambition `1 + 0,568 × 4 = 3,27`.
+Croisement : `min(3,27 ; 4,14) = 3,27` → arrondi à 3. Aucun plafond dur ne se déclenche :
 **Level 3 recommandé**.
 
 **B — le même cas, sans ressource IA.** Seule la réponse « aucun rôle IA » change. La capacité tombe
-à `1 + 0,4 × 4 = 2,6`, mais le croisement reste dicté par l'ambition : `min(3,34 ; 3,6) = 3,34` →
+à `1 + 0,4 × 4 = 2,6`, mais le croisement reste dicté par l'ambition : `min(3,27 ; 3,6) = 3,27` →
 arrondi à 3. C'est le plafond dur qui tranche : sans ressource affectée à l'IA, le niveau est borné
 à 2. **Level 2 recommandé**, avec le motif affiché. L'exemple montre pourquoi les plafonds existent :
 la moyenne à elle seule absorbait le facteur bloquant.

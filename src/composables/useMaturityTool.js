@@ -8,6 +8,7 @@
 import { computed, reactive, watch } from 'vue'
 import { ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
+import { INFO } from '../data/info.js'
 import { DEFAULT_INDICATOR_RANK, MATURITY_INDICATORS } from '../data/maturity-indicators.js'
 import { IN_PROGRESS, PREPARATION } from '../data/preparation.js'
 import { PASSAGES, REVOLUTIONARY_FROM, transformationDegree } from '../data/transformation.js'
@@ -598,6 +599,13 @@ export function useMaturityTool() {
     }))
   }))
 
+  // L'écran d'information ne dépend d'aucune session : ce qu'il explique — les
+  // trois mots, la grille de niveaux, les équivalences d'échelles — vaut avant
+  // comme après le diagnostic. Le contenu passe tout de même par le view-model,
+  // pour que l'écran continue de ne recevoir que des props et n'aille jamais
+  // chercher lui-même dans src/data.
+  const info = computed(() => INFO)
+
   const cadrage1 = computed(() => ({
     blocks: BLOCKS.map(block => ({
       id: block.id,
@@ -1038,6 +1046,7 @@ export function useMaturityTool() {
     home,
     demo,
     journey,
+    info,
     cadrage1,
     cadrage3,
     diagStart,

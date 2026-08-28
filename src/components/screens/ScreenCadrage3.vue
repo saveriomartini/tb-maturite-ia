@@ -34,8 +34,8 @@
 // parcourra ; le formulaire qui suit ne fait que le restreindre — jamais le
 // remonter — et l'écran ne montre pas ce qu'il produit : l'écart entre ce qu'on
 // vise et ce que le contexte porte ne se discute qu'à la restitution. Les
-// attributs d'établissement closent l'écran : ils ne pèsent sur rien, et leur
-// en-tête le dit.
+// attributs qui décrivent l'organisation closent l'écran : ils ne pèsent sur
+// rien, et leur en-tête le dit.
 //
 // Rien ne plaide plus ici pour le formulaire, et rien ne le contourne : la page
 // pose ses questions et laisse le pied de page conclure, comme tous les autres

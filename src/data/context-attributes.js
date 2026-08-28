@@ -7,7 +7,7 @@
 // Les attributs sont regroupés selon les trois familles du modèle (fonctions
 // organisationnelles / technologiques / IA). Chaque attribut porte :
 //   aimm  : l'attribut correspondant de la Table 1, '' si l'attribut vient
-//           du cadrage métier (littératie, digitalisation, ROI, pilotage,
+//           du cadrage métier (connaissances, digitalisation, ROI, pilotage,
 //           déploiement) — traçabilité vers la source, non affiché dans l'outil
 //   axis  : 'ambition' (ce que l'organisation veut atteindre)
 //           'capacity' (ce qu'elle est en mesure de soutenir)
@@ -25,14 +25,21 @@ export const CONTEXT_GROUPS = [
     id: 'org',
     label: 'Fonctions organisationnelles',
     fields: [
+      // Quatre options et non cinq : « un programme transverse » a été retiré le
+      // 28.08.2026. C'était un calque de l'anglais *program*, qui ne nomme rien
+      // dans une PME — l'équipe qui porte l'initiative suffit à décrire ce cas,
+      // et le mot « transverse » faisait hésiter entre le périmètre évalué et
+      // l'instance qui pilote (voir l'attribut de pilotage, où il garde son
+      // sens). Les scores sont redistribués régulièrement sur les quatre rangs
+      // restants ; l'attribut n'ayant pas d'`axis`, ils ne pèsent sur aucune
+      // moyenne et seul « une équipe » agit, par le plafond qu'il déclenche.
       {
         id: 'scope', short: 'Périmètre', label: 'Périmètre de l’évaluation', aimm: 'Organizational scope', axis: null,
         hint: 'Frontière de la discussion sur la maturité',
         opts: [
           ['team', 'Une équipe', 0],
-          ['unit', 'Un département', 0.25],
-          ['sector', 'Un secteur d’activité', 0.5],
-          ['program', 'Un programme transverse', 0.75],
+          ['unit', 'Un département', 0.33],
+          ['sector', 'Un secteur d’activité', 0.67],
           ['org', 'Toute l’entreprise', 1]
         ]
       },
@@ -45,16 +52,16 @@ export const CONTEXT_GROUPS = [
           ['h3a', '1 à 3 ans', 0.67],
           ['h3p', 'Plus de 3 ans', 1]
         ]
-      },
-      {
-        id: 'regulatory', short: 'Réglementation', label: 'Posture réglementaire', aimm: 'Regulatory posture', axis: null,
-        hint: 'Un cadre réglementaire fort abaisse l’appétit au risque retenu',
-        opts: [
-          ['regulated', 'Fortement régulé', 0],
-          ['semi', 'Partiellement régulé', 0.5],
-          ['unregulated', 'Non régulé', 1]
-        ]
       }
+      // L'attribut de posture réglementaire (`regulatory`, Table 1 « Regulatory
+      // posture ») a été retiré le 28.08.2026. Il proposait « non régulé », et
+      // c'était faux pour la cible du travail : une PME de l'arc jurassien relève
+      // de la nLPD, et souvent du règlement européen sur l'IA par les clients
+      // qu'elle sert. Un attribut dont une option sur trois ne décrit aucune
+      // organisation réelle n'informe pas le calcul, il le fausse — et il faisait
+      // en outre baisser l'appétit au risque retenu au nom d'une réponse que
+      // personne n'était en mesure de donner correctement. Les obligations
+      // légales générales ne se déclarent donc plus : elles sont acquises.
     ]
   },
   {
@@ -79,10 +86,10 @@ export const CONTEXT_GROUPS = [
         opts: [
           ['none', 'Non préparées', 0,
             'Les données vivent dans les applications métier ou des fichiers, sans inventaire ni responsable désigné. Constituer un jeu de données est un projet en soi : plusieurs mois, ou délai inconnu.'],
-          ['partial', 'Partiellement prêtes', 0.5,
+          ['partial', 'Partiellement prêtes à l’emploi', 0.5,
             'Au moins un domaine clé est déjà consolidé et exploité (reporting, tableaux de bord), avec un responsable identifié. Sa réutilisation pour l’IA reste à qualifier : qualité, documentation, droits d’usage. Compter quelques semaines.'],
-          ['ready', 'Prêtes ou acquises pour l’IA', 1,
-            'Les jeux de données visés sont accessibles par un flux documenté et maintenu, leur qualité est suivie et leur droit d’usage pour l’IA est tranché (données personnelles, contrats tiers) — ou ils ont été acquis pour le cas d’usage. Compter quelques jours.']
+          ['ready', 'Prêtes à l’emploi', 1,
+            'Les jeux de données visés sont accessibles par un flux documenté et maintenu, leur qualité est suivie et leur droit d’usage pour l’IA est tranché (données personnelles, contrats tiers) — ou la solution retenue est prête à l’emploi et vient avec ses données. Compter quelques jours.']
         ]
       },
       {
@@ -91,7 +98,8 @@ export const CONTEXT_GROUPS = [
         opts: [
           ['buy', 'Acheter sur étagère', 0],
           ['customize', 'Personnaliser', 0.33],
-          ['hybrid', 'Hybride', 0.67],
+          ['hybrid', 'Hybride', 0.67,
+            'Certaines solutions sont achetées et utilisées telles quelles, d’autres sont développées ou entraînées par l’entreprise : les deux modes coexistent, chacun sur des cas d’usage identifiés.'],
           ['build', 'Construire en interne', 1]
         ]
       }
@@ -102,7 +110,7 @@ export const CONTEXT_GROUPS = [
     label: 'Fonctions IA',
     fields: [
       {
-        id: 'literacy', short: 'Littératie', label: 'Littératie IA du conseil et de la direction', aimm: '', axis: 'capacity',
+        id: 'literacy', short: 'Connaissances', label: 'Connaissances IA du conseil et de la direction', aimm: '', axis: 'capacity',
         hint: 'Ce que le conseil d’administration et le comité de direction savent faire eux-mêmes face à une proposition IA',
         opts: [
           ['low', 'Faible', 0,
@@ -158,19 +166,29 @@ export const CONTEXT_GROUPS = [
         hint: 'Le ROI a-t-il été discuté en amont ou repoussé après une phase pilote ?',
         opts: [
           ['deferred', 'Reporté après la phase pilote', 0],
-          ['qualitative', 'Discuté qualitativement en amont', 0.5],
-          ['business', 'Cas d’affaires chiffré en amont', 1]
+          ['qualitative', 'Discuté qualitativement en amont', 0.5,
+            'Les gains attendus ont été nommés et débattus avant de lancer le projet — gain de temps, qualité, capacité à absorber une charge —, mais aucun n’a été chiffré ni rapporté au coût de la solution.'],
+          ['business', 'Rentabilité chiffrée en amont', 1]
         ]
       },
+      // Les catégories d'adoptants de Rogers (1962) restent l'inspiration de cet
+      // attribut — c'est bien la même question qu'il pose, et le même axe. Leurs
+      // noms, eux, ont été abandonnés : personne ne se déclare « retardataire »,
+      // et la frontière entre majorité précoce et majorité tardive n'est pas
+      // lisible pour un dirigeant qui ne connaît pas la courbe. Une option
+      // humiliante à cocher n'est pas répondue sincèrement : elle est répondue
+      // un cran au-dessus, et l'attribut mesure alors la pudeur plutôt que le
+      // rythme. Les libellés disent donc ce qui est réellement demandé —
+      // attendre que d'autres aient éprouvé la technologie, ou avancer avant
+      // eux — et chacun énonce une préférence défendable en comité de direction.
       {
-        id: 'ambition', short: 'Ambition', label: 'Ambition d’adoption', aimm: 'AI business goal', axis: 'ambition',
-        hint: 'Archétype qui caractérise l’approche de l’organisation face à l’IA',
+        id: 'ambition', short: 'Rythme', label: 'Rythme d’adoption', aimm: 'AI business goal', axis: 'ambition',
+        hint: 'Préférez-vous laisser d’autres éprouver la technologie avant vous, ou avancer avant eux ?',
         opts: [
-          ['laggard', 'Retardataire', 0],
-          ['late', 'Majorité tardive', 0.25],
-          ['earlyMajority', 'Majorité précoce', 0.5],
-          ['earlyAdopter', 'Adopteur précoce', 0.75],
-          ['leader', 'Leader / innovateur IA', 1]
+          ['proven', 'Adopter ce qui a fait ses preuves', 0],
+          ['sector', 'Avancer au rythme du secteur', 0.33],
+          ['ahead', 'Prendre une longueur d’avance', 0.67],
+          ['pioneer', 'Ouvrir la voie', 1]
         ]
       }
     ]
@@ -188,14 +206,14 @@ export const DESCRIPTIVE_FIELDS = [
     ]
   },
   {
-    id: 'size', label: 'Taille de l’unité évaluée', aimm: 'Size', axis: null, hint: '',
+    id: 'size', label: 'Taille de l’organisation évaluée', aimm: 'Size', axis: null, hint: '',
     opts: [
       ['xs', '10 à 49', 0], ['s', '50 à 99', 0],
       ['m', '100 à 199', 0], ['l', '200 et plus', 0]
     ]
   },
   {
-    id: 'footprint', label: 'Empreinte organisationnelle', aimm: 'Organization footprint', axis: null, hint: '',
+    id: 'footprint', label: 'Territoire', aimm: 'Organization footprint', axis: null, hint: '',
     opts: [['national', 'Nationale', 0], ['regional', 'Régionale', 0], ['global', 'Mondiale', 0]]
   }
 ]
@@ -203,7 +221,7 @@ export const DESCRIPTIVE_FIELDS = [
 // Plafonds durs : facteurs bloquants qui ne se compensent pas par une moyenne.
 export const LEVEL_CAPS = [
   { field: 'staffing', values: ['none'], max: 2, why: 'aucune ressource n’est affectée à l’IA' },
-  { field: 'literacy', values: ['low'], max: 2, why: 'la littératie IA du conseil et de la direction est faible' },
+  { field: 'literacy', values: ['low'], max: 2, why: 'les connaissances IA du conseil et de la direction sont faibles' },
   { field: 'data', values: ['none'], max: 2, why: 'les données ne sont pas préparées pour l’IA' },
   { field: 'digital', values: ['low'], max: 2, why: 'le niveau de digitalisation est faible' },
   { field: 'scope', values: ['team'], max: 3, why: 'le périmètre se limite à une équipe' },
@@ -218,11 +236,8 @@ export const LEVEL5_REQUIREMENTS = [
   { field: 'horizon', values: ['h3p'], why: 'un horizon supérieur à 3 ans' },
   { field: 'staffing', values: ['dedicated'], why: 'une équipe IA interne dédiée' },
   { field: 'governance', values: ['crossfunctional'], why: 'une instance de pilotage transverse' },
-  { field: 'literacy', values: ['high'], why: 'une littératie IA avancée du conseil et de la direction' }
+  { field: 'literacy', values: ['high'], why: 'des connaissances IA avancées du conseil et de la direction' }
 ]
-
-// Un cadre réglementaire fort borne l'appétit au risque effectivement retenu.
-export const REGULATED_RISK_CEILING = 0.5
 
 export const ALL_FIELDS = CONTEXT_GROUPS.reduce((acc, g) => acc.concat(g.fields), [])
 

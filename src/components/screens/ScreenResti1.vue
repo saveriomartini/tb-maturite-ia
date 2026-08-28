@@ -75,8 +75,8 @@
 // détail par area la suit sans changer d'écran, et la navigation appartient à
 // la page.
 //
-// L'unité évaluée ouvre la page, avant le profil. Le modèle source évalue une
-// organizational unit et non forcément l'entreprise entière : une restitution
+// L'organisation évaluée ouvre la page, avant le profil. Le modèle source évalue
+// une organizational unit et non forcément l'entreprise entière : une restitution
 // qui ne nomme pas son périmètre se lit comme un verdict sur tout. Déclarée,
 // elle se nomme sans commentaire — la conséquence de lecture se tire d'elle-
 // même ; non déclarée, elle dit la lecture par défaut, seul cas où le silence
@@ -117,7 +117,7 @@ function stripe(colors) {
 </script>
 
 <style scoped>
-/* L'unité évaluée précède le profil et se tient au-dessus de lui : même
+/* L'organisation évaluée précède le profil et se tient au-dessus de lui : même
    alignement à gauche, un cran de gris en dessous. Elle cadre la page sans lui
    disputer la première lecture — ce n'est pas un résultat, c'est ce sur quoi
    les résultats portent. */

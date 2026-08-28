@@ -56,11 +56,11 @@ export const DEMO_SESSIONS = [
     // Visé : « Alignement des processus ». Le formulaire le ramènera plus bas.
     transformation: 3,
     form: {
-      scope: 'org', horizon: 'h3a', regulatory: 'unregulated',
+      scope: 'org', horizon: 'h3a',
       digital: 'low', data: 'none', devApproach: 'buy',
       literacy: 'mid', risk: 'moderate', staffing: 'contracted',
       governance: 'coordinated', deployment: 'project', roi: 'qualitative',
-      ambition: 'earlyMajority',
+      ambition: 'sector',
       domain: 'industry', size: 'xs', footprint: 'regional'
     },
     wave: 1,
@@ -76,20 +76,20 @@ export const DEMO_SESSIONS = [
     name: 'Clinique Bel-Air',
     profile: '140 personnes · santé · national',
     story:
-      'L’établissement a mis son socle en ordre avant de rien déployer : politiques, ' +
-      'gestion des risques, cycle de vie des données. Fortement régulé, il assume un ' +
-      'appétit au risque que le cadre ramène de toute façon à la prudence.',
+      'L’organisation a mis son socle en ordre avant de rien déployer : politiques, ' +
+      'gestion des risques, cycle de vie des données. Les données de patients qu’elle ' +
+      'traite lui imposent un appétit au risque mesuré.',
     shows:
       'Le profil visé est de l’autre côté de la ligne : c’est le seul passage de ' +
       'l’échelle qui change de nature, et la restitution refuse de le présenter comme ' +
       'un effort de plus.',
     transformation: 3,
     form: {
-      scope: 'org', horizon: 'h3a', regulatory: 'regulated',
+      scope: 'org', horizon: 'h3a',
       digital: 'mid', data: 'partial', devApproach: 'customize',
-      literacy: 'mid', risk: 'open', staffing: 'shared',
+      literacy: 'mid', risk: 'moderate', staffing: 'shared',
       governance: 'coordinated', deployment: 'waves', roi: 'qualitative',
-      ambition: 'earlyMajority',
+      ambition: 'sector',
       domain: 'health', size: 'm', footprint: 'national'
     },
     wave: 1,
@@ -115,11 +115,11 @@ export const DEMO_SESSIONS = [
       'capacités, appétit au risque et objectifs.',
     transformation: 3,
     form: {
-      scope: 'org', horizon: 'h3a', regulatory: 'unregulated',
+      scope: 'org', horizon: 'h3a',
       digital: 'high', data: 'ready', devApproach: 'hybrid',
       literacy: 'mid', risk: 'moderate', staffing: 'shared',
       governance: 'crossfunctional', deployment: 'waves', roi: 'qualitative',
-      ambition: 'earlyMajority',
+      ambition: 'sector',
       domain: 'other', size: 'l', footprint: 'national'
     },
     // La seconde série a été ouverte : tout a été présenté, et la restitution

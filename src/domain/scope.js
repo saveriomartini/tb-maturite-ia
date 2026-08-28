@@ -1,4 +1,4 @@
-// — unité évaluée —
+// — organisation évaluée —
 // Le modèle source évalue une *organizational unit*, pas nécessairement
 // l'entreprise entière : « for the selected organizational scope » ouvre la
 // dimension Organizational Strategy (docs/MODEL_EXTRAS.md, § 4.4). L'attribut
@@ -15,13 +15,13 @@
 // une décision enregistrée. Le périmètre déclaré, lui, les distingue : le dire
 // en tête rattache le résultat à ce que l'organisation a prétendu couvrir.
 //
-// Un document qui ne nomme pas son unité d'évaluation se lit comme un verdict
-// sur l'entreprise entière. Nommer l'unité ne corrige aucun calcul — rien ici
+// Un document qui ne nomme pas l'organisation qu'il évalue se lit comme un
+// verdict sur l'entreprise entière. La nommer ne corrige aucun calcul — rien ici
 // n'entre dans le scoring — mais rend la restitution opposable.
 
 import { optionLabel } from '../data/context-attributes.js'
 
-export const EVALUATION_UNIT_LABEL = 'Unité évaluée'
+export const EVALUATION_UNIT_LABEL = 'Organisation évaluée'
 
 // Le périmètre est facultatif au cadrage : seul le degré de transformation est
 // exigé. Non renseigné, il ne se tait pas — l'absence est justement le cas où
