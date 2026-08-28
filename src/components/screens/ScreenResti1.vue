@@ -1,110 +1,189 @@
 <template>
   <div class="summary">
-    <div class="unit">
-      <p class="unit__line">
-        <span class="unit__label eyebrow">{{ vm.unit.label }}</span>
-        <span class="unit__value">{{ vm.unit.value }}</span>
+    <header class="verdict">
+      <p class="verdict__eyebrow eyebrow">Profil diagnostiqué</p>
+      <h1 class="verdict__name heading">{{ vm.acquiredLabel }}</h1>
+      <p class="verdict__desc">{{ vm.acquiredDesc }}</p>
+      <p v-if="vm.acquiredPosition" class="verdict__position">{{ vm.acquiredPosition }}</p>
+    </header>
+
+    <div class="frame">
+      <p class="frame__row">
+        <span class="frame__label eyebrow">{{ vm.unit.label }}</span>
+        <span class="frame__value">{{ vm.unit.value }}</span>
       </p>
-      <p v-if="vm.unit.note" class="unit__note">{{ vm.unit.note }}</p>
+      <p v-if="vm.unit.note" class="frame__note">{{ vm.unit.note }}</p>
+      <p class="frame__row">
+        <span class="frame__label eyebrow">Couverture</span>
+        <span class="frame__value">{{ vm.coverage }}</span>
+      </p>
     </div>
 
-    <div class="headline">
-      <p class="headline__label">Votre profil :</p>
-      <p class="headline__value heading">{{ vm.acquiredLabel }}</p>
-    </div>
+    <section class="section">
+      <h2 class="section-head">L’échelle des paliers</h2>
+      <div class="ladder">
+        <div class="scale">
+          <MaturityLadder
+            :steps="vm.ladder"
+            :line-label="vm.line.label"
+            :note="vm.ladderNote"
+            :focused="focusedGate"
+            @focus="emit('focus-gate', $event)"
+          />
+        </div>
 
-    <div class="ladder">
-      <ol class="ladder__levels">
-        <li
-          v-for="level in vm.ladder"
-          :key="level.n"
-          class="ladder__level"
-          :class="{ 'is-reached': level.reached, 'is-beyond': level.beyondTarget }"
-        >
-          <span class="ladder__label heading">{{ level.label }}</span>
-          <span v-if="level.acquired" class="tag tag--solid ladder__tag">diagnostic</span>
-          <span v-else-if="level.isTarget" class="tag ladder__tag">cible</span>
-        </li>
-      </ol>
-      <div class="ladder__body">
-        <p class="ladder__desc">{{ vm.acquiredDesc }}</p>
-        <p v-if="vm.acquiredPosition" class="ladder__desc ladder__position">
-          {{ vm.acquiredPosition }}
-        </p>
+        <div class="ladder__body">
+          <div class="line">
+            <p class="line__eyebrow eyebrow">{{ vm.line.label }}</p>
+            <p class="line__text">{{ vm.line.text }}</p>
+          </div>
 
-        <div class="gap">
-          <p class="gap__eyebrow eyebrow">{{ vm.gap.eyebrow }}</p>
-          <p class="gap__text">{{ vm.gap.passage }}</p>
-          <p class="gap__text gap__domains">{{ vm.gap.domains }}</p>
+          <div class="target">
+            <p class="target__eyebrow eyebrow">
+              Profil visé<template v-if="vm.targetState.label"> : {{ vm.targetState.label }}</template>
+            </p>
+            <p class="target__text">{{ vm.targetState.text }}</p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <p class="section-title">Par bloc :</p>
-
-    <div class="blocks">
-      <section
-        v-for="block in vm.blocks"
-        :key="block.id"
-        class="block"
-        :style="stripe(block.dimensionColors)"
-      >
-        <h2 class="block__name heading">{{ block.name }}</h2>
-        <div class="block__stats">
-          <div class="stat">
-            <p class="stat__label">Domaines :</p>
-            <p class="stat__figure heading"><span class="stat__done">{{ block.areas.done }}</span><span class="stat__total">/{{ block.areas.total }}</span></p>
-          </div>
-          <div class="stat">
-            <p class="stat__label">Critères :</p>
-            <p class="stat__figure heading"><span class="stat__done">{{ block.goals.done }}</span><span class="stat__total">/{{ block.goals.total }}</span></p>
-          </div>
-          <div class="stat">
-            <p class="stat__label">Indicateurs :</p>
-            <p class="stat__figure heading"><span class="stat__done">{{ block.indicators.done }}</span><span v-if="block.indicators.total" class="stat__total">/{{ block.indicators.total }}</span></p>
-          </div>
+    <section v-if="vm.outOfScopeLabel || vm.pendingLabel" class="section">
+      <h2 class="section-head">Ce que la mesure laisse de côté</h2>
+      <div class="asides">
+        <div v-if="vm.outOfScopeLabel" class="aside">
+          <p class="aside__eyebrow eyebrow">Domaines déclarés hors périmètre</p>
+          <p class="aside__list">{{ vm.outOfScopeLabel }}</p>
         </div>
-      </section>
-    </div>
+
+        <div v-if="vm.pendingLabel" class="aside">
+          <p class="aside__eyebrow eyebrow">Domaines restant à évaluer</p>
+          <p class="aside__list">{{ vm.pendingLabel }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-head">Par dimension</h2>
+      <div class="panel">
+        <DimensionRadar :dimensions="vm.radar.dimensions" :scale="vm.radar.scale" />
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-head">Par bloc et dimension</h2>
+      <div class="blocks">
+        <section
+          v-for="block in vm.blocks"
+          :key="block.id"
+          class="block"
+          :style="stripe(block.dimensionColors)"
+        >
+          <h3 class="block__name heading">{{ block.name }}</h3>
+          <div class="block__dims">
+            <div v-for="dimension in block.dimensions" :key="dimension.id" class="dim">
+              <p class="dim__name">{{ dimension.name }}</p>
+              <div class="dim__stats">
+                <p class="stat">
+                  <span class="stat__label">moyenne</span>
+                  <span class="stat__figure heading">
+                    <span class="stat__done">{{ dimension.average }}</span><span class="stat__total">/{{ dimension.scale }}</span>
+                  </span>
+                </p>
+                <p class="stat">
+                  <span class="stat__label">plancher</span>
+                  <span class="stat__figure heading">
+                    <span class="stat__done">{{ dimension.floor }}</span><span class="stat__total">/{{ dimension.scale }}</span>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-// Synthèse des résultats : profil atteint, escalier des profils, écart avec le
-// profil visé, avancement par bloc. Section haute de la page de résultats — le
-// détail par area la suit sans changer d'écran, et la navigation appartient à
-// la page.
+// Synthèse des résultats : le profil atteint, ce sur quoi il porte, l'échelle
+// des paliers, ce que la mesure laisse de côté, la lecture par dimension.
+// Section haute de la page de résultats — le détail par domaine la suit sans
+// changer d'écran, et la navigation appartient à la page.
+//
+// — la hiérarchie de la page —
+// Le verdict d'abord, seul, au plus gros corps du parcours : c'est ce que
+// quarante énoncés ont produit, et il ouvrait la page en 22px derrière un
+// intitulé « Votre profil : ». Sa description et sa position sur l'échelle de
+// transformation le suivent : elles disent ce qu'il veut dire, et vivaient
+// jusqu'ici dans la colonne de droite de l'échelle, où elles se lisaient comme
+// un commentaire de l'échelle.
+//
+// Vient ensuite ce qui borne la lecture — l'organisation évaluée, la couverture
+// —, en bande serrée et au corps du hors-texte. Ni l'une ni l'autre ne peut
+// disparaître : sans elles le verdict se lit comme portant sur l'entreprise
+// entière et sur le modèle entier. Mais elles ne sont pas un résultat, et rien
+// dans leur traitement ne doit le laisser croire.
+//
+// Le reste se range en sections coiffées à l'identique. Les domaines hors
+// périmètre et ceux restant à évaluer en forment une : ils bornaient la lecture
+// de toute la page depuis le bas d'un panneau qui parlait d'autre chose.
+//
+// Ce que cette page ne décide pas : le profil visé. Il se déclare en phase
+// d'ancrage, après cet écran, parce qu'on ne peut pas demander à une
+// organisation jusqu'où elle veut aller avant de lui avoir montré où elle est.
+// L'échelle ne porte donc la marque « cible » que si la question a déjà été
+// répondue — au retour, par exemple. Elle le *dit* alors, plutôt que de laisser
+// l'absence de marque parler : une échelle muette sur sa cible se lit comme une
+// cible à zéro. Les quatre cas — non déclarée, plus haut, atteinte, sous le
+// palier atteint — ont chacun leur phrase, aucun n'est un défaut silencieux.
 //
 // L'organisation évaluée ouvre la page, avant le profil. Le modèle source évalue
 // une organizational unit et non forcément l'entreprise entière : une restitution
-// qui ne nomme pas son périmètre se lit comme un verdict sur tout. Déclarée,
-// elle se nomme sans commentaire — la conséquence de lecture se tire d'elle-
-// même ; non déclarée, elle dit la lecture par défaut, seul cas où le silence
-// tromperait.
+// qui ne nomme pas son périmètre se lit comme un verdict sur tout.
 //
-// L'escalier situe, il n'explique pas : il montre deux étiquettes sur une
-// échelle sans dire ce qui les sépare. Le texte d'écart le dit et nomme les
-// areas qui retiennent le rang suivant — c'est la seule chose de cette page sur
-// laquelle on puisse agir dès demain.
+// La couverture suit immédiatement : combien de domaines ont été situés, combien
+// restent à évaluer, combien ont été déclarés hors périmètre. Sans ces trois
+// nombres, le profil se lirait comme portant sur le modèle entier.
 //
-// Le bloc se lit sur trois chiffres, du plus haut au plus fin : les areas
-// acquises — c'est sur cette unité, et elle seule, que se joue le profil —, les
-// objectifs validés qui les composent, et le rang moyen des indicateurs de
-// maturité rapporté au rang du profil visé, qui dit comment c'est tenu.
+// Chaque palier porte son avancement — combien des domaines qu'il attend
+// l'atteignent. Le ratio ne mesure pas une acquisition : celle-ci est un seuil,
+// et un palier dont tous les domaines sauf un sont au rang n'est pas « presque
+// acquis », il n'est pas acquis. Il dit de combien il s'en est fallu, ce qui est
+// une autre information — et il ne peut pas dépasser son total. D'où l'absence
+// de jauge : rien sur cette échelle ne se remplit par degrés, le repère de rang
+// est plein ou vide, et une note sous la colonne dit ce que les nombres ne
+// veulent pas dire.
 //
-// Trois chiffres et rien d'autre : la barre de progression a été retirée avec
-// l'unité qui la portait. Elle mesurait des pratiques validées sur pratiques
-// attendues, c'est-à-dire un ratio agrégé — la seule chose de cette page qui
-// laissait croire à une progression continue, quand l'acquisition d'un domaine
-// est un seuil qu'on franchit ou non. La convertir en objectifs n'aurait
-// changé que son unité.
+// La ligne évolutif / révolutionnaire se trace entre le deuxième et le troisième
+// palier. C'est la seule information de l'échelle qui dise que tous les crans ne
+// se valent pas : les deux premiers posent l'IA sur des routines inchangées, les
+// trois suivants supposent de refaire les routines. Elle ne dépend d'aucune
+// réponse et se trace donc aussi sur une session vierge — c'est une propriété du
+// modèle, pas un résultat.
 //
-// Les trois se lisent « atteint sur total ». Le total n'est pas un résultat :
-// il donne son échelle au nombre qui en est un, et l'affichage le dit — le
-// chiffre atteint porte la taille, le total suit en petit.
+// La dimension se lit sur deux nombres qui ne disent pas la même chose : la
+// moyenne situe l'ensemble, le plancher dit ce qui la retiendrait si elle était
+// un palier. Les deux sont rapportés au haut de l'échelle et jamais au rang
+// visé : c'est de là que venait le « 3,1 / 3 » relevé en test.
+//
+// La lecture par dimension se donne deux fois, et ce n'est pas une redite : le
+// radar et ses barres comparent les neuf dimensions entre elles — ce que la
+// grille par bloc ne permet pas, ses dimensions étant réparties dans quatre
+// encadrés —, et la grille par bloc garde le regroupement de restitution et les
+// chiffres exacts. La figure situe, le tableau chiffre.
+import DimensionRadar from '../DimensionRadar.vue'
+import MaturityLadder from '../MaturityLadder.vue'
+
 defineProps({
-  vm: { type: Object, required: true }
+  vm: { type: Object, required: true },
+  // Le palier dont le détail par domaine est focalisé plus bas. La synthèse ne
+  // le retient pas : c'est la page qui compose l'échelle et le détail qui le
+  // tient, elle seule voyant les deux.
+  focusedGate: { type: Number, default: null }
 })
+
+const emit = defineEmits(['focus-gate'])
 
 // Bande supérieure du bloc : un segment par dimension, à parts égales sur la
 // largeur — même principe que le liseré de gauche du tableau de cadrage.
@@ -117,106 +196,122 @@ function stripe(colors) {
 </script>
 
 <style scoped>
-/* L'organisation évaluée précède le profil et se tient au-dessus de lui : même
-   alignement à gauche, un cran de gris en dessous. Elle cadre la page sans lui
-   disputer la première lecture — ce n'est pas un résultat, c'est ce sur quoi
-   les résultats portent. */
-.unit {
-  margin-bottom: 14px;
-  padding-bottom: 12px;
+/* — le verdict —
+   Ce qu'on lit en premier, et de loin : le nom du profil, en tête de page et au
+   corps le plus fort de tout le parcours. Il portait 22px et l'intitulé
+   « Votre profil : » à côté de lui, si bien qu'il pesait exactement autant
+   qu'un nom de domaine dans le questionnaire. C'est la conclusion de tout le
+   parcours de saisie : elle a droit à la première ligne et à la plus grande
+   taille.
+
+   La description du profil et sa position sur l'échelle de transformation le
+   suivent immédiatement. Elles étaient dans la colonne de droite de l'échelle
+   des paliers, où elles se lisaient comme un commentaire de l'échelle ; elles
+   disent en réalité ce que le verdict veut dire, et c'est ici qu'elles le
+   disent. */
+.verdict {
+  max-width: 80ch;
+}
+
+.verdict__eyebrow {
+  margin: 0;
+  color: var(--color-neutral-700);
+}
+
+.verdict__name {
+  margin: 6px 0 0;
+  font-size: 38px;
+  line-height: 1.08;
+}
+
+.verdict__desc {
+  margin: 14px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* la position suit la description comme une seconde voix : même corps, couleur
+   légèrement retirée, pour qu'on voie qu'elle ne vient pas de la même source
+   sans avoir à le dire */
+.verdict__position {
+  margin: 12px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  text-wrap: pretty;
+}
+
+/* — le cadrage de la lecture —
+   L'organisation évaluée et la couverture. Ce n'est pas un résultat : c'est ce
+   sur quoi le résultat porte, et ce que la mesure a effectivement couvert. Ce
+   sont les deux bornes sans lesquelles le verdict se lirait comme portant sur
+   l'entreprise entière et sur le modèle entier — elles ne peuvent donc pas
+   disparaître. Elles passent sous le verdict, en bande serrée entre deux
+   filets, au corps du hors-texte : présentes, jamais concurrentes. */
+.frame {
+  margin: 22px 0 0;
+  padding: 10px 0;
+  border-top: 1px solid var(--color-divider);
   border-bottom: 1px solid var(--color-divider);
 }
 
-.unit__line {
+.frame__row {
   display: flex;
-  gap: 10px;
+  gap: 6px 14px;
   align-items: baseline;
   flex-wrap: wrap;
   margin: 0;
 }
 
-.unit__label {
+.frame__row + .frame__row {
+  margin-top: 5px;
+}
+
+/* les deux intitulés tiennent la même colonne : de l'un à l'autre, l'œil ne
+   revient pas chercher où commence la valeur */
+.frame__label {
+  flex: none;
+  min-width: 190px;
   color: var(--color-neutral-700);
 }
 
-.unit__value {
-  font-size: 13px;
-  font-weight: 700;
+.frame__value {
+  font-size: 12px;
+  color: var(--color-neutral-800);
 }
 
 /* Le périmètre non déclaré est le seul cas commenté : la note dit la lecture
    par défaut, et reste dans le registre du hors-texte — corps réduit, gris. */
-.unit__note {
+.frame__note {
   margin: 5px 0 0;
-  font-size: 12px;
+  padding-left: 190px;
+  font-size: 11.5px;
   line-height: 1.45;
   color: var(--color-neutral-700);
+  text-wrap: pretty;
 }
 
-/* une seule ligne : l'intitulé cale à gauche, le profil diagnostiqué à droite,
-   sur la même ligne de base */
-.headline {
-  display: flex;
-  gap: 20px;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.headline__label {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.headline__value {
-  margin: 0;
-  font-size: 22px;
-  letter-spacing: normal;
+/* Les sections de la page, toutes coiffées par .section-head : l'échelle des
+   paliers, ce que la mesure laisse de côté, la lecture par dimension — puis le
+   détail par domaine, sur la page qui compose celle-ci. */
+.section {
+  margin-top: 34px;
 }
 
 .ladder {
   display: grid;
-  grid-template-columns: 340px 1fr;
-  margin-top: 26px;
+  grid-template-columns: 380px 1fr;
   border: 2px solid var(--color-text);
 }
 
-.ladder__levels {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* Le fond de la colonne est explicite : l'étiquette de la ligne évolutif /
+   révolutionnaire s'y découpe en masquant le trait derrière elle, et un fond
+   hérité ne lui donnerait rien à masquer. Tout ce qui se passe à l'intérieur
+   appartient à MaturityLadder. */
+.scale {
+  background: var(--color-neutral-100);
   border-right: 2px solid var(--color-text);
-}
-
-.ladder__level {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 16px;
-}
-
-.ladder__level:not(:last-child) {
-  border-bottom: 1px solid var(--color-divider);
-}
-
-.ladder__level.is-reached {
-  background: var(--color-neutral-200);
-}
-
-.ladder__level.is-beyond {
-  opacity: 0.45;
-}
-
-.ladder__label {
-  font-size: 13px;
-}
-
-.ladder__tag {
-  margin-left: auto;
-  padding: 2px 6px;
-  border-color: var(--color-text);
 }
 
 .ladder__body {
@@ -232,37 +327,6 @@ function stripe(colors) {
   text-wrap: pretty;
 }
 
-/* L'écart suit la description du profil atteint, séparé par un filet et non par
-   un second panneau : les deux textes sont du même registre et se lisent à la
-   suite — l'un décrit la situation, l'autre le chemin qui reste. Les encadrer
-   séparément en ferait deux informations concurrentes. */
-.gap {
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--color-divider);
-}
-
-.gap__eyebrow {
-  margin: 0 0 6px;
-}
-
-.gap__text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  text-wrap: pretty;
-}
-
-/* Deux paragraphes de registres différents : le premier dit la nature du
-   passage, le second ce par quoi le commencer. Le second est le seul de la page
-   sur lequel on puisse agir dès demain — il se détache donc, sans changer de
-   corps ni de couleur, par le seul filet vertical qui le tient. */
-.gap__domains {
-  margin-top: 12px;
-  padding-left: 12px;
-  border-left: 2px solid var(--color-text);
-}
-
 /* le positionnement suit la description AIMM comme une seconde voix : même
    corps, couleur légèrement retirée, pour qu'on voie qu'il ne vient pas de la
    même source sans avoir à le dire */
@@ -271,10 +335,77 @@ function stripe(colors) {
   color: var(--color-neutral-700);
 }
 
-.section-title {
-  margin: 26px 0 10px;
-  font-size: 11px;
-  font-weight: 700;
+/* La ligne, en toutes lettres. Elle se lit à côté de l'échelle qui la trace :
+   le trait dit où elle passe, ce bloc dit pourquoi elle y passe. Encadrée à
+   gauche comme la nature du passage à l'ancrage — même registre, celui d'un
+   texte qui peut modifier une décision d'investissement. */
+.line {
+  padding-left: 12px;
+  border-left: 2px solid var(--color-text);
+}
+
+.line__eyebrow {
+  margin: 0 0 5px;
+  color: var(--color-neutral-700);
+}
+
+.line__text {
+  max-width: 80ch;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Où en est la cible sur cette échelle — y compris quand il n'y en a pas
+   encore. Le cas se dit toujours : une échelle sans marque de cible et sans
+   phrase se lirait comme une cible à zéro. */
+.target {
+  margin-top: 16px;
+}
+
+.target__eyebrow {
+  margin: 0 0 5px;
+  color: var(--color-neutral-700);
+}
+
+.target__text {
+  max-width: 80ch;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-800);
+  text-wrap: pretty;
+}
+
+/* Ce que la mesure laisse de côté. Ces deux listes finissaient la colonne de
+   droite de l'échelle, où elles closaient un panneau qui parlait d'autre chose.
+   Elles ont leur propre section : elles bornent la lecture de toute la page, pas
+   de l'échelle seule. En retrait de corps et sans cadre plein — c'est la limite
+   d'un résultat, ce n'en est pas un. */
+.asides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.aside {
+  min-width: 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--color-neutral-300);
+}
+
+.aside__eyebrow {
+  margin: 0 0 5px;
+  color: var(--color-neutral-700);
+}
+
+.aside__list {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-neutral-800);
+  text-wrap: pretty;
 }
 
 .blocks {
@@ -307,25 +438,44 @@ function stripe(colors) {
   letter-spacing: normal;
 }
 
-/* trois compteurs sur une ligne, qui passent à la ligne plutôt que de se
-   comprimer quand le bloc se rétrécit */
-.block__stats {
+.block__dims {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.dim__name {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+.dim__stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 20px;
-  margin-top: 16px;
+  gap: 6px 18px;
+  margin-top: 4px;
+}
+
+.stat {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin: 0;
 }
 
 .stat__label {
-  margin: 0;
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--color-neutral-700);
 }
 
 /* le rapport se lit en deux temps : le nombre atteint est le résultat et porte
    la lecture, le total ne fait que lui donner son échelle. Moitié moins haut et
    en gris, il dit « sur combien » sans disputer la place au chiffre qui compte.
-   Insécable : « 3 » et « /7 » ne se séparent jamais en fin de ligne. */
+   Insécable : « 3 » et « /5 » ne se séparent jamais en fin de ligne. */
 .stat__figure {
   margin: 0;
   letter-spacing: normal;
@@ -333,11 +483,11 @@ function stripe(colors) {
 }
 
 .stat__done {
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .stat__total {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--color-neutral-700);
 }
 
@@ -356,12 +506,27 @@ function stripe(colors) {
 }
 
 @media (max-width: 900px) {
+  .verdict__name {
+    font-size: 30px;
+  }
+
+  /* Empilés, les intitulés du cadrage n'ont plus de colonne commune à tenir :
+     la valeur passe sous son intitulé, et la note reprend le bord de la page. */
+  .frame__label {
+    min-width: 0;
+  }
+
+  .frame__note {
+    padding-left: 0;
+  }
+
   .ladder,
+  .asides,
   .blocks {
     grid-template-columns: 1fr;
   }
 
-  .ladder__levels {
+  .scale {
     border-right: 0;
     border-bottom: 2px solid var(--color-text);
   }

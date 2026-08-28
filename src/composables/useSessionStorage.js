@@ -1,21 +1,44 @@
 // Persistance locale de la session d'évaluation.
 //
-// L'état complet (écran courant, attributs de contexte, degré de transformation
-// visé, série ouverte, areas présentées, pratiques validées, indicateurs de
-// maturité) est écrit dans
-// localStorage sous une clé versionnée. Toute donnée
-// relue est validée avant d'être réinjectée : un payload écrit par une version
-// antérieure du modèle ne doit jamais pouvoir corrompre l'état applicatif —
-// les valeurs inconnues sont écartées silencieusement, pas l'ensemble.
+// L'état complet (écran courant, position dans le questionnaire, attributs de
+// contexte, portée déclarée, niveau retenu par domaine) est écrit dans
+// localStorage sous une clé versionnée. Toute donnée relue est validée avant
+// d'être réinjectée : un payload écrit par une version antérieure du modèle ne
+// doit jamais pouvoir corrompre l'état applicatif — les valeurs inconnues sont
+// écartées silencieusement, pas l'ensemble.
+//
+// — pourquoi le schéma passe à 2, et pourquoi une v1 est jetée —
+//
+// Le changement d'unité de réponse suffirait : `checked` portait des pratiques
+// validées, `answers` porte un niveau par domaine, et un état de cases cochées
+// ne se convertit pas en niveau. Rien ne dit à quel rang d'énoncé correspond un
+// jeu de critères validés — c'est justement ce qui a changé de nature. Une
+// migration devrait inventer la réponse ; elle serait fausse et muette.
+//
+// Mais la version aurait dû monter même sans `answers`. Le lot précédent a
+// retiré l'option `program` de `scope`, remplacé les cinq identifiants de
+// `ambition` et supprimé l'attribut `regulatory`. Or `validForm` écarte
+// silencieusement toute valeur devenue inconnue, et `recommendation.js` fait
+// valoir `UNANSWERED_SCORE` — le score **maximal** — à tout attribut absent. Une
+// session enregistrée avant ce lot se rechargeait donc avec deux ou trois
+// réponses perdues *et* une recommandation plus haute qu'à l'enregistrement,
+// sans le moindre message. C'est ce motif, et non le seul confort, qui justifie
+// de jeter plutôt que de réinterpréter : une session relue doit valoir ce
+// qu'elle valait, ou ne pas être relue du tout.
+//
+// Il n'y a donc aucune migration depuis la v1. Une v1 relue est effacée, comme
+// le fait déjà le contrôle de version ci-dessous — aucune session n'est en
+// production, et le coût d'une conversion inventée dépasse de loin celui d'un
+// parcours refait.
 
 import { watch } from 'vue'
 import { ALL_FIELDS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { DEMO_SESSIONS } from '../data/demo-sessions.js'
-import { MATURITY_INDICATORS } from '../data/maturity-indicators.js'
 import { EVALUABLE_AREAS } from '../domain/model.js'
+import { MAX_RANK, MIN_RANK, OUT_OF_SCOPE } from '../domain/scoring.js'
 
 const STORAGE_KEY = 'maia.session'
-const SCHEMA_VERSION = 1
+const SCHEMA_VERSION = 2
 const WRITE_DELAY = 200
 
 const FORM_FIELDS = ALL_FIELDS.concat(DESCRIPTIVE_FIELDS)
@@ -57,22 +80,22 @@ function validForm(v) {
   return out
 }
 
-// Indicateurs de maturité : une area connue du modèle, un indicateur connu de
-// la grille, un rang qui existe. Tout le reste tombe — et une area vidée de
-// toute réponse ne laisse pas d'entrée derrière elle.
-function validIndicators(v) {
+// Réponses du questionnaire : une clé de domaine connue du modèle, et une valeur
+// qui est soit un entier de l'échelle des énoncés, soit la déclaration de hors
+// périmètre. Tout le reste tombe silencieusement, comme partout ici — un domaine
+// retiré du modèle ne doit pas empêcher de relire les 27 autres, et une valeur
+// abîmée ne doit pas se retrouver comparée à un rang.
+function validAnswers(v) {
   if (!isPlainObject(v)) return {}
   const out = {}
   Object.keys(v).forEach(areaId => {
-    if (!AREA_IDS.has(areaId) || !isPlainObject(v[areaId])) return
-    const answers = {}
-    MATURITY_INDICATORS.forEach(indicator => {
-      const n = v[areaId][indicator.id]
-      if (Number.isInteger(n) && indicator.statements.some(statement => statement.n === n)) {
-        answers[indicator.id] = n
-      }
-    })
-    if (Object.keys(answers).length) out[areaId] = answers
+    if (!AREA_IDS.has(areaId)) return
+    const value = v[areaId]
+    if (value === OUT_OF_SCOPE) {
+      out[areaId] = OUT_OF_SCOPE
+      return
+    }
+    if (Number.isInteger(value) && value >= MIN_RANK && value <= MAX_RANK) out[areaId] = value
   })
   return out
 }
@@ -82,14 +105,14 @@ function sanitize(raw, screens) {
   const out = {}
   if (screens.indexOf(raw.screen) >= 0) out.screen = raw.screen
   if (Number.isInteger(raw.diagIdx) && raw.diagIdx >= 0) out.diagIdx = raw.diagIdx
-  if (raw.wave === 1 || raw.wave === 2) out.wave = raw.wave
   // Avertissement de saut déjà lu : il ne se repose pas après un rechargement.
   if (typeof raw.contextWarned === 'boolean') out.contextWarned = raw.contextWarned
-  // Degré de transformation visé : un profil du modèle, ou rien. Absent ou
-  // invalide, il retombe sur la valeur par défaut (null), c'est-à-dire sur la
-  // seule recommandation. Un payload écrit par une version antérieure porte
-  // encore un `target` — le choix manuel du palier, qui n'existe plus : les
-  // clés inconnues sont écartées ici, sans invalider le reste de la session.
+  // Degré de transformation visé : il se déduit de la portée déclarée en phase
+  // d'ancrage, et vaut un rang du modèle ou rien. Absent ou invalide, il retombe
+  // sur la valeur par défaut (null), c'est-à-dire sur la seule recommandation.
+  // Les clés d'un payload plus ancien — `target`, `wave`, `checked`,
+  // `indicators` — ne sont pas lues : elles n'existent plus, et un état de v1
+  // n'arrive de toute façon jamais jusqu'ici (voir l'en-tête).
   if (Number.isInteger(raw.transformation) && raw.transformation >= 1 && raw.transformation <= 5) {
     out.transformation = raw.transformation
   }
@@ -99,11 +122,9 @@ function sanitize(raw, screens) {
   // seulement son anonymat — l'en-tête cesse d'annoncer une démonstration dont
   // plus rien ne dit ce qu'elle était.
   if (typeof raw.demo === 'string' && DEMO_IDS.has(raw.demo)) out.demo = raw.demo
-  out.checked = boolMap(raw.checked)
+  out.answers = validAnswers(raw.answers)
   out.openLevels = boolMap(raw.openLevels)
-  out.seen = boolMap(raw.seen)
   out.form = validForm(raw.form)
-  out.indicators = validIndicators(raw.indicators)
   return out
 }
 
@@ -111,16 +132,13 @@ function snapshot(state) {
   return {
     screen: state.screen,
     diagIdx: state.diagIdx,
-    wave: state.wave,
     transformation: state.transformation,
     contextWarned: state.contextWarned,
     session: state.session,
     demo: state.demo,
-    checked: boolMap(state.checked),
+    answers: validAnswers(state.answers),
     openLevels: boolMap(state.openLevels),
-    seen: boolMap(state.seen),
-    form: validForm(state.form),
-    indicators: validIndicators(state.indicators)
+    form: validForm(state.form)
   }
 }
 
@@ -142,6 +160,8 @@ export function loadSession(screens) {
     clearSession()
     return null
   }
+  // Toute version autre que la courante est effacée, sans tentative de
+  // conversion : c'est ici que la v1 est jetée.
   if (!isPlainObject(payload) || payload.v !== SCHEMA_VERSION) {
     clearSession()
     return null

@@ -15,13 +15,18 @@
               :key="area.id"
               type="button"
               class="button-reset strip__area"
-              :class="{ 'is-active': area.active, 'is-off-scope': !area.inScope }"
-              :style="area.color ? { background: area.color } : null"
-              :title="area.inScope ? area.name : `${area.name} — hors cadrage`"
-              :aria-label="`Domaine ${area.number} — ${area.name}${area.inScope ? '' : ', hors cadrage'}`"
+              :class="{
+                'is-active': area.active,
+                'is-answered': area.answered,
+                'is-out-of-scope': area.outOfScope
+              }"
+              :style="area.color && area.answered ? { background: area.color } : null"
+              :title="`${area.name} — ${area.state}`"
+              :aria-label="`Domaine ${area.number} — ${area.name}, ${area.state}`"
               @click="emit('open-area', area.id)"
             >
-              {{ area.number }}
+              <span class="strip__number">{{ area.number }}</span>
+              <span class="strip__mark" aria-hidden="true">{{ area.mark }}</span>
             </button>
           </div>
         </div>
@@ -29,92 +34,82 @@
       <p class="toolbar__progress">{{ vm.progress }}</p>
     </div>
 
-    <div class="workspace">
-      <!-- Hors cadrage, la colonne de rappel garde tout son contenu — l'area
-           existe, elle se lit — mais s'éteint pour dire qu'elle ne se remplit pas. -->
-      <aside class="context" :class="{ 'context--off-scope': vm.area.offScope }">
-        <div class="context__band" :style="vm.area.color ? { background: vm.area.color } : null" />
-        <h2 class="context__area heading">{{ vm.area.name }}</h2>
-        <p class="context__desc">{{ vm.area.desc }}</p>
+    <header class="head">
+      <div class="head__band" :style="vm.area.color ? { background: vm.area.color } : null" />
+      <p class="head__path">
+        <span>{{ vm.area.block }} · {{ vm.area.dim }}</span>
+        <span class="head__rank">attendu au rang {{ vm.area.required }}</span>
+      </p>
+      <h1 class="head__area heading">{{ vm.area.name }}</h1>
+      <p class="head__desc">{{ vm.area.desc }}</p>
+    </header>
 
-        <div v-if="vm.area.exampleArtifacts.length" class="context__artifacts">
-          <p class="context__label">
-            Exemples d'artefacts
-            <button
-              type="button"
-              class="button-reset context__toggle"
-              :aria-expanded="artifactsOpen"
-              :aria-controls="artifactsId"
-              :aria-label="`${artifactsOpen ? 'Masquer' : 'Afficher'} les exemples d'artefacts`"
-              @click="artifactsOpen = !artifactsOpen"
-            >
-              {{ artifactsOpen ? '−' : '+' }}
-            </button>
-          </p>
-          <ul v-show="artifactsOpen" :id="artifactsId" class="context__artifacts-list">
-            <li v-for="artifact in vm.area.exampleArtifacts" :key="artifact">{{ artifact }}</li>
-          </ul>
-        </div>
-      </aside>
+    <StatementPicker :vm="vm.picker" @select="emit('answer', vm.area.id, $event)" />
 
-      <div v-if="vm.offScope" class="work">
-        <div class="empty">
-          <p class="empty__message">{{ vm.offScope.message }}</p>
-          <p class="empty__note">{{ vm.offScope.note }}</p>
-        </div>
+    <aside v-if="vm.area.exampleArtifacts.length" class="artifacts">
+      <p class="artifacts__label">
+        Exemples d'artefacts
+        <button
+          type="button"
+          class="button-reset artifacts__toggle"
+          :aria-expanded="artifactsOpen"
+          :aria-controls="artifactsId"
+          :aria-label="`${artifactsOpen ? 'Masquer' : 'Afficher'} les exemples d'artefacts`"
+          @click="artifactsOpen = !artifactsOpen"
+        >
+          {{ artifactsOpen ? '−' : '+' }}
+        </button>
+      </p>
+      <ul v-show="artifactsOpen" :id="artifactsId" class="artifacts__list">
+        <li v-for="artifact in vm.area.exampleArtifacts" :key="artifact">{{ artifact }}</li>
+      </ul>
+    </aside>
 
-        <div class="work__nav work__nav--single">
-          <button type="button" class="btn btn-secondary" @click="emit('close-off-scope')">
-            {{ vm.offScope.backLabel }}
-          </button>
-        </div>
-      </div>
-
-      <div v-else class="work">
-        <GoalChecklist :goals="vm.goals" @toggle="emit('toggle-goal', $event)" />
-
-        <MaturityIndicatorsForm
-          v-if="vm.indicators"
-          :indicators="vm.indicators"
-          @select="(indicatorId, value) => emit('select-indicator', vm.indicatorAreaId, indicatorId, value)"
-        />
-
-        <div class="work__nav">
-          <button type="button" class="btn btn-ghost" @click="emit('back')">Précédent</button>
-          <div class="work__next">
-            <p v-if="vm.area.hint" class="work__hint">{{ vm.area.hint }}</p>
-            <button type="button" class="btn btn-primary work__button" @click="emit('next')">
-              {{ vm.nextLabel }}
-            </button>
-          </div>
-        </div>
-      </div>
+    <div class="work__nav">
+      <button type="button" class="btn btn-ghost" @click="emit('back')">Précédent</button>
+      <button type="button" class="btn btn-primary work__button" @click="emit('next')">
+        {{ vm.nextLabel }}
+      </button>
     </div>
   </AppScreen>
 </template>
 
 <script setup>
-// Les exemples d'artefacts se déplient comme les pratiques d'un objectif ou
-// l'aide d'un attribut de contexte : au repos, la colonne ne dit que ce qu'est
-// l'area. L'état est local et suit d'une area à l'autre — qui a demandé les
-// artefacts une fois les veut en général partout.
+// Le questionnaire, un domaine de capacité par écran.
 //
-// Les indicateurs de maturité suivent les objectifs de chaque area : on valide
-// d'abord ce qui est en place, on qualifie ensuite la façon dont l'area est
-// tenue. Le bloc s'absente hors cadrage, où il n'y a rien à remplir — c'est le
-// view-model qui le dit, l'écran ne fait que suivre.
+// L'ordre de lecture suit l'ordre de la décision : où l'on en est (la barre), de
+// quel domaine il s'agit (l'en-tête), la réponse (le sélecteur), et seulement
+// ensuite le rappel. Celui-ci est passé *sous* la réponse : tant qu'il était en
+// colonne à gauche, il se lisait comme la question, alors qu'il n'est qu'un
+// appui.
+//
+// Ce que le rappel dit, et il n'y a plus rien d'autre : le bloc, la dimension,
+// le nom, la description, le rang auquel le modèle attend le domaine, et des
+// exemples d'artefacts. Les critères d'adoption et les pratiques en sont sortis.
+// Ils restent dans le modèle, qui reste le report littéral de la source, mais
+// affichés à côté des énoncés ils rouvraient la lecture en liste de conditions
+// et donnaient à croire qu'on répondait sur eux. L'unité de réponse est
+// l'énoncé, et lui seul.
+//
+// L'écran n'a donc plus qu'une colonne de contenu sous le sélecteur : la grille
+// à deux colonnes du rappel n'avait plus de second occupant.
+//
+// Il n'y a plus de domaine hors cadrage à consulter : les 28 sont dans le
+// parcours, et ce qu'une organisation retire de la mesure, c'est elle qui le
+// déclare — par la réponse « hors périmètre », qui vit dans le sélecteur.
+//
+// Les exemples d'artefacts se déplient : au repos, le rappel ne dit que ce
+// qu'est le domaine. L'état est local et suit d'un domaine à l'autre — qui a
+// demandé les artefacts une fois les veut en général partout.
 import { ref, useId } from 'vue'
 import AppScreen from '../AppScreen.vue'
-import GoalChecklist from '../GoalChecklist.vue'
-import MaturityIndicatorsForm from '../MaturityIndicatorsForm.vue'
+import StatementPicker from '../StatementPicker.vue'
 
 defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits([
-  'toggle-goal', 'select-indicator', 'open-area', 'close-off-scope', 'back', 'next'
-])
+const emit = defineEmits(['answer', 'open-area', 'back', 'next'])
 
 const artifactsOpen = ref(false)
 const artifactsId = `artifacts-${useId()}`
@@ -135,10 +130,10 @@ const artifactsId = `artifacts-${useId()}`
   color: var(--color-neutral-700);
 }
 
-/* Deux niveaux : le bloc coiffe, sans être cliquable ; seules les areas
-   numérotées en dessous portent la navigation. Chaque bloc pèse le nombre
-   d'areas qu'il présente, si bien que toutes les cases gardent la même
-   largeur d'un bout à l'autre de la barre. */
+/* Deux niveaux : le bloc coiffe, sans être cliquable ; seuls les domaines
+   numérotés en dessous portent la navigation. Chaque bloc pèse le nombre de
+   domaines qu'il présente, si bien que toutes les cases gardent la même largeur
+   d'un bout à l'autre de la barre. */
 .strip {
   display: flex;
   gap: 6px;
@@ -172,17 +167,43 @@ const artifactsId = `artifacts-${useId()}`
   gap: 3px;
 }
 
+/* Chaque case dit deux choses : quel domaine — le numéro, qui ne bouge jamais —
+   et où il en est — la marque, sur une seconde ligne. Le rang retenu s'y écrit
+   en clair, l'absence de réponse par un point, le hors périmètre par une croix.
+   La couleur de dimension ne s'allume qu'une fois répondu : de loin, la barre
+   dit l'avancement avant de dire le contenu. */
 .strip__area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
   flex: 1 1 0;
   min-width: 0;
-  padding: 4px 2px;
+  padding: 3px 2px;
   border: 1px solid var(--color-divider);
   color: var(--color-text);
-  font-size: 10px;
-  font-weight: 600;
   line-height: 1;
   text-align: center;
   opacity: 0.78;
+}
+
+.strip__number {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.strip__mark {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--color-neutral-700);
+}
+
+.strip__area.is-answered {
+  opacity: 1;
+}
+
+.strip__area.is-answered .strip__mark {
+  color: var(--color-text);
 }
 
 .strip__area.is-active {
@@ -191,79 +212,88 @@ const artifactsId = `artifacts-${useId()}`
   opacity: 1;
 }
 
-/* Hors cadrage : la case reste à sa place et garde son numéro — le modèle ne
-   rétrécit pas — mais perd sa couleur de dimension. Elle reste cliquable, pour
-   qu'on puisse aller voir ce qui a été écarté ; c'est l'écran qui l'explique,
-   pas un curseur barré. */
-.strip__area.is-off-scope {
+/* Hors périmètre : la case garde sa place et son numéro — le modèle ne rétrécit
+   pas — mais perd sa couleur de dimension. C'est une réponse, pas un manque :
+   elle reste pleinement lisible. */
+.strip__area.is-out-of-scope {
   background: var(--color-neutral-200);
   border-color: var(--color-neutral-400);
-  color: var(--color-neutral-600);
+  color: var(--color-neutral-700);
   opacity: 1;
 }
 
-.strip__area.is-off-scope:hover {
+.strip__area.is-out-of-scope:hover {
   background: var(--color-neutral-300);
 }
 
-.strip__area.is-off-scope.is-active {
-  border: 2px solid var(--color-neutral-600);
-  color: var(--color-neutral-800);
+/* L'en-tête du domaine : la bande de dimension, le chemin, le rang attendu, le
+   nom, la description. C'est tout ce qu'il faut avoir lu avant de choisir un
+   énoncé. */
+.head {
+  margin-top: 20px;
 }
 
-/* Le plan de travail n'est plus une boîte : la colonne de rappel se lit à nu à
-   gauche, et les blocs de saisie s'encadrent eux-mêmes à droite. Un cadre de
-   plus autour d'eux ne délimiterait rien qu'ils ne délimitent déjà. */
-.workspace {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 22px;
-  margin-top: 18px;
-}
-
-.context {
-  min-width: 0;
-}
-
-.context__band {
+.head__band {
   height: 8px;
-  margin: 0 0 14px;
+  margin-bottom: 12px;
 }
 
-/* La bande éteinte : même géométrie, couleur neutre. La colonne pâlit d'un cran
-   sans devenir illisible — on doit pouvoir lire l'area qu'on est venu voir.
-   Elle reprend alors un fond, donc une gouttière : hors cadrage, la colonne
-   redevient un bloc, ce qui est précisément ce qu'on veut dire. */
-.context--off-scope {
-  padding: 14px;
-  background: var(--color-neutral-200);
+.head__path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  justify-content: space-between;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--color-neutral-700);
 }
 
-.context--off-scope .context__band {
-  margin: -14px -14px 14px;
+/* Le rang attendu tient le bout de la ligne de chemin : il appartient au même
+   registre — ce que le modèle dit du domaine avant qu'on réponde — et explique
+   pourquoi ce domaine pèse sur tel palier et pas sur tel autre. En bas de casse,
+   parce que ce n'est pas un intitulé mais une précision. */
+.head__rank {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
 }
 
-.context--off-scope .context__band {
-  background: var(--color-neutral-400);
+.head__area {
+  margin: 5px 0 0;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: normal;
 }
 
-.context--off-scope .context__area,
-.context--off-scope .context__desc,
-.context--off-scope .context__label,
-.context--off-scope .context__artifacts-list {
-  color: var(--color-neutral-700);
+.head__desc {
+  max-width: 90ch;
+  margin: 8px 0 18px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-800);
+  text-wrap: pretty;
 }
 
-.context__label {
+/* Le rappel vient après la réponse, sur toute la largeur : il n'a plus de
+   voisin à qui disputer la colonne. Un filet le sépare du sélecteur — c'est un
+   appui, pas une suite de la question. */
+.artifacts {
+  min-width: 0;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.artifacts__label {
   margin: 0;
   font-size: 11px;
   font-weight: 700;
 }
 
-/* Même affordance que les attributs de contexte et les objectifs : discrète,
-   elle suit le libellé sans lui disputer la place. */
-.context__toggle {
+.artifacts__toggle {
   margin-left: 5px;
   font-size: 13px;
   line-height: 1;
@@ -271,110 +301,39 @@ const artifactsId = `artifacts-${useId()}`
   color: var(--color-neutral-600);
 }
 
-.context__toggle:hover {
+.artifacts__toggle:hover {
   color: var(--color-text);
 }
 
-.context__area {
-  margin: 0;
-  font-size: 19px;
-  line-height: 1.2;
-  letter-spacing: normal;
-}
-
-.context__desc {
-  margin: 10px 0 0;
-  font-size: 11.5px;
-  line-height: 1.45;
-  color: var(--color-neutral-800);
-}
-
-/* le filet sépare ce que l'area *est* de ce qu'elle donne à voir */
-.context__artifacts {
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--color-divider);
-}
-
 /* Plus d'ascenseur : la liste ne s'affiche que sur demande, elle se donne alors
-   en entier (14 artefacts au plus dans le modèle) plutôt que par la fenêtre. */
-.context__artifacts-list {
+   en entier (14 artefacts au plus dans le modèle) plutôt que par la fenêtre.
+   Sur toute la largeur, elle se met en colonnes plutôt que de tirer une ligne de
+   dix mots sur quatre-vingts caractères de vide. */
+.artifacts__list {
   margin: 8px 0 0;
   padding: 0 0 0 16px;
+  columns: 3;
+  column-gap: 32px;
   font-size: 11px;
   line-height: 1.5;
   color: var(--color-neutral-800);
 }
 
-.context__artifacts-list li + li {
+.artifacts__list li {
+  break-inside: avoid;
+}
+
+.artifacts__list li + li {
   margin-top: 4px;
-}
-
-/* Les deux panneaux de saisie et le pied de navigation, empilés à intervalle
-   constant : c'est la gouttière qui les sépare, plus un trait. */
-.work {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  min-width: 0;
-}
-
-/* Le cadre du questionnaire, vide : le trait discontinu dit qu'il n'y a rien à
-   remplir ici, là où le trait plein du reste de l'outil annonce une saisie. La
-   hauteur minimale évite que le panneau se rétracte au clic sur une case grise. */
-.empty {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 260px;
-  padding: 24px;
-  border: 2px dashed var(--color-neutral-400);
-  background: var(--color-neutral-200);
-  text-align: center;
-}
-
-.empty__message {
-  max-width: 46ch;
-  margin: 0 auto;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: var(--color-neutral-800);
-}
-
-.empty__note {
-  max-width: 52ch;
-  margin: 12px auto 0;
-  font-size: 11.5px;
-  line-height: 1.5;
-  color: var(--color-neutral-700);
 }
 
 .work__nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 24px;
   padding-top: 16px;
   border-top: 2px solid var(--color-text);
-}
-
-/* Une seule issue depuis l'area hors cadrage : revenir. Pas de « précédent » ni
-   de « suivant » — cette area n'a pas de voisine, elle n'est pas dans le fil. */
-.work__nav--single {
-  justify-content: flex-end;
-}
-
-.work__next {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.work__hint {
-  margin: 0;
-  font-size: 11px;
-  color: var(--color-neutral-700);
 }
 
 .work__button {
@@ -382,14 +341,11 @@ const artifactsId = `artifacts-${useId()}`
 }
 
 @media (max-width: 1200px) {
-  .workspace {
-    grid-template-columns: 210px 1fr;
-    gap: 16px;
+  .artifacts__list {
+    columns: 2;
   }
 }
 
-/* Empilé, le rappel de contexte (bloc, dimension, area, score) coiffe le
-   questionnaire au lieu de le border. */
 @media (max-width: 900px) {
   /* la barre reste d'un seul tenant : on resserre les gouttières plutôt que
      de la laisser passer à la ligne, ce qui casserait la numérotation */
@@ -402,19 +358,15 @@ const artifactsId = `artifacts-${useId()}`
   }
 
   .strip__area {
-    padding: 4px 1px;
+    padding: 3px 1px;
+  }
+
+  .strip__number {
     font-size: 9px;
   }
 
-  .workspace {
-    grid-template-columns: 1fr;
-  }
-
-  /* Empilé, le rappel n'a plus de voisin à sa droite pour marquer la limite :
-     un filet la reprend sous lui, avant le premier panneau de saisie. */
-  .context {
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--color-divider);
+  .artifacts__list {
+    columns: 1;
   }
 
   .work__nav {

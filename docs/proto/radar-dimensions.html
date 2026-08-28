@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette — radar par dimension</title>
+
+<!--
+  MAQUETTE, HORS APPLICATION.
+
+  Ce fichier ne fait pas partie de l'outil : rien de src/ ne l'importe et il
+  n'importe rien de src/. Il s'ouvre par double-clic — aucune dépendance, aucun
+  CDN, aucun build, aucun serveur, aucun accès réseau. C'est délibéré : le radar
+  se montre et se discute avant qu'on décide s'il entre dans le parcours, et une
+  maquette qu'il faut installer pour voir ne se discute pas en séance.
+
+  Il n'y a donc rien à mutualiser avec l'application tant que la question n'est
+  pas tranchée. Ce qui suit est une COPIE À LA MAIN, pas une lecture du modèle.
+
+  Les jetons de couleur et d'espacement sont repris de src/assets/tokens.css ;
+  les couleurs de dimension, la table des domaines de capacité par dimension et
+  les trois jeux de réponses viennent de src/data/model-data.json et de
+  src/data/demo-sessions.js. Si l'un des deux bouge, ce fichier ne suit pas tout
+  seul : il ment alors sans le dire, et c'est le prix de l'autonomie.
+-->
+
+<style>
+/* Jetons repris de src/assets/tokens.css. La police Archivo n'y est pas chargée
+   — aucun accès réseau — et la pile de repli s'applique donc toujours ici. */
+:root {
+  --color-bg: #f3f2f2;
+  --color-text: #201e1d;
+  --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
+  --color-neutral-100: #f8f4f4;
+  --color-neutral-200: #eae7e7;
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-400: #bab6b6;
+  --color-neutral-600: #7d7979;
+  --color-neutral-700: #605d5d;
+  --color-neutral-800: #444141;
+  --font-heading: 'Archivo', system-ui, sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+
+  /* Les deux tracés. La couleur ne suffit jamais à les distinguer — voir le
+     trait plein / tireté et les repères rond / carré plus bas : elle ne fait
+     que doubler une différence déjà lisible en noir et blanc. */
+  --trace-average: #4a5ec8;
+  --trace-floor: #b8452a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 32px 40px 64px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+main { max-width: 1080px; margin: 0 auto; }
+
+h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+.lead {
+  max-width: 78ch;
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.panel { border: 2px solid var(--color-text); background: var(--color-neutral-100); }
+
+.panel-head {
+  margin: 0;
+  padding: 8px 14px;
+  border-bottom: 2px solid var(--color-text);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* — commandes — */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  align-items: flex-end;
+  margin-top: 26px;
+  padding: 14px 16px;
+}
+
+.control__label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+select {
+  min-width: 340px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.toggles { display: flex; gap: 18px; }
+
+.toggle {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+/* Le témoin de la légende répète la forme du tracé : trait plein et rond pour
+   la moyenne, trait tireté et carré pour le plancher. Photocopiée en noir et
+   blanc, la figure reste lisible. */
+.swatch { flex: none; width: 34px; height: 12px; }
+
+.scenario { margin-top: 22px; padding: 14px 16px; }
+
+.scenario__name {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.scenario__note {
+  max-width: 80ch;
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-800);
+  text-wrap: pretty;
+}
+
+figure { margin: 22px 0 0; }
+
+svg.figure { display: block; width: 100%; height: auto; background: var(--color-neutral-100); }
+
+figcaption {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 2px solid var(--color-text);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--color-neutral-800);
+}
+
+/* — relevé chiffré —
+   Le radar situe ; le tableau dit les nombres exacts et, surtout, dit *pourquoi*
+   une dimension n'a pas de valeur. La figure ne peut montrer une absence que par
+   un trou, qui ne se lit pas tout seul. */
+.readout { margin-top: 22px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+th {
+  padding: 8px;
+  border-bottom: 2px solid var(--color-divider);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--color-neutral-700);
+}
+
+td { padding: 7px 8px; border-bottom: 1px solid var(--color-divider); }
+
+.col-num { width: 110px; text-align: right; font-variant-numeric: tabular-nums; }
+
+.readout__body { padding: 10px 14px 14px; }
+
+.dim-chip {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border: 1px solid var(--color-neutral-600);
+  vertical-align: baseline;
+}
+
+.absent { color: var(--color-neutral-700); font-style: italic; }
+
+.caveat { margin-top: 26px; padding: 16px 18px 18px; }
+
+.caveat h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.caveat p {
+  max-width: 82ch;
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.caveat p:last-child { margin-bottom: 0; }
+
+.caveat strong { font-weight: 800; }
+
+.open-question {
+  margin-top: 14px;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-text);
+}
+
+@media (max-width: 900px) {
+  body { padding: 20px 16px 48px; }
+  select { min-width: 0; width: 100%; }
+}
+</style>
+</head>
+
+<body>
+<main>
+  <p class="eyebrow">Maquette · hors application</p>
+  <h1>Radar par dimension</h1>
+  <p class="lead">
+    Neuf axes, un par dimension du modèle. Deux tracés qui ne disent pas la même chose :
+    la <strong>moyenne</strong> des domaines de capacité renseignés de la dimension, et son
+    <strong>plancher</strong> — le domaine le plus bas, celui qui la retiendrait si la dimension
+    était un palier. Les jeux de données sont recopiés à la main des trois démonstrations de
+    l’outil, plus un quatrième construit pour le cas limite. Rien ici n’est calculé par
+    l’application.
+  </p>
+
+  <section class="panel controls">
+    <div>
+      <label class="control__label" for="dataset">Jeu de données</label>
+      <select id="dataset"></select>
+    </div>
+    <div>
+      <span class="control__label">Tracés</span>
+      <div class="toggles">
+        <label class="toggle">
+          <input id="show-average" type="checkbox" checked>
+          <svg class="swatch" viewBox="0 0 34 12" aria-hidden="true">
+            <line x1="1" y1="6" x2="33" y2="6" stroke="#4a5ec8" stroke-width="2.5"></line>
+            <circle cx="17" cy="6" r="4" fill="#f8f4f4" stroke="#4a5ec8" stroke-width="2.5"></circle>
+          </svg>
+          Moyenne
+        </label>
+        <label class="toggle">
+          <input id="show-floor" type="checkbox" checked>
+          <svg class="swatch" viewBox="0 0 34 12" aria-hidden="true">
+            <line x1="1" y1="6" x2="33" y2="6" stroke="#b8452a" stroke-width="2.5" stroke-dasharray="6 4"></line>
+            <rect x="13" y="2" width="8" height="8" fill="#f8f4f4" stroke="#b8452a" stroke-width="2.5"></rect>
+          </svg>
+          Plancher
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel scenario">
+    <p class="scenario__name" id="scenario-name"></p>
+    <p class="scenario__note" id="scenario-note"></p>
+  </section>
+
+  <figure class="panel">
+    <svg id="radar" class="figure" viewBox="0 0 960 720" role="img" aria-labelledby="radar-title">
+      <title id="radar-title">Radar des neuf dimensions : moyenne et plancher de chacune, sur une échelle de 1 à 5</title>
+    </svg>
+    <figcaption>
+      Échelle de 1 à 5, cinq anneaux gradués. Le centre n’est pas une valeur : le premier anneau
+      porte le rang 1, et une dimension sans mesure n’est pas tracée du tout — le tracé s’y
+      interrompt. Le relevé ci-dessous dit laquelle, et pourquoi.
+    </figcaption>
+  </figure>
+
+  <section class="panel readout">
+    <h2 class="panel-head">Relevé par dimension</h2>
+    <div class="readout__body">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Dimension</th>
+            <th scope="col">Domaines renseignés</th>
+            <th class="col-num" scope="col">Moyenne</th>
+            <th class="col-num" scope="col">Plancher</th>
+          </tr>
+        </thead>
+        <tbody id="readout"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel caveat">
+    <h2>Ce que ce radar montre, et ce qu’il ne montre pas</h2>
+
+    <p>
+      Il montre neuf lectures par dimension, chacune sur deux nombres. La moyenne situe
+      l’ensemble des domaines de capacité renseignés de la dimension ; le plancher nomme le plus
+      bas d’entre eux, celui qui retiendrait la dimension si elle était un palier. Ces deux
+      nombres <strong>situent, ils ne mesurent pas</strong> : ni l’un ni l’autre n’entre dans le
+      calcul du palier atteint, qui se joue sur le périmètre entier et sur les rangs attendus,
+      jamais par dimension.
+    </p>
+
+    <p>
+      Il ne montre pas un résultat, et il ne faut pas le lire comme tel.
+      <strong>Sa surface se lit comme un total</strong> : c’est le propre de la figure — un creux
+      s’y compense visuellement par une pointe voisine, et l’œil en retire une impression de
+      niveau global. Or la règle de l’outil refuse exactement cela. Un palier n’est acquis que
+      lorsque <em>tous</em> les domaines qu’il attend l’atteignent, sans compensation, et l’outil
+      ne restitue aucun score global (décision du 30.07.2026). Le radar contredit donc, par sa
+      forme, ce que l’échelle des paliers établit par son calcul.
+    </p>
+
+    <p>
+      Une dimension sans mesure n’y est jamais tracée à zéro. Aucun domaine renseigné, ou tous
+      déclarés hors périmètre : la valeur est <strong>absente</strong>, pas nulle, et le tracé
+      s’interrompt sur cet axe. Un zéro s’y lirait comme le pire résultat possible alors que rien
+      n’a été mesuré — c’est la même famille de défaut que le « 3,1 / 3 » relevé en test.
+    </p>
+
+    <p class="open-question">
+      <strong>À trancher avant toute intégration au parcours.</strong> La contradiction ci-dessus
+      n’est pas rattrapée par cette maquette, et elle ne se rattrape pas par une légende : une
+      figure compensatoire posée à côté d’une règle qui ne compense pas reste lue comme un score.
+      Deux issues, et cette maquette n’en choisit aucune. Ou bien le radar reste hors du
+      parcours, support de discussion en séance, où quelqu’un est là pour dire ce qu’il ne dit
+      pas. Ou bien il y entre en second rang, après le verdict, avec le <em>plancher seul</em>
+      tracé par défaut : des deux tracés, c’est le seul qui ne compense rien — il dit le minimum,
+      comme la règle d’agrégation.
+    </p>
+  </section>
+</main>
+
+<script>
+/* ───────────────────────────────────────────────────────────────────────────
+   LE MODÈLE, RECOPIÉ À LA MAIN.
+
+   Report de src/data/model-data.json : les neuf dimensions dans l'ordre du
+   modèle, leur couleur, et les domaines de capacité qu'elles portent. Le rang
+   attendu de chaque domaine n'est pas repris — il ne sert qu'au calcul du
+   palier, qui n'est pas ce que cette figure montre.
+
+   C'est une copie, pas une lecture : ce fichier ne peut rien importer sans
+   cesser de s'ouvrir par double-clic.
+   ─────────────────────────────────────────────────────────────────────────── */
+const DIMENSIONS = [
+  { id: 'D11', name: "Alignement stratégique et Structure de l'organisation", color: '#ff6464', areas: ['A1', 'A2', 'A3', 'A4'] },
+  { id: 'D12', name: "Motivations et Justification de l'adoption", color: '#fe9f4d', areas: ['A5', 'A6', 'A7'] },
+  { id: 'D21', name: "Compétences de la main-d'œuvre et Culture", color: '#f8d3af', areas: ['A8', 'A9'] },
+  { id: 'D22', name: 'Éthique et Gestion du Risque', color: '#fff6b6', areas: ['A10', 'A11', 'A12'] },
+  { id: 'D31', name: 'Innovation, Mesure et Analyse', color: '#cbe1c0', areas: ['A13', 'A14', 'A15', 'A16'] },
+  { id: 'D32', name: 'Gouvernance des données', color: '#c6dcff', areas: ['A17', 'A18'] },
+  { id: 'D41', name: 'Architecture et Intégration des technologies IA', color: '#b0d2f6', areas: ['A19', 'A20', 'A21', 'A22'] },
+  { id: 'D42', name: 'Production et Gestion de modèles (MLOPS)', color: '#659df2', areas: ['A23', 'A24', 'A25'] },
+  { id: 'D43', name: 'Infrastructure technologique ICT', color: '#8f7fee', areas: ['A26', 'A27', 'A28'] }
+]
+
+/* ───────────────────────────────────────────────────────────────────────────
+   LES JEUX DE DONNÉES, RECOPIÉS À LA MAIN.
+
+   Les trois premiers sont les tables `answers` de src/data/demo-sessions.js,
+   reprises telles quelles : un rang de 1 à 5 par domaine renseigné, `'na'` pour
+   un domaine déclaré hors périmètre, et rien du tout pour un domaine resté sans
+   réponse. Encore une fois : une copie, faite à une date donnée, qui ne suivra
+   pas le fichier source s'il change.
+
+   Le quatrième n'existe pas dans l'outil. Il est construit pour le cas limite
+   que la figure doit savoir tenir : une dimension entièrement hors périmètre
+   (D42) et une autre restée entièrement non renseignée (D22) — deux absences de
+   nature différente, aucune des deux n'étant un zéro. Il porte aussi une
+   dimension à un seul domaine renseigné (D43), où moyenne et plancher tombent
+   sur la même valeur.
+   ─────────────────────────────────────────────────────────────────────────── */
+const DATASETS = [
+  {
+    id: 'rochat',
+    name: 'Menuiserie Rochat — 32 personnes · industrie · régional',
+    note: 'Deux domaines déclarés hors périmètre (A23, A25) et deux restés à évaluer (A4, A28). ' +
+      'Aucune dimension n’est vide pour autant : MLOPS garde un domaine renseigné, et c’est ce ' +
+      'qui la distingue du quatrième jeu.',
+    answers: {
+      A6: 2, A8: 2, A13: 2,
+      A1: 1, A5: 1, A7: 1, A10: 1, A11: 2, A12: 1,
+      A17: 1, A18: 1, A19: 1, A20: 1, A26: 2,
+      A23: 'na', A24: 1, A25: 'na',
+      A2: 1, A3: 1, A9: 2, A14: 1, A15: 1, A16: 1, A21: 1, A22: 1, A27: 1
+    }
+  },
+  {
+    id: 'belair',
+    name: 'Clinique Bel-Air — 140 personnes · santé · national',
+    note: 'Les 28 domaines sont renseignés, aucun hors périmètre. La figure est complète : ' +
+      'c’est le cas où sa surface est la plus tentante à lire comme un total.',
+    answers: {
+      A6: 3, A8: 3, A13: 3,
+      A1: 3, A5: 2, A7: 3, A10: 3, A11: 3, A12: 3,
+      A17: 3, A18: 2, A19: 2, A20: 2, A23: 2, A24: 3, A26: 2,
+      A2: 2, A3: 2, A9: 2, A14: 2, A15: 1, A16: 2, A21: 2, A22: 2, A25: 2, A27: 2,
+      A28: 1, A4: 2
+    }
+  },
+  {
+    id: 'terravia',
+    name: 'Groupe Terravia — 210 personnes · distribution · national',
+    note: 'Les 28 domaines sont renseignés. L’écart entre moyenne et plancher s’y voit bien : ' +
+      'plusieurs dimensions montent en moyenne sans que leur plancher bouge.',
+    answers: {
+      A6: 4, A8: 3, A13: 4,
+      A1: 4, A5: 3, A7: 3, A10: 3, A11: 4, A12: 3,
+      A17: 4, A18: 3, A19: 3, A20: 3, A23: 3, A24: 3, A26: 4,
+      A2: 3, A3: 3, A9: 3, A14: 4, A15: 3, A16: 3, A21: 3, A22: 3, A25: 3, A27: 3,
+      A28: 2, A4: 2
+    }
+  },
+  {
+    id: 'limite',
+    name: 'Cas limite — construit pour la maquette',
+    note: 'Deux dimensions sans valeur, pour deux raisons différentes : MLOPS est entièrement ' +
+      'hors périmètre, Éthique et Gestion du Risque est entièrement non renseignée. Ni l’une ni ' +
+      'l’autre n’est tracée — surtout pas à zéro. Infrastructure ICT n’a qu’un domaine ' +
+      'renseigné : sa moyenne et son plancher s’y confondent.',
+    answers: {
+      A1: 3, A2: 2, A3: 2, A4: 'na',
+      A5: 2, A6: 3, A7: 2,
+      A8: 3, A9: 2,
+      /* A10, A11, A12 : absents de la table — la dimension n'a pas été évaluée. */
+      A13: 4, A14: 2, A15: 'na', A16: 3,
+      A17: 3, A18: 3,
+      A19: 2, A20: 2, A21: 'na', A22: 'na',
+      A23: 'na', A24: 'na', A25: 'na',
+      A26: 4
+      /* A27, A28 : absents — un seul domaine renseigné dans la dimension. */
+    }
+  }
+]
+
+const OUT_OF_SCOPE = 'na'
+const MIN_RANK = 1
+const MAX_RANK = 5
+
+/* La règle de src/domain/scoring.js, réécrite ici parce qu'on ne peut pas
+   l'importer. Son intention est reprise mot pour mot :
+     — un domaine hors périmètre sort du calcul ;
+     — un domaine sans réponse n'est pas un niveau bas, ce n'est pas une mesure ;
+     — une dimension sans aucun domaine mesuré ne rend pas 0 mais `null`.
+   C'est ce dernier point que la figure doit tenir : `null` ne se trace pas. */
+function ratedRanks(dimension, answers) {
+  return dimension.areas
+    .map(areaId => answers[areaId])
+    .filter(value => Number.isInteger(value) && value >= MIN_RANK && value <= MAX_RANK)
+}
+
+function readDimension(dimension, answers) {
+  const ranks = ratedRanks(dimension, answers)
+  const declared = dimension.areas.filter(areaId => areaId in answers)
+  const outOfScope = dimension.areas.filter(areaId => answers[areaId] === OUT_OF_SCOPE)
+
+  if (!ranks.length) {
+    /* Deux absences, et elles ne se disent pas de la même façon. Toutes les
+       deux valent `null` pour la figure — c'est le tableau qui les distingue. */
+    return {
+      dimension: dimension,
+      average: null,
+      floor: null,
+      rated: 0,
+      reason: outOfScope.length === dimension.areas.length
+        ? 'tous hors périmètre'
+        : declared.length === 0
+          ? 'aucun domaine renseigné'
+          : 'aucun domaine mesuré'
+    }
+  }
+
+  const total = ranks.reduce((sum, rank) => sum + rank, 0)
+  return {
+    dimension: dimension,
+    average: total / ranks.length,
+    floor: Math.min.apply(null, ranks),
+    rated: ranks.length,
+    reason: null
+  }
+}
+
+/* — géométrie —
+   Neuf axes, le premier en haut, dans le sens des aiguilles d'une montre.
+   Le rayon du rang 1 n'est pas nul : au centre, un 1 serait un point, donc
+   indiscernable d'une absence — exactement ce que la figure doit éviter. Le
+   centre ne porte aucune valeur. */
+const SVG_NS = 'http://www.w3.org/2000/svg'
+const CENTER = { x: 480, y: 336 }
+const R_MAX = 196
+const R_MIN = 56
+const AXIS_COUNT = DIMENSIONS.length
+const STEP = (Math.PI * 2) / AXIS_COUNT
+
+function radius(value) {
+  return R_MIN + ((value - MIN_RANK) / (MAX_RANK - MIN_RANK)) * (R_MAX - R_MIN)
+}
+
+function point(index, value) {
+  const angle = -Math.PI / 2 + index * STEP
+  const r = radius(value)
+  return { x: CENTER.x + r * Math.cos(angle), y: CENTER.y + r * Math.sin(angle) }
+}
+
+function el(name, attrs, text) {
+  const node = document.createElementNS(SVG_NS, name)
+  Object.keys(attrs).forEach(key => node.setAttribute(key, attrs[key]))
+  if (text !== undefined) node.textContent = text
+  return node
+}
+
+/* Les intitulés de dimension sont longs — ce sont eux, et non la figure, qui
+   décident de la taille du dessin. On les coupe aux mots, et la marge du
+   viewBox est réservée en conséquence. */
+function wrap(text, max) {
+  const lines = []
+  let line = ''
+  text.split(' ').forEach(function (word) {
+    const candidate = line ? line + ' ' + word : word
+    if (candidate.length > max && line) {
+      lines.push(line)
+      line = word
+    } else {
+      line = candidate
+    }
+  })
+  if (line) lines.push(line)
+  return lines
+}
+
+/* Un tracé peut avoir des trous : une dimension sans mesure n'a pas de point.
+   On dessine donc des segments ouverts sur les suites d'axes consécutifs qui
+   ont une valeur, en faisant le tour de la figure. Si les neuf en ont une, il
+   n'y a qu'une suite et elle se referme en polygone. S'il y a un trou, le tracé
+   s'interrompt : il ne passe pas par le centre et ne coupe pas d'un bord à
+   l'autre — les deux tromperaient sur ce qui n'a pas été mesuré. */
+function runsOf(values) {
+  const present = values.map(function (value) { return value !== null })
+  if (present.every(Boolean)) return [{ indices: values.map(function (_, i) { return i }), closed: true }]
+  if (!present.some(Boolean)) return []
+
+  /* On part d'un axe sans valeur, ce qui garantit qu'aucune suite n'enjambe le
+     début du tour : avec au moins un trou, un tel axe existe toujours. */
+  const start = present.indexOf(false)
+  const runs = []
+  let current = null
+  for (let step = 1; step <= AXIS_COUNT; step++) {
+    const index = (start + step) % AXIS_COUNT
+    if (present[index]) {
+      if (!current) { current = { indices: [], closed: false }; runs.push(current) }
+      current.indices.push(index)
+    } else {
+      current = null
+    }
+  }
+  return runs
+}
+
+function drawTrace(svg, values, options) {
+  runsOf(values).forEach(function (run) {
+    const points = run.indices.map(function (index) { return point(index, values[index]) })
+    if (points.length > 1) {
+      const d = points.map(function (p, i) {
+        return (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)
+      }).join(' ')
+      svg.appendChild(el('path', {
+        d: run.closed ? d + ' Z' : d,
+        fill: run.closed ? options.color : 'none',
+        'fill-opacity': run.closed ? '0.10' : '0',
+        stroke: options.color,
+        'stroke-width': '2.5',
+        'stroke-linejoin': 'round',
+        'stroke-linecap': 'round',
+        'stroke-dasharray': options.dash || 'none'
+      }))
+    }
+    /* Le repère de chaque point : rond pour la moyenne, carré pour le plancher.
+       C'est la distinction qui survit au noir et blanc, et c'est aussi la seule
+       marque qui reste quand une dimension isolée est seule à avoir une valeur. */
+    run.indices.forEach(function (index) {
+      const p = point(index, values[index])
+      if (options.shape === 'square') {
+        svg.appendChild(el('rect', {
+          x: (p.x - 4.5).toFixed(1), y: (p.y - 4.5).toFixed(1), width: 9, height: 9,
+          fill: '#f8f4f4', stroke: options.color, 'stroke-width': '2.5'
+        }))
+      } else {
+        svg.appendChild(el('circle', {
+          cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: 4.5,
+          fill: '#f8f4f4', stroke: options.color, 'stroke-width': '2.5'
+        }))
+      }
+    })
+  })
+}
+
+function drawGrid(svg) {
+  /* Cinq anneaux, un par rang. Ils sont polygonaux et non circulaires : un
+     anneau rond suggérerait une échelle continue entre les axes, alors qu'il
+     n'y a rien entre deux dimensions. */
+  for (let rank = MIN_RANK; rank <= MAX_RANK; rank++) {
+    const points = DIMENSIONS.map(function (_, index) {
+      const p = point(index, rank)
+      return p.x.toFixed(1) + ',' + p.y.toFixed(1)
+    }).join(' ')
+    svg.appendChild(el('polygon', {
+      points: points,
+      fill: 'none',
+      stroke: rank === MAX_RANK ? '#201e1d' : '#d7d3d3',
+      'stroke-width': rank === MAX_RANK ? '2' : '1'
+    }))
+  }
+
+  DIMENSIONS.forEach(function (dimension, index) {
+    const inner = point(index, MIN_RANK)
+    const outer = point(index, MAX_RANK)
+    svg.appendChild(el('line', {
+      x1: inner.x.toFixed(1), y1: inner.y.toFixed(1),
+      x2: outer.x.toFixed(1), y2: outer.y.toFixed(1),
+      stroke: '#bab6b6', 'stroke-width': '1'
+    }))
+
+    /* La pastille de couleur de la dimension, posée au bout de l'axe : c'est le
+       seul endroit où la figure reprend le code couleur du modèle. */
+    svg.appendChild(el('rect', {
+      x: (outer.x - 4).toFixed(1), y: (outer.y - 4).toFixed(1), width: 8, height: 8,
+      fill: dimension.color, stroke: '#7d7979', 'stroke-width': '1'
+    }))
+  })
+
+  /* La graduation, une seule fois, sur l'axe qui monte : répétée sur les neuf,
+     elle encombrerait la figure sans rien ajouter. */
+  for (let rank = MIN_RANK; rank <= MAX_RANK; rank++) {
+    const p = point(0, rank)
+    svg.appendChild(el('rect', {
+      x: (p.x + 4).toFixed(1), y: (p.y - 7).toFixed(1), width: 13, height: 13,
+      fill: '#f8f4f4'
+    }))
+    svg.appendChild(el('text', {
+      x: (p.x + 6).toFixed(1), y: (p.y + 4).toFixed(1),
+      'font-size': '11', 'font-weight': '700', fill: '#605d5d'
+    }, String(rank)))
+  }
+}
+
+function drawLabels(svg, readings) {
+  DIMENSIONS.forEach(function (dimension, index) {
+    const angle = -Math.PI / 2 + index * STEP
+    const cos = Math.cos(angle)
+    const x = CENTER.x + (R_MAX + 28) * cos
+    const y = CENTER.y + (R_MAX + 28) * Math.sin(angle)
+    const anchor = cos > 0.25 ? 'start' : cos < -0.25 ? 'end' : 'middle'
+
+    const lines = wrap(dimension.name, 26)
+    const reading = readings[index]
+    const text = el('text', {
+      x: x.toFixed(1), y: y.toFixed(1),
+      'text-anchor': anchor,
+      'font-size': '12',
+      'font-weight': '700',
+      fill: '#201e1d'
+    })
+    /* Le bloc d'intitulé est centré verticalement sur le bout de l'axe. */
+    const offset = -((lines.length - 1) * 14) / 2
+    lines.forEach(function (line, lineIndex) {
+      text.appendChild(el('tspan', {
+        x: x.toFixed(1),
+        y: (y + offset + lineIndex * 14).toFixed(1)
+      }, line))
+    })
+    /* Une dimension sans mesure le dit sous son intitulé. Sans cette mention,
+       l'axe vide se lirait comme un oubli de la figure. */
+    if (reading.average === null) {
+      text.appendChild(el('tspan', {
+        x: x.toFixed(1),
+        y: (y + offset + lines.length * 14).toFixed(1),
+        'font-size': '10.5',
+        'font-weight': '500',
+        'font-style': 'italic',
+        fill: '#605d5d'
+      }, 'non mesurée — ' + reading.reason))
+    }
+    svg.appendChild(text)
+  })
+}
+
+function fr(value) {
+  return value.toLocaleString('fr-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+}
+
+function render() {
+  const chosen = document.getElementById('dataset').value
+  const dataset = DATASETS.filter(function (item) { return item.id === chosen })[0]
+  const readings = DIMENSIONS.map(function (dimension) {
+    return readDimension(dimension, dataset.answers)
+  })
+
+  document.getElementById('scenario-name').textContent = dataset.name
+  document.getElementById('scenario-note').textContent = dataset.note
+
+  const svg = document.getElementById('radar')
+  /* On repart du titre accessible et on redessine tout : la figure est petite,
+     et un rendu complet évite d'avoir à réconcilier deux états. */
+  const title = svg.querySelector('title')
+  svg.textContent = ''
+  svg.appendChild(title)
+
+  drawGrid(svg)
+  if (document.getElementById('show-average').checked) {
+    drawTrace(svg, readings.map(function (r) { return r.average }), { color: '#4a5ec8', shape: 'circle' })
+  }
+  if (document.getElementById('show-floor').checked) {
+    drawTrace(svg, readings.map(function (r) { return r.floor }), { color: '#b8452a', shape: 'square', dash: '7 5' })
+  }
+  drawLabels(svg, readings)
+
+  const body = document.getElementById('readout')
+  body.textContent = ''
+  readings.forEach(function (reading) {
+    const row = document.createElement('tr')
+
+    const name = document.createElement('td')
+    const chip = document.createElement('span')
+    chip.className = 'dim-chip'
+    chip.style.background = reading.dimension.color
+    name.appendChild(chip)
+    name.appendChild(document.createTextNode(reading.dimension.name))
+    row.appendChild(name)
+
+    const rated = document.createElement('td')
+    rated.textContent = reading.rated + ' sur ' + reading.dimension.areas.length
+    row.appendChild(rated)
+
+    if (reading.average === null) {
+      /* Pas de « 0 », pas de « 0,0 », pas de tiret muet : la raison de
+         l'absence tient la place des deux nombres. */
+      const absent = document.createElement('td')
+      absent.className = 'col-num absent'
+      absent.colSpan = 2
+      absent.textContent = reading.reason
+      row.appendChild(absent)
+    } else {
+      const average = document.createElement('td')
+      average.className = 'col-num'
+      average.textContent = fr(reading.average) + ' / 5'
+      row.appendChild(average)
+
+      const floor = document.createElement('td')
+      floor.className = 'col-num'
+      floor.textContent = reading.floor + ' / 5'
+      row.appendChild(floor)
+    }
+
+    body.appendChild(row)
+  })
+}
+
+const select = document.getElementById('dataset')
+DATASETS.forEach(function (dataset) {
+  const option = document.createElement('option')
+  option.value = dataset.id
+  option.textContent = dataset.name
+  select.appendChild(option)
+})
+
+select.addEventListener('change', render)
+document.getElementById('show-average').addEventListener('change', render)
+document.getElementById('show-floor').addEventListener('change', render)
+render()
+</script>
+</body>
+</html>

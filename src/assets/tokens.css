@@ -144,6 +144,21 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800;
 }
 
+/* — titre de section —
+   Coiffe une section de page, là où .panel-head coiffe un encadré. Les pages de
+   résultats et d'ancrage en portent plusieurs chacune : sans un traitement
+   commun, leurs sections ne se lisaient pas comme des sections — un intitulé de
+   11px en gras ne se distinguait ni du corps ni des étiquettes. Le filet est
+   celui du panneau, pour que les deux appartiennent visiblement au même
+   système. */
+.section-head {
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-text);
+  font-family: var(--font-heading); font-weight: 800;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+}
+
 .heading { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.01em; }
 .eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
 .meta { font-size: 11px; color: var(--color-neutral-700); }

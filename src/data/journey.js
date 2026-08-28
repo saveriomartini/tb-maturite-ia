@@ -1,11 +1,18 @@
-// Texte du parcours utilisateur en trois phases (Cadrage, Évaluation,
-// Résultats) : étapes, points de friction et opportunités.
+// Texte du parcours utilisateur en quatre phases (Cadrage, Évaluation,
+// Résultats, Ancrage) : étapes, points de friction et opportunités.
 // Contenu rédactionnel, au même titre que model-data.json — aucune logique.
 //
-// Les définitions ne mentionnent plus de « niveau cible » : le profil visé se
-// déduit du contexte et ne s'annonce qu'au palier, une fois la première série
-// d'areas parcourue. L'annoncer ici rouvrirait dès le cadrage une décision qu'on
-// ne demande plus.
+// L'Ancrage était affiché grisé comme hors périmètre, puis retiré : annoncer sur
+// chaque écran ce que l'outil ne fait pas est un aveu de conception. Il revient
+// parce qu'il a un contenu — la portée visée, le niveau cible qui en découle,
+// l'écart, et la pièce à emporter. Il s'arrête là : préparer l'ancrage, pas le
+// conduire. Ce que l'organisation fera ensuite ne se joue pas dans un outil de
+// diagnostic.
+//
+// Le degré de transformation visé n'est plus une question de cadrage : il se
+// déduit de la portée déclarée à l'ancrage, une fois les énoncés lus. Les textes
+// de l'Évaluation ne parlent plus de valider des pratiques une par une — l'unité
+// de réponse est le domaine, et la réponse est un énoncé parmi cinq.
 
 export const JOURNEY = [
   {
@@ -13,14 +20,14 @@ export const JOURNEY = [
     name: 'Cadrage',
     steps: [
       'vous décrivez votre organisation en quelques attributs',
-      'l’outil en déduit les domaines de capacité à évaluer en priorité'
+      'l’outil retient ce que votre contexte peut porter'
     ],
     frictions: [
       'décrire son organisation avant d’avoir commencé peut sembler fastidieux',
       'difficulté à percevoir la vue d’ensemble et les détails en même temps'
     ],
     opps: [
-      'la sélection des domaines est faite pour vous : rien à trancher soi-même',
+      'aucun attribut n’est obligatoire : ce que vous ne dites pas ne vous retire rien',
       's’approprier un vocabulaire commun sur l’adoption de l’IA'
     ]
   },
@@ -28,23 +35,43 @@ export const JOURNEY = [
     n: '2',
     name: 'Évaluation',
     steps: [
-      'vous validez, domaine par domaine, les pratiques déjà en place',
-      'seules les pratiques que votre situation appelle vous sont présentées'
+      'pour chaque domaine de capacité, vous retenez l’énoncé qui décrit votre situation',
+      'un domaine qui ne vous concerne pas se déclare hors périmètre'
     ],
-    frictions: ['valider une pratique demande parfois de vérifier auprès d’un collègue'],
-    opps: ['choix binaire oui / non : une définition claire et objective de ce qui est acquis']
+    frictions: [
+      'trancher entre deux énoncés voisins demande parfois de vérifier auprès d’un collègue'
+    ],
+    opps: [
+      'un choix par domaine : 28 réponses tiennent dans une séance',
+      'les énoncés décrivent des situations concrètes, pas des niveaux à s’attribuer'
+    ]
   },
   {
     n: '3',
     name: 'Résultats',
     steps: [
       'vous situez votre organisation sur l’échelle des profils d’adoption',
-      'vous obtenez la liste des pratiques manquantes, prête à exporter'
+      'vous lisez, domaine par domaine, ce que vos réponses donnent'
     ],
-    frictions: ['frustration de voir un critère non atteint pour une seule pratique manquante'],
+    frictions: ['frustration de voir un palier retenu par un seul domaine'],
     opps: [
-      'les écarts regroupés par bloc se lisent d’un coup d’œil',
-      'une liste d’actions concrètes pour engager la suite'
+      'la règle est explicite : aucun palier ne se compense',
+      'le détail par dimension montre où l’écart se concentre'
+    ]
+  },
+  {
+    n: '4',
+    name: 'Ancrage',
+    steps: [
+      'vous déclarez jusqu’où l’adoption de l’IA doit avoir porté',
+      'vous emportez les domaines qui vous en séparent, prêts à exporter'
+    ],
+    frictions: [
+      'la portée visée engage : elle se déclare après l’évaluation, pas avant'
+    ],
+    opps: [
+      'l’écart est nommé domaine par domaine, avec l’énoncé à atteindre',
+      'la pièce exportée dit sur quoi elle porte et ce qu’elle laisse de côté'
     ]
   }
 ]

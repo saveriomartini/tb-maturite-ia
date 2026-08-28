@@ -1,10 +1,5 @@
 <template>
   <div class="cadrage3">
-    <TransformationQuestion
-      :field="vm.transformationField"
-      @select="emit('select-transformation', $event)"
-    />
-
     <div ref="form" class="form">
       <ContextAttributeForm
         :groups="vm.groups"
@@ -29,13 +24,14 @@
 </template>
 
 <script setup>
-// Cadrage du contexte. L'écran s'ouvre sur la question du degré de
-// transformation, qui pose le profil visé, donc les areas que le diagnostic
-// parcourra ; le formulaire qui suit ne fait que le restreindre — jamais le
-// remonter — et l'écran ne montre pas ce qu'il produit : l'écart entre ce qu'on
-// vise et ce que le contexte porte ne se discute qu'à la restitution. Les
-// attributs qui décrivent l'organisation closent l'écran : ils ne pèsent sur
-// rien, et leur en-tête le dit.
+// Cadrage du contexte. L'écran ne pose plus que des attributs, et aucun n'est
+// exigé : la seule question qui l'était — jusqu'où l'adoption doit transformer
+// l'organisation — est passée en phase d'ancrage, où elle se pose après que les
+// énoncés ont donné un sens au vocabulaire du modèle. Ce que ces attributs
+// produisent ne s'affiche pas ici : ils bornent le profil que l'outil proposera
+// de viser, et l'écart entre ce qu'on vise et ce que le contexte porte ne se
+// discute qu'à l'ancrage. Les attributs qui décrivent l'organisation closent
+// l'écran : ils ne pèsent sur rien, et leur en-tête le dit.
 //
 // Rien ne plaide plus ici pour le formulaire, et rien ne le contourne : la page
 // pose ses questions et laisse le pied de page conclure, comme tous les autres
@@ -50,15 +46,12 @@ import { ref, useTemplateRef } from 'vue'
 import AppDialog from '../AppDialog.vue'
 import ContextAttributeForm from '../ContextAttributeForm.vue'
 import DescriptiveContext from '../DescriptiveContext.vue'
-import TransformationQuestion from '../TransformationQuestion.vue'
 
 const props = defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits([
-  'select-option', 'select-transformation', 'dismiss-warning', 'next'
-])
+const emit = defineEmits(['select-option', 'dismiss-warning', 'next'])
 
 const form = useTemplateRef('form')
 const asking = ref(false)

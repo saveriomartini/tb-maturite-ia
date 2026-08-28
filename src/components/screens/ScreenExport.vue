@@ -9,7 +9,7 @@
       <article v-for="page in vm.pages" :key="page.label" class="page">
         <header class="page__head">
           <div>
-            <h1 class="page__title heading">Liste des critères d’adoption manquants (Gap)</h1>
+            <h1 class="page__title heading">Domaines de capacité qui séparent du profil visé</h1>
             <p class="page__meta">{{ vm.meta }}</p>
           </div>
           <div class="page__levels">
@@ -22,27 +22,19 @@
         </header>
 
         <div class="page__body">
-          <p v-if="page.empty" class="page__empty">
-            Aucun critère manquant — tous les domaines évalués sont acquis.
-          </p>
+          <p v-if="page.empty" class="page__empty">{{ vm.emptyLabel }}</p>
 
-          <section v-for="group in page.groups" :key="group.id" class="group">
-            <p v-if="group.showBlock" class="group__block">{{ group.block }}</p>
-            <header class="group__head">
-              <span class="group__swatch" :style="{ background: group.dimColor }" />
-              <span class="group__dimension">{{ group.dim }}</span>
-              <span class="group__area heading">{{ group.area }}</span>
+          <section v-for="row in page.rows" :key="row.id" class="domain">
+            <p v-if="row.showGate" class="domain__gate">Pour atteindre « {{ row.gateLabel }} »</p>
+            <header class="domain__head">
+              <span class="domain__swatch" :style="{ background: row.dimColor }" />
+              <span class="domain__dimension">{{ row.dim }}</span>
+              <span class="domain__area heading">{{ row.name }}</span>
             </header>
-            <div class="objectives">
-              <div v-for="objective in group.objectives" :key="objective.label">
-                <p class="objective">
-                  <span class="objective__label">{{ objective.label }} </span>{{ objective.goal }}
-                </p>
-                <div class="practices">
-                  <p v-for="practice in objective.practices" :key="practice" class="practice">— {{ practice }}</p>
-                </div>
-              </div>
-            </div>
+            <p class="domain__ranks">
+              Attendu au rang {{ row.required }} · situé au {{ row.level || '—' }}
+            </p>
+            <p class="domain__statement">{{ row.statement }}</p>
           </section>
         </div>
 
@@ -56,13 +48,22 @@
 </template>
 
 <script setup>
+// L'aperçu de la pièce à emporter. Elle ne liste plus des critères manquants et
+// des pratiques à mettre en place : elle nomme les domaines de capacité qui
+// séparent du profil visé et, pour chacun, l'énoncé à atteindre. C'est la même
+// matière que l'écran d'ancrage, mise à plat pour être relue hors de l'outil.
+//
 // L'en-tête de page nomme d'abord l'organisation évaluée, puis les deux profils,
 // puis la couverture : du plus englobant au plus fin, chaque ligne bornant celles
 // qui la suivent. Elle vient en premier parce que c'est la seule qui puisse
-// invalider la lecture des autres — un document relu hors de l'outil, sans
-// personne pour préciser le périmètre, se prend sinon pour un bilan de
-// l'entreprise entière. Elle est répétée sur chaque page : une page détachée du
-// dossier reste rattachée à son périmètre.
+// invalider la lecture des autres — un document relu sans personne pour préciser
+// le périmètre se prend sinon pour un bilan de l'entreprise entière. Elle est
+// répétée sur chaque page : une page détachée du dossier reste rattachée à son
+// périmètre.
+//
+// La couverture dit aussi ce que la liste ne contient pas : les domaines restés
+// à évaluer et ceux déclarés hors périmètre. Sans cette ligne, l'absence d'un
+// domaine se lirait comme un acquis.
 import AppScreen from '../AppScreen.vue'
 
 defineProps({
@@ -144,7 +145,7 @@ const emit = defineEmits(['back'])
   font-weight: 700;
 }
 
-/* Sur quoi porte la liste : une area jamais présentée n'y figure pas, et le
+/* Sur quoi porte la liste : un domaine non renseigné n'y figure pas, et le
    document doit le dire pour être lu correctement hors de l'outil. */
 .page__coverage {
   margin: 3px 0 0;
@@ -170,17 +171,9 @@ const emit = defineEmits(['back'])
   line-height: 1.45;
 }
 
-.group__head {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--color-divider);
-}
-
-/* Le bloc annonce les areas qui suivent sur sa propre ligne : les dimensions
-   restent alignées à gauche d'une area à l'autre. */
-.group__block {
+/* Le palier annonce les domaines qui suivent sur sa propre ligne : les
+   dimensions restent alignées à gauche d'un domaine à l'autre. */
+.domain__gate {
   margin: 0 0 6px;
   font-size: 9.5px;
   text-transform: uppercase;
@@ -188,55 +181,42 @@ const emit = defineEmits(['back'])
   font-weight: 800;
 }
 
-.group__swatch {
+.domain__head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.domain__swatch {
   width: 9px;
   height: 9px;
   flex: none;
   border: 1px solid var(--color-text);
 }
 
-.group__dimension {
+.domain__dimension {
   font-size: 9.5px;
   color: var(--color-neutral-700);
 }
 
-.group__area {
+.domain__area {
   margin-left: auto;
   font-size: 11.5px;
   letter-spacing: normal;
 }
 
-.objectives {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
+.domain__ranks {
+  margin: 6px 0 0;
+  font-size: 9px;
+  color: var(--color-neutral-700);
 }
 
-.objective {
-  margin: 0;
-  font-size: 9.5px;
-  line-height: 1.4;
-  color: var(--color-neutral-800);
-}
-
-.objective__label {
-  font-weight: 800;
-  color: var(--color-text);
-}
-
-.practices {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-top: 4px;
-  padding-left: 12px;
-}
-
-.practice {
-  margin: 0;
-  font-size: 9.5px;
-  line-height: 1.4;
+.domain__statement {
+  margin: 4px 0 0;
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 .page__foot {

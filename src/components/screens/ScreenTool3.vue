@@ -1,36 +1,62 @@
 <template>
   <AppScreen class="tool3">
-    <ScreenResti1 :vm="resti1" />
+    <ScreenResti1 :vm="resti1" :focused-gate="focusedGate" @focus-gate="focusedGate = $event" />
 
     <section class="zone">
-      <ScreenResti2 :vm="resti2" />
+      <ScreenResti2 :vm="resti2" :focus="focus" />
     </section>
 
-    <AppScreenNav next-label="Voir les écarts" @back="emit('back')" @next="emit('next')" />
+    <AppScreenNav next-label="Passer à l'ancrage" @back="emit('back')" @next="emit('next')" />
   </AppScreen>
 </template>
 
 <script setup>
-// Page de résultats : la synthèse en haut, le détail par area en dessous. Les
-// deux se lisaient auparavant sur deux écrans séparés, ce qui obligeait à
+// Page de résultats : la synthèse en haut, le détail par domaine en dessous.
+// Les deux se lisaient auparavant sur deux écrans séparés, ce qui obligeait à
 // naviguer pour rapprocher un chiffre global de sa décomposition.
+//
+// La page dit ce que le diagnostic constate, et rien de ce qu'on vise : l'écart
+// appartient à la phase suivante, où la portée visée se déclare enfin. Le pied
+// de page y mène.
+//
+// — la focalisation —
+// Cliquer un palier dans l'échelle allume, dans le détail par domaine, ce qui
+// retient ce palier. C'est la seule chose que les deux vues ont à se dire, et
+// c'est cette page qui la tient : elle seule les voit toutes les deux. L'état
+// est local et ne suit pas la session — il ne décrit pas l'évaluation, il décrit
+// ce qu'on est en train de regarder.
+import { computed, ref } from 'vue'
 import AppScreen from '../AppScreen.vue'
 import AppScreenNav from '../AppScreenNav.vue'
 import ScreenResti1 from './ScreenResti1.vue'
 import ScreenResti2 from './ScreenResti2.vue'
 
-defineProps({
+const props = defineProps({
   resti1: { type: Object, required: true },
   resti2: { type: Object, required: true }
 })
 
 const emit = defineEmits(['back', 'next'])
+
+const focusedGate = ref(null)
+
+// Le palier focalisé, tel que le tableau en a besoin : son libellé et les
+// domaines qu'il retient. Les deux viennent du view-model, qui les a déjà
+// calculés pour l'échelle — rien n'est dérivé ici que la jointure.
+const focus = computed(() => {
+  const step = props.resti1.ladder.find(candidate => candidate.n === focusedGate.value)
+  if (!step || !step.focusLabel) return null
+  return { label: step.focusLabel, areas: step.blocking }
+})
 </script>
 
 <style scoped>
+/* Le détail par domaine est une section de la page comme les autres : il porte
+   désormais son propre titre coiffé (.section-head), et n'a donc plus besoin du
+   filet fort qui l'annonçait — deux traits pleins à 22px l'un de l'autre se
+   lisaient comme une rupture de page. Reste l'écart vertical, celui de toutes
+   les sections de la synthèse. */
 .zone {
   margin-top: 34px;
-  padding-top: 22px;
-  border-top: 2px solid var(--color-text);
 }
 </style>

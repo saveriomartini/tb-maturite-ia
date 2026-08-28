@@ -51,10 +51,32 @@
         <span class="phase__desc">{{ phase.desc }}</span>
       </button>
     </nav>
+
+    <div v-if="vm.verdict" class="verdict">
+      <p class="verdict__cell">
+        <span class="verdict__label">Profil atteint</span>
+        <span class="verdict__value heading">{{ vm.verdict.acquiredLabel }}</span>
+      </p>
+      <p v-if="vm.verdict.nextLabel" class="verdict__cell verdict__cell--next">
+        <span class="verdict__label">Profil suivant</span>
+        <span class="verdict__value">{{ vm.verdict.nextLabel }}</span>
+      </p>
+      <p class="verdict__cell verdict__cell--progress">
+        <span class="verdict__value verdict__value--meta">{{ vm.verdict.progress }}</span>
+      </p>
+    </div>
   </header>
 </template>
 
 <script setup>
+// L'en-tête colle en haut de la fenêtre : marque, session, phases — et, pendant
+// l'évaluation et les résultats, le verdict en cours.
+//
+// Le verdict collant répond à une question qu'on se pose en descendant : où en
+// suis-je, et qu'est-ce qui vient après. Il ne remplace pas la restitution — il
+// n'en porte ni la description, ni l'échelle, ni ce qui sépare du palier suivant
+// — et il ne s'affiche pas dans les phases où il n'aurait rien à dire. Voir
+// docs/logs/BACKLOG.md, ligne 3.4.
 defineProps({
   vm: { type: Object, required: true },
 });
@@ -72,9 +94,61 @@ const emit = defineEmits(["home", "phase", "reset"]);
 }
 
 .header__bar,
-.header__phases {
+.header__phases,
+.verdict {
   max-width: 1440px;
   margin: 0 auto;
+}
+
+/* — le verdict en cours —
+   Une bande basse, sous les phases, qui ne dispute rien à la page : corps
+   réduit, filet de séparation, et le seul mot en gras est le nom du palier
+   tenu. Elle se lit d'un coup d'œil sans arrêter ce qu'on est en train de
+   faire — c'est tout ce qu'on demande à un en-tête collant. */
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  align-items: baseline;
+  padding: 7px var(--gutter) 8px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.verdict__cell {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin: 0;
+  min-width: 0;
+}
+
+.verdict__label {
+  flex: none;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+.verdict__value {
+  font-size: 12.5px;
+  letter-spacing: normal;
+}
+
+/* Le profil suivant est une indication de direction, pas un résultat : il se
+   tient un cran de gris sous le palier tenu, sans la graisse de titrage. */
+.verdict__cell--next .verdict__value {
+  color: var(--color-neutral-700);
+}
+
+.verdict__cell--progress {
+  margin-left: auto;
+}
+
+.verdict__value--meta {
+  font-size: 11px;
+  color: var(--color-neutral-700);
 }
 
 .header__bar {
@@ -193,6 +267,12 @@ const emit = defineEmits(["home", "phase", "reset"]);
    nom de la phase suffisent à se repérer, la phrase d'explication a déjà été
    lue à l'accueil. */
 @media (max-width: 900px) {
+  /* Empilée, la progression n'a plus de bord droit à tenir : elle reprend le
+     rang des deux autres cellules plutôt que de flotter seule. */
+  .verdict__cell--progress {
+    margin-left: 0;
+  }
+
   /* le titre suffit à identifier l'outil : la ligne de description passe à la
      trappe avant que l'en-tête collant ne mange l'écran */
   .header__subtitle {

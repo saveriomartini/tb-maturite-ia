@@ -1,39 +1,45 @@
 <template>
   <section class="panel transformation">
     <h2 class="panel-head transformation__title">
-      <span>Degré de transformation visé <span aria-hidden="true">*</span></span>
-      <span class="transformation__required"><span aria-hidden="true">*</span> champ obligatoire</span>
+      <span>{{ title }}</span>
+      <span class="transformation__note">une seule réponse, révisable</span>
     </h2>
 
     <div class="transformation__body">
-      <ContextField :field="field" pin-active required @select="emit('select', $event)" />
+      <ContextField :field="field" pin-active @select="emit('select', $event)" />
     </div>
   </section>
 </template>
 
 <script setup>
-// Question d'intention, posée avant la description factuelle de l'organisation :
-// jusqu'où l'adoption de l'IA doit-elle transformer la maison ? Les réponses
-// sont les cinq profils du modèle, présentés comme les options d'un attribut de
-// contexte pour ne pas introduire une seconde façon de répondre dans la même
-// page.
+// La question qui fixe le degré de transformation visé. Elle a changé deux fois
+// de place et une fois de formulation, et les deux tiennent au même motif.
 //
-// Le panneau ne se replie plus : la réponse fixe le profil visé, donc les areas
-// qui seront parcourues. Ce qui décide du diagnostic reste sous les yeux
-// pendant qu'on remplit le formulaire qui, lui, ne fait que le restreindre.
+// Elle se posait au cadrage, avant qu'on ait lu un seul énoncé : on demandait au
+// dirigeant de trancher sur un vocabulaire qu'il découvrait. Elle est désormais
+// posée en phase d'ancrage, après l'évaluation, quand les mots du modèle ont un
+// sens — et quand il sait où il en est.
 //
-// C'est aussi la seule réponse exigée de l'écran — le reste du cadrage ne fait
-// qu'affiner —, d'où l'astérisque de l'en-tête et l'`aria-required` du groupe
-// d'options : le départ vers l'évaluation reste fermé tant qu'elle manque.
+// Elle portait surtout sur le palier lui-même : celui qui désignait « Alignement
+// des processus » s'entendait répondre qu'il visait l'alignement des processus.
+// Elle porte donc sur la **portée** — ce que l'adoption doit avoir touché si elle
+// réussit —, jamais sur le degré ni sur le rang. Le degré s'en déduit ; il ne se
+// choisit pas.
 //
-// Au repos, la question se réduit à ses cinq options : c'est le choix, et rien
-// d'autre. La définition du profil retenu s'affiche dès qu'il est cliqué, et le
-// « + » du libellé donne les cinq d'un coup — « Alignement des processus » ou
-// « Mise à l'échelle en réseau » ne se départagent pas sur leur nom seul.
+// Elle n'est plus obligatoire, et l'astérisque a disparu avec l'exigence : sans
+// réponse, le profil visé retombe sur ce que les attributs de contexte portent,
+// et l'écran le dit. Le panneau ne se replie pas : ce qui décide de tout ce qui
+// suit reste sous les yeux pendant qu'on le lit.
+//
+// Au repos, la question se réduit à ses options : c'est le choix, et rien
+// d'autre. Le détail de la situation retenue s'affiche dès qu'elle est cliquée,
+// et le « + » du libellé donne les cinq d'un coup — deux portées voisines ne se
+// départagent pas sur leur seul intitulé.
 import ContextField from './ContextField.vue'
 
 defineProps({
-  field: { type: Object, required: true }
+  field: { type: Object, required: true },
+  title: { type: String, required: true }
 })
 
 const emit = defineEmits(['select'])
@@ -44,9 +50,9 @@ const emit = defineEmits(['select'])
   margin-bottom: 22px;
 }
 
-/* La seule réponse exigée du cadrage porte sa marque dans son en-tête, et sa
-   légende au bout de la même barre : le signe et ce qu'il veut dire se lisent
-   d'un même coup d'œil, sans renvoi à une note de bas de page. */
+/* Le titre du panneau et sa glose au bout de la même barre : ce qu'on demande et
+   ce que l'on risque en répondant se lisent d'un même coup d'œil, sans renvoi à
+   une note de bas de page. */
 .transformation__title {
   display: flex;
   flex-wrap: wrap;
@@ -58,9 +64,9 @@ const emit = defineEmits(['select'])
   line-height: inherit;
 }
 
-/* La légende n'est pas un second titre : elle abandonne les capitales et la
+/* La glose n'est pas un second titre : elle abandonne les capitales et la
    graisse de la barre pour rester une glose. */
-.transformation__required {
+.transformation__note {
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: none;

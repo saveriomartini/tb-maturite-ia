@@ -3,9 +3,8 @@
 // L'accueil annonce trois portes de même rang, dont une démonstration : un
 // parcours pré-rempli qui montre ce que l'outil restitue sans rien avoir à
 // saisir. Ce fichier en porte la matière — les organisations, leur contexte, ce
-// qu'elles ont validé — et rien d'autre : la fabrication de l'état de session
-// appartient à src/domain/demo-session.js, qui seul sait ce qu'est une clé de
-// pratique ou un rang d'indicateur.
+// qu'elles ont répondu — et rien d'autre : la fabrication de l'état de session
+// appartient à src/domain/demo-session.js.
 //
 // Les trois cas ne sont pas trois variantes du même. Chacun place l'écart entre
 // profil atteint et profil visé à un endroit différent de l'échelle de
@@ -14,31 +13,28 @@
 // tient un discours distinct dans chacun de ces cas (voir
 // src/data/transformation.js) — sans trois cas, on n'en verrait qu'un.
 //
-// Deux réglages traversent les trois scénarios :
+// — ce que porte un scénario —
 //
-//   `wave`      jusqu'où le questionnaire est allé. À 1, la seconde série n'a
-//               pas été ouverte et la restitution annonce des domaines non
-//               évalués ; à 2, tout a été présenté et ce bloc disparaît.
+//   `answers`   un niveau par domaine de capacité : le rang de l'énoncé retenu
+//               (1 à 5), ou `'na'` pour un domaine déclaré hors périmètre. Un
+//               domaine absent de la table n'a pas été renseigné — la
+//               restitution le compte parmi les domaines restant à évaluer, et
+//               jamais comme un manque. C'est exactement ce que le questionnaire
+//               produit : la démonstration ne doit pas écrire un état que
+//               l'utilisateur ne pourrait pas atteindre lui-même.
 //
-//   `ranks`     les indicateurs de maturité ne se saisissent pas domaine par
-//   `bias`      domaine ici : ils se déduisent de l'état du domaine — maîtrisé,
-//               entamé, intact — puis se décalent par indicateur. Une
-//               organisation qui nomme des responsables sans jamais doter les
-//               initiatives le montre sur les 28 domaines à la fois, ce qu'une
-//               saisie manuelle de 84 rangs rendrait illisible à écrire comme à
-//               relire.
+//   `reach`     la portée déclarée en phase d'ancrage — le `n` d'une option de
+//               REACH_QUESTION. C'est elle qui fixe l'intention ; le profil visé
+//               en découle, borné par ce que le contexte porte.
 //
-// Les identifiants de domaine (`mastered`, `partial`) sont ceux du modèle — A1 à
-// A28, les vingt-cinq d'Ozkaya et al. (2026) et les trois de la neuvième
-// dimension. `partial` compte des critères d'adoption validés, jamais des
-// pratiques : c'est l'unité de saisie du questionnaire, et une démonstration ne
-// doit pas produire un état que l'utilisateur ne pourrait pas atteindre lui-même.
+// Les tables sont écrites à la main, domaine par domaine, plutôt que dérivées
+// d'un état global comme elles l'étaient du temps des pratiques validées. Avec
+// 28 réponses et non plus 271 clés, la table tient sous les yeux : on lit ce que
+// la PME fictive a répondu sans avoir à dérouler une règle de génération.
 //
-// A5, A6 et A7 sont entrés dans la mesure le 18.08.2026 (voir docs/DECISIONS.md).
-// Les trois scénarios les portent désormais : A6 relève du premier rang, A5 et A7
-// du deuxième, et une PME fictive qui ne les aurait pas validés retomberait au
-// profil « Préparation » — ce que ni son récit ni ce qu'elle est censée démontrer
-// ne diraient plus.
+// Aucun scénario n'écrit de résultat : le profil atteint, l'écart et la synthèse
+// sont recalculés par domain/scoring.js comme pour une vraie session, faute de
+// quoi la démonstration montrerait autre chose que l'outil.
 
 export const DEMO_SESSIONS = [
   {
@@ -52,9 +48,11 @@ export const DEMO_SESSIONS = [
     shows:
       'Le contexte ramène l’ambition à ce qu’il peut porter, et l’écart qui reste ne ' +
       'demande pas de redessiner les processus — il se joue sous la ligne évolutif / ' +
-      'révolutionnaire.',
-    // Visé : « Alignement des processus ». Le formulaire le ramènera plus bas.
-    transformation: 3,
+      'révolutionnaire. Deux domaines y sont déclarés hors périmètre.',
+    // Portée déclarée : « notre façon de travailler est revue ». Le contexte
+    // ramènera le profil visé plus bas — c'est l'un des deux écarts que la
+    // restitution nomme.
+    reach: 3,
     form: {
       scope: 'org', horizon: 'h3a',
       digital: 'low', data: 'none', devApproach: 'buy',
@@ -63,13 +61,28 @@ export const DEMO_SESSIONS = [
       ambition: 'sector',
       domain: 'industry', size: 'xs', footprint: 'regional'
     },
-    wave: 1,
-    // L'atelier sait pourquoi il s'y met — ses clients le lui demandent — mais
-    // n'a ni enveloppe (A5) ni examen de ce que la solution suppose (A7).
-    mastered: ['A6', 'A8', 'A13'],
-    partial: { A1: 1, A11: 1, A17: 1, A24: 1 },
-    ranks: { mastered: 3, partial: 2, untouched: 1 },
-    bias: { accountability: 0, planning: 0, resourcing: -1 }
+    // L'atelier a franchi le premier rang — ses collaborateurs se forment, un
+    // client lui demande de l'IA, deux essais tournent — et rien du deuxième
+    // n'est en place : ni enveloppe (A5), ni examen de ce que la solution
+    // suppose (A7), ni cycle de vie des données (A17).
+    //
+    // A23 et A25 sont déclarés hors périmètre : l'atelier achète un service et
+    // n'entraîne aucun modèle ; ni le cycle de vie des modèles ni leur suivi en
+    // production ne sont à lui. C'est *sa* déclaration, pas un retrait décidé
+    // par l'outil — le modèle, lui, tient qu'une PME consommatrice reste
+    // concernée par ce qu'elle exploite, et A24 (sécurité des modèles et agents)
+    // reste donc dans la mesure, à son niveau réel.
+    //
+    // A4 et A28 n'ont pas été renseignés : la séance s'est arrêtée avant. Ils ne
+    // comptent ni comme acquis ni comme manquants — la restitution les annonce
+    // comme restant à évaluer.
+    answers: {
+      A6: 2, A8: 2, A13: 2,
+      A1: 1, A5: 1, A7: 1, A10: 1, A11: 2, A12: 1,
+      A17: 1, A18: 1, A19: 1, A20: 1, A26: 2,
+      A23: 'na', A24: 1, A25: 'na',
+      A2: 1, A3: 1, A9: 2, A14: 1, A15: 1, A16: 1, A21: 1, A22: 1, A27: 1
+    }
   },
   {
     id: 'belair',
@@ -83,7 +96,7 @@ export const DEMO_SESSIONS = [
       'Le profil visé est de l’autre côté de la ligne : c’est le seul passage de ' +
       'l’échelle qui change de nature, et la restitution refuse de le présenter comme ' +
       'un effort de plus.',
-    transformation: 3,
+    reach: 3,
     form: {
       scope: 'org', horizon: 'h3a',
       digital: 'mid', data: 'partial', devApproach: 'customize',
@@ -92,14 +105,17 @@ export const DEMO_SESSIONS = [
       ambition: 'sector',
       domain: 'health', size: 'm', footprint: 'national'
     },
-    wave: 1,
-    mastered: [
-      'A6', 'A8', 'A13',
-      'A1', 'A5', 'A7', 'A10', 'A11', 'A12', 'A17', 'A18', 'A19', 'A20', 'A23', 'A24', 'A26'
-    ],
-    partial: { A9: 1, A14: 1, A16: 1, A21: 1, A25: 1 },
-    ranks: { mastered: 3, partial: 2, untouched: 1 },
-    bias: { accountability: 1, planning: 0, resourcing: 0 }
+    // Tout le socle est tenu : les deux premiers rangs sont au niveau 2 ou
+    // au-dessus, sans exception. Ce qui manque est d'un autre ordre — refaire
+    // les processus autour de l'IA (A14, A15), en mesurer les effets (A16),
+    // faire évoluer la culture (A9). Le troisième rang n'y est pas.
+    answers: {
+      A6: 3, A8: 3, A13: 3,
+      A1: 3, A5: 2, A7: 3, A10: 3, A11: 3, A12: 3,
+      A17: 3, A18: 2, A19: 2, A20: 2, A23: 2, A24: 3, A26: 2,
+      A2: 2, A3: 2, A9: 2, A14: 2, A15: 1, A16: 2, A21: 2, A22: 2, A25: 2, A27: 2,
+      A28: 1, A4: 2
+    }
   },
   {
     id: 'terravia',
@@ -113,7 +129,7 @@ export const DEMO_SESSIONS = [
       'Le profil visé est atteint, et la restitution ne pousse pas au suivant : le modèle ' +
       'tient que le meilleur profil n’est pas le plus haut mais celui qui aligne ' +
       'capacités, appétit au risque et objectifs.',
-    transformation: 3,
+    reach: 3,
     form: {
       scope: 'org', horizon: 'h3a',
       digital: 'high', data: 'ready', devApproach: 'hybrid',
@@ -122,20 +138,16 @@ export const DEMO_SESSIONS = [
       ambition: 'sector',
       domain: 'other', size: 'l', footprint: 'national'
     },
-    // La seconde série a été ouverte : tout a été présenté, et la restitution
-    // n'a donc aucun domaine non évalué à mettre de côté.
-    wave: 2,
-    // Les trois premiers rangs du modèle, au complet : c'est ce qu'« Alignement
-    // des processus » met en jeu, et rien de moins ne l'acquiert.
-    mastered: [
-      'A6', 'A8', 'A13',
-      'A1', 'A5', 'A7', 'A10', 'A11', 'A12', 'A17', 'A18', 'A19', 'A20', 'A23', 'A24', 'A26',
-      'A2', 'A3', 'A9', 'A14', 'A15', 'A16', 'A21', 'A22', 'A25', 'A27'
-    ],
-    // Au-delà du profil visé, le travail est entamé sans être poursuivi : c'est
-    // ce que décrit une organisation qui s'arrête volontairement là.
-    partial: { A28: 1, A4: 1 },
-    ranks: { mastered: 3, partial: 2, untouched: 1 },
-    bias: { accountability: 0, planning: 0, resourcing: -1 }
+    // Les trois premiers rangs au niveau 3 ou au-dessus, sans exception : c'est
+    // ce qu'« Alignement des processus » met en jeu, et rien de moins ne
+    // l'acquiert. Au-delà, le travail est entamé sans être poursuivi — c'est ce
+    // que décrit une organisation qui s'arrête volontairement là.
+    answers: {
+      A6: 4, A8: 3, A13: 4,
+      A1: 4, A5: 3, A7: 3, A10: 3, A11: 4, A12: 3,
+      A17: 4, A18: 3, A19: 3, A20: 3, A23: 3, A24: 3, A26: 4,
+      A2: 3, A3: 3, A9: 3, A14: 4, A15: 3, A16: 3, A21: 3, A22: 3, A25: 3, A27: 3,
+      A28: 2, A4: 2
+    }
   }
 ]

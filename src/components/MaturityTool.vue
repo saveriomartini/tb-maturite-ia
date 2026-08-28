@@ -25,7 +25,6 @@
     v-else-if="screen === 'tool1'"
     :cadrage3="tool.cadrage3"
     @select-option="tool.actions.selectOption"
-    @select-transformation="tool.actions.selectTransformation"
     @dismiss-warning="tool.actions.dismissContextWarning"
     @back="tool.nav.back"
     @next="tool.nav.next"
@@ -33,19 +32,10 @@
   <ScreenDiag
     v-else-if="screen === 'tool2'"
     :vm="tool.diag"
-    @toggle-goal="tool.actions.toggleGoal"
-    @select-indicator="tool.actions.selectIndicator"
+    @answer="tool.actions.answerArea"
     @open-area="tool.actions.openArea"
-    @close-off-scope="tool.actions.closeOffScope"
     @back="tool.nav.back"
     @next="tool.nav.next"
-  />
-  <ScreenPalier
-    v-else-if="screen === 'palier'"
-    :vm="tool.palier"
-    @continue="tool.actions.continueDiagnostic"
-    @skip="tool.nav.skipToRestitution"
-    @back="tool.nav.back"
   />
   <ScreenTool3
     v-else-if="screen === 'tool3'"
@@ -54,12 +44,13 @@
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
-  <ScreenResti3
-    v-else-if="screen === 'tool3b'"
-    :vm="tool.resti3"
+  <ScreenAncrage
+    v-else-if="screen === 'tool4'"
+    :vm="tool.ancrage"
+    @select-reach="tool.actions.selectReach"
     @export="tool.nav.exportPreview"
     @finish="tool.nav.finish"
-    @resume="tool.actions.continueDiagnostic"
+    @resume="tool.nav.resumeQuestionnaire"
     @back="tool.nav.back"
   />
   <ScreenExport
@@ -76,17 +67,20 @@
 //
 // Les écrans de cadrage et de restitution ne sont plus routés individuellement :
 // ils sont devenus des sections empilées dans `info`, `tool1` et `tool3`, qui
-// portent désormais le gabarit et la navigation. Leurs fichiers gardent leurs
-// noms, le temps qu'un renommage se justifie.
+// portent le gabarit et la navigation. Leurs fichiers gardent leurs noms, le
+// temps qu'un renommage se justifie.
+//
+// `tool4` est la phase d'ancrage, rétablie : la portée visée s'y déclare, le
+// profil visé s'en déduit, et l'écart s'y lit. Le palier — qui fermait la
+// première série du questionnaire — a disparu avec les séries.
 import { computed } from 'vue'
 import ScreenHome from './screens/ScreenHome.vue'
 import ScreenInfo from './screens/ScreenInfo.vue'
 import ScreenDemo from './screens/ScreenDemo.vue'
 import ScreenTool1 from './screens/ScreenTool1.vue'
 import ScreenDiag from './screens/ScreenDiag.vue'
-import ScreenPalier from './screens/ScreenPalier.vue'
 import ScreenTool3 from './screens/ScreenTool3.vue'
-import ScreenResti3 from './screens/ScreenResti3.vue'
+import ScreenAncrage from './screens/ScreenAncrage.vue'
 import ScreenExport from './screens/ScreenExport.vue'
 
 const props = defineProps({

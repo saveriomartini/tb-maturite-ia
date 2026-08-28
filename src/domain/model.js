@@ -58,10 +58,16 @@ export function levelDescription(n) {
   return level ? level.desc : ''
 }
 
-// Areas effectivement évaluables, dans l'ordre du modèle. C'est cet ordre — et
-// non celui du parcours — qui porte la numérotation de la barre de navigation :
-// une area garde le même numéro d'un bout à l'autre de la session, quel que soit
-// le profil visé.
+// Areas effectivement évaluables, dans l'ordre du modèle. C'est aussi l'ordre du
+// questionnaire : il n'y a plus qu'un ordre, donc plus de renumérotation
+// possible entre la barre de navigation et le parcours.
+//
+// `orderedAreas(target)` a disparu avec lui. Le profil visé ordonnait les areas
+// en deux séries — celles qu'il met en jeu, puis les autres — parce que 271
+// pratiques ne se parcouraient pas en une séance. Avec un énoncé par domaine,
+// une passe complète en compte 28 : la série n'a plus d'objet, et le profil visé
+// n'est plus connu au moment du questionnaire, puisque la question qui le fixe
+// est posée en fin de parcours.
 //
 // Depuis le 18.08.2026, les 28 areas du modèle sont évaluables : A5-A7, les
 // trois de la neuvième dimension, portent leurs critères et leurs pratiques
@@ -69,16 +75,3 @@ export function levelDescription(n) {
 // la couture qui permet de déclarer une area dans le modèle avant qu'elle soit
 // rédigée, sans qu'elle pollue la mesure. Aucune ne le porte aujourd'hui.
 export const EVALUABLE_AREAS = AREAS.filter(area => !area.pending)
-
-// Areas ordonnées pour le questionnaire. Le profil visé n'exclut plus personne :
-// il ordonne. Les areas qu'il met en jeu forment la première série (`wave` 1),
-// les autres suivent (`wave` 2) et ne sont proposées que si l'utilisateur
-// choisit de poursuivre.
-export function orderedAreas(target) {
-  const first = EVALUABLE_AREAS.filter(area => area.level <= target)
-  const rest = EVALUABLE_AREAS.filter(area => area.level > target)
-  return [
-    ...first.map(area => ({ ...area, wave: 1 })),
-    ...rest.map(area => ({ ...area, wave: 2 }))
-  ]
-}

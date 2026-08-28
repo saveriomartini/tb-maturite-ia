@@ -19,7 +19,7 @@
 // Le PDF de l'AIMM ne cite Venkatraman nulle part : le rapprochement est une
 // lecture propre à ce travail, et ce fichier la tient à l'écart de
 // model-data.json, qui reste le report littéral de la source — même règle que
-// pour preparation.js.
+// pour statements.js et in-progress.js.
 
 // Le nom de Venkatraman ne sort d'aucune des chaînes de ce fichier. L'experte
 // métier a demandé « qui est Venkatraman ? » devant un écran de restitution :
@@ -34,6 +34,29 @@
 // calcul : c'est la frontière que Venkatraman trace dans sa figure, reportée sur
 // l'échelle du modèle.
 export const REVOLUTIONARY_FROM = 3
+
+// La ligne elle-même, nommée, pour l'échelle des paliers.
+//
+// Les trois autres textes de ce fichier supposent tous un écart : `position`
+// situe un profil atteint, `PASSAGES` commente un passage vers une cible. Or
+// l'échelle des paliers se lit avant qu'aucune cible soit déclarée, et la ligne
+// y est une propriété de l'échelle, pas du résultat — elle s'y trace même sur
+// une session vierge. Elle avait donc besoin de son propre texte, et c'est la
+// seule information de l'échelle qui dise que tous les crans ne se valent pas.
+//
+// Ni « Venkatraman » ni « degré » n'y figurent : à cet endroit du parcours, le
+// lecteur n'a encore vu ni l'échelle de transformation ni son vocabulaire. La
+// phrase se comprend sans référence, comme le reste de la prose du parcours.
+export const REVOLUTIONARY_LINE = {
+  label: 'Évolutif / révolutionnaire',
+  text:
+    'Les deux premiers paliers posent l’IA sur des façons de travailler qui ne changent pas : ' +
+    'le bénéfice y reste borné par ces routines, et c’est la contrepartie assumée de paliers qui ' +
+    'coûtent peu à tenir. À partir du troisième, ce sont les routines elles-mêmes qu’il faut ' +
+    'refaire. C’est le seul cran de l’échelle qui change de nature — les autres ajoutent, ' +
+    'celui-ci reprend — et aucune quantité d’IA ajoutée à des processus inchangés ne le fait ' +
+    'franchir.'
+}
 
 // Un degré par profil du modèle. `reach` dit ce que la transformation touche à
 // ce degré — il sert à finir la phrase du passage, quand l'écart se joue déjà
@@ -126,6 +149,22 @@ export const PASSAGES = {
     'Ce passage se joue au-dessus de la ligne évolutif / révolutionnaire : vos processus ' +
     'sont déjà refaits autour de l’IA, et la question n’est plus de savoir s’il faut les ' +
     'reprendre mais jusqu’où la transformation porte. Au degré visé, elle atteint {reach}.',
+
+  // Cinquième cas, et il n'est pas une erreur : la cible peut tomber *sous* le
+  // profil atteint. Il devient possible depuis que la portée se déclare après
+  // l'évaluation — on répond sur ce qu'on veut atteindre alors que le diagnostic
+  // a déjà dit ce qui est tenu. Deux lectures, que l'outil ne tranche pas : soit
+  // l'ambition est sous-déclarée, soit l'organisation a construit plus que son
+  // intention n'exige. Le modèle autorise explicitement la seconde — le meilleur
+  // profil n'est pas le plus haut —, et rien ici ne doit se lire comme un
+  // reproche ni comme une invitation à corriger la réponse.
+  beyond:
+    'Le degré que vous visez est en deçà de celui que le diagnostic constate : vos réponses ' +
+    'décrivent une organisation qui a déjà construit plus que la portée déclarée ne l’exige. Ce ' +
+    'n’est pas une incohérence à corriger. Ou bien la portée dit moins que ce que vous visez ' +
+    'réellement, et il vaut la peine de la revoir ; ou bien vous avez bâti au-delà de ce que votre ' +
+    'ambition demande, et la question devient celle de l’entretien de ces capacités plutôt que de ' +
+    'leur extension.',
 
   reached:
     'Vous êtes au degré de transformation que vous visiez. Le modèle n’est pas une échelle ' +
