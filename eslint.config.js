@@ -45,5 +45,13 @@ export default [
     // Fichiers de configuration : exécutés par Node, pas par le navigateur.
     files: ['*.config.js', 'eslint.config.js'],
     languageOptions: { globals: globals.node }
+  },
+
+  {
+    // Outillage de contrôle : exécuté par Node en ligne de commande, jamais
+    // livré au navigateur. Sans ces globales, `process` y est signalé comme non
+    // défini par no-undef.
+    files: ['scripts/**/*.js'],
+    languageOptions: { globals: globals.node }
   }
 ]

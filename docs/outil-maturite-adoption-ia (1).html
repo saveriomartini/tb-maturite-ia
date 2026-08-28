@@ -1,0 +1,415 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Échelle d'adoption — évaluation de la maturité de l'adoption de l'IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EAE6; --card:#FAFBF9; --ink:#12181C; --ink-soft:#556069; --rule:#C6CDC7;
+  --pine:#1F5344; --pine-soft:#3E7C68; --pine-wash:#E1EAE5;
+  --gold:#9C7318; --gold-wash:#F0E7D3; --slate:#8A959B;
+  --disp:"Fraunces",Georgia,serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:100% 28px,28px 100%;background-position:0 -1px;opacity:1}
+body::before{content:"";position:fixed;inset:0;background:var(--paper);opacity:.86;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 20px 80px}
+
+/* ---------- en-tête ---------- */
+header{padding:44px 0 22px;border-bottom:2px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+h1{font-family:var(--disp);font-weight:600;font-size:clamp(30px,4.6vw,52px);line-height:1.02;margin:12px 0 10px;letter-spacing:-.015em}
+h1 em{font-style:italic;color:var(--pine)}
+.lede{max-width:64ch;color:var(--ink-soft);margin:0}
+.src{font-family:var(--mono);font-size:11px;color:var(--slate);margin-top:14px;line-height:1.6}
+
+/* ---------- verdict collant ---------- */
+.verdict{position:sticky;top:0;z-index:20;background:var(--ink);color:#F2F4F1;margin:0 -20px;padding:10px 20px;
+  display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid #000}
+.verdict .lv{font-family:var(--disp);font-size:20px;font-weight:600}
+.verdict .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BB0A6}
+.verdict .sp{margin-left:auto;font-family:var(--mono);font-size:11px;color:#9BB0A6}
+
+/* ---------- mise en page ---------- */
+.grid{display:grid;grid-template-columns:230px minmax(0,1fr);gap:38px;align-items:start;margin-top:34px}
+.grid>*,.res>*,.cap .row>*,.bars .b>*{min-width:0}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr);gap:22px}}
+
+/* ---------- signature : l'échelle ---------- */
+.ladder{position:sticky;top:64px}
+.ladder h2,.panel h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px;font-weight:500}
+.step{display:block;width:100%;text-align:left;border:1px solid var(--rule);border-left:3px solid var(--rule);background:var(--card);
+  padding:9px 11px;margin-bottom:6px;position:relative;overflow:hidden;cursor:pointer;font:inherit;color:inherit}
+.step .fill{position:absolute;inset:0;background:var(--pine-wash);width:0%;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.step .t{position:relative;display:flex;gap:9px;align-items:baseline}
+.step .num{font-family:var(--mono);font-size:11px;color:var(--slate)}
+.step .nm{font-family:var(--disp);font-size:16px;font-weight:600;letter-spacing:-.01em}
+.step .st{position:relative;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);margin-top:3px;display:block}
+.step.done{border-left-color:var(--pine)}
+.step.done .nm{color:var(--pine)}
+.step.done .st{color:var(--pine)}
+.step.next{border-left-color:var(--gold);border-color:var(--gold)}
+.step.next .fill{background:var(--gold-wash)}
+.step.next .st{color:var(--gold)}
+.step:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+.ladder .hint{font-family:var(--mono);font-size:10.5px;color:var(--slate);line-height:1.6;margin-top:12px}
+@media(max-width:860px){.ladder{position:static}.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}.step{margin:0}}
+
+/* ---------- sections ---------- */
+section{margin-bottom:34px}
+.sechead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;border-bottom:1px solid var(--ink);padding-bottom:7px;margin-bottom:0;cursor:pointer}
+.sechead .ix{font-family:var(--mono);font-size:11px;color:var(--slate);width:26px;flex:none}
+.sechead h3{min-width:0;font-family:var(--disp);font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em}
+.sechead .fam{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate)}
+.sechead .meter{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-soft);white-space:nowrap}
+.sechead .caret{font-family:var(--mono);font-size:11px;color:var(--slate)}
+
+/* ---------- lignes de capacité ---------- */
+@media(max-width:520px){.sechead .fam{display:none}.sechead .meter{margin-left:38px}}
+.cap{border-bottom:1px solid var(--rule);padding:13px 0 13px 38px;position:relative}
+.cap:last-child{border-bottom:none}
+.cap .id{position:absolute;left:0;top:15px;font-family:var(--mono);font-size:11px;color:var(--slate)}
+.cap .nm{font-weight:600;font-size:15px}
+.cap .row{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.cap .txt{flex:1 1 300px;min-width:0}
+.gate{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-soft);background:var(--pine-wash);border:1px solid var(--rule);padding:1px 5px;margin-left:7px;white-space:nowrap}
+.seg{display:flex;flex:none;border:1px solid var(--rule);background:var(--card)}
+.seg button{width:34px;height:32px;border:none;border-right:1px solid var(--rule);background:transparent;font-family:var(--mono);font-size:13px;color:var(--ink-soft);cursor:pointer}
+.seg button:last-child{border-right:none;width:38px;font-size:10px;letter-spacing:.04em}
+.seg button:hover{background:var(--pine-wash)}
+.seg button[aria-pressed="true"]{background:var(--pine);color:#fff}
+.seg button.na[aria-pressed="true"]{background:var(--slate);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--pine);outline-offset:-2px}
+.desc{font-family:var(--mono);font-size:12px;line-height:1.65;color:var(--ink-soft);margin-top:7px;padding-left:1px}
+.desc.empty{color:var(--slate)}
+.all{margin-top:8px;border-left:2px solid var(--rule);padding-left:11px}
+.all div{font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--ink-soft)}
+.all b{color:var(--ink)}
+.more{background:none;border:none;padding:0;margin-top:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--pine);cursor:pointer;text-decoration:underline}
+
+/* ---------- contexte ---------- */
+.ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px 18px;padding-top:16px}
+.ctx label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px}
+.ctx select{width:100%;font-family:var(--body);font-size:14px;padding:7px 8px;background:var(--card);border:1px solid var(--rule);color:var(--ink);border-radius:0}
+.ctx select:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+
+/* ---------- résultats ---------- */
+.panel{scroll-margin-top:58px;background:var(--card);border:1px solid var(--ink);padding:22px}
+.res{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:30px}
+@media(max-width:760px){.res{grid-template-columns:minmax(0,1fr)}}
+.bars div.b{display:grid;grid-template-columns:1fr 84px;gap:8px;align-items:center;margin-bottom:7px}
+.bars .lab{font-size:12.5px}
+.bars .track{height:8px;background:var(--pine-wash);border:1px solid var(--rule);position:relative}
+.bars .val{height:100%;background:var(--pine-soft)}
+.bars .num{font-family:var(--mono);font-size:10.5px;white-space:nowrap;color:var(--ink-soft);text-align:right}
+.road li{margin-bottom:9px;padding-left:2px}
+.road .cn{font-weight:600;font-size:14px}
+.road .meta{font-family:var(--mono);font-size:11px;color:var(--gold)}
+.road .meta.todo{color:var(--slate)}
+.road ol{padding-left:18px;margin:8px 0 0}
+.big{font-family:var(--disp);font-size:clamp(26px,3.4vw,38px);font-weight:600;line-height:1.05;margin:2px 0 6px;letter-spacing:-.02em}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:9px 14px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn:hover{background:var(--ink);color:var(--card)}
+.btn.p{background:var(--pine);border-color:var(--pine);color:#fff}
+.btn.p:hover{background:var(--ink);border-color:var(--ink)}
+textarea{width:100%;min-height:110px;font-family:var(--mono);font-size:11px;padding:10px;border:1px solid var(--rule);background:var(--paper);margin-top:12px;color:var(--ink)}
+.note{font-family:var(--mono);font-size:11px;color:var(--slate);margin-top:10px;line-height:1.6}
+@media print{.verdict,.actions,.seg,textarea,.more{display:none}body{background:#fff}.panel{border:none;padding:0}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Auto-évaluation · d'après le modèle CMU SEI / Accenture (déc. 2025)</div>
+  <h1>Échelle d'adoption<br><em>maturité de l'adoption de l'IA</em></h1>
+  <p class="lede">Trente domaines de capacité, huit dimensions, cinq paliers. On n'évalue pas la qualité des modèles : on évalue l'aptitude de l'organisation à produire des résultats prévisibles et reproductibles avec l'IA. Un palier n'est acquis que si tous ses domaines déclencheurs le sont — le maillon faible fixe le niveau.</p>
+  <p class="src">Structure adaptée de : Ozkaya I. et al., « A Preliminary Report on a Model for Maturing AI Adoption », CMU/SEI, white paper, décembre 2025, DOI 10.1184/R1/30840476 — CC BY-NC-ND 4.0. Formulations des questions et règle de notation : originales. Outil non officiel, sans lien avec le SEI ni Accenture.</p>
+</header>
+
+<div class="verdict">
+  <span class="n">Palier atteint</span>
+  <span class="lv" id="vLevel">à évaluer</span>
+  <span class="n" id="vNext"></span>
+  <span class="sp" id="vProg">0/30 domaines renseignés</span>
+</div>
+
+<div class="grid">
+  <aside class="ladder">
+    <h2>Les cinq paliers</h2>
+    <div class="steps" id="steps"></div>
+    <p class="hint">Barre pleine = part des domaines déclencheurs du palier déjà atteints. Cliquez un palier pour voir ce qui le bloque.</p>
+  </aside>
+
+  <main>
+    <section>
+      <div class="sechead" data-static="1">
+        <span class="ix">00</span>
+        <h3>Contexte</h3>
+        <span class="fam">cadrage</span>
+      </div>
+      <div class="ctx" id="ctx"></div>
+      <p class="note">Le contexte ne modifie pas la note. Il cadre le périmètre, apparaît dans le rapport, et justifie les domaines que vous marquez « hors périmètre » (bouton HP), lesquels sont alors exclus du calcul.</p>
+    </section>
+    <div id="dims"></div>
+
+    <section class="panel" id="results">
+      <h2>Résultat</h2>
+      <div class="big" id="rTitle">Renseignez les domaines pour obtenir un palier</div>
+      <p id="rText" style="color:var(--ink-soft);max-width:62ch;margin:0 0 22px"></p>
+      <div class="res">
+        <div>
+          <h2>Profil par dimension</h2>
+          <div id="radar"></div>
+          <div class="bars" id="bars"></div>
+        </div>
+        <div>
+          <h2>Feuille de route — prochain palier</h2>
+          <div class="road" id="road"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn p" onclick="copyReport()">Copier le rapport</button>
+        <button class="btn" onclick="copyAnswers()">Copier mes réponses</button>
+        <button class="btn" onclick="toggleRestore()">Restaurer une session</button>
+        <button class="btn" onclick="window.print()">Imprimer / PDF</button>
+        <button class="btn" onclick="resetAll()">Tout effacer</button>
+      </div>
+      <div id="restoreBox" style="display:none">
+        <textarea id="restoreArea" placeholder="Collez ici le texte obtenu avec « Copier mes réponses », puis validez."></textarea>
+        <button class="btn" onclick="doRestore()">Charger ces réponses</button>
+      </div>
+      <p class="note" id="copyNote"></p>
+    </section>
+  </main>
+</div>
+</div>
+
+<script>
+const LEVELS=[
+ {n:"IA exploratoire",  s:"On apprend : périmètre, risques, faisabilité."},
+ {n:"IA implémentée",   s:"Des systèmes IA sont en production, avec les pratiques qui vont avec."},
+ {n:"IA alignée",       s:"Les processus sont repensés et pilotés de façon cohérente."},
+ {n:"IA à l'échelle",   s:"L'IA est répliquée dans l'organisation avec une performance prévisible."},
+ {n:"IA prête pour l'avenir", s:"L'innovation par l'IA est régulière, mesurée, anticipée."}];
+
+const DIMS=[
+{id:"ORG",n:"Stratégie organisationnelle",f:"changement organisationnel",caps:[
+ {id:"1.1",n:"Stratégie IA",g:3,L:["Aucune stratégie ; des initiatives portées par des individus.","Des objectifs IA écrits existent pour quelques cas d'usage.","Une stratégie IA validée par la direction est liée aux objectifs métier.","La stratégie IA arbitre les investissements dans toute l'organisation.","La stratégie est révisée à partir de modèles analytiques, sur un horizon long."]},
+ {id:"1.2",n:"Structure organisationnelle alignée",g:3,L:["Les rôles liés à l'IA ne sont pas définis.","Un référent IA est identifié pour les projets en production.","Rôles, responsabilités et instances de décision sont définis et suivis.","La structure est répliquée dans les entités et partage ses ressources.","La structure évolue avant les changements technologiques, pas après."]},
+ {id:"1.3",n:"Valeurs et principes",g:2,L:["Les principes de l'organisation n'ont pas été confrontés à l'IA.","Les usages de l'IA sont rattachés explicitement aux valeurs affichées.","Les principes sont communiqués, connus et appliqués aux décisions IA.","Les écarts aux principes sont détectés, traités et rapportés.","Les principes sont éprouvés sur les nouveaux usages avant adoption."]},
+ {id:"1.4",n:"Partenariats et achats IA",g:4,L:["Les achats IA se font au coup par coup.","Les fournisseurs IA sont recensés et contractualisés.","Des critères d'évaluation des fournisseurs sont définis et appliqués.","Les capacités des partenaires sont évaluées face au passage à l'échelle.","Le portefeuille de partenaires est arbitré sur des mesures de performance."]},
+ {id:"1.5",n:"Gestion des capacités organisationnelles",g:4,L:["Les capacités nécessaires à l'IA ne sont pas recensées.","Un inventaire des capacités existe pour le périmètre concerné.","Les écarts de capacité sont priorisés et dotés en ressources.","Les capacités sont mesurées objectivement et guident les décisions.","Causalité, statistiques et simulations guident planification et évaluation."]}]},
+
+{id:"CUL",n:"Personnes et culture",f:"changement organisationnel",caps:[
+ {id:"2.1",n:"Compétences et formation",g:1,L:["Quelques personnes se forment de leur propre initiative.","Une formation de base à l'IA est disponible pour les équipes concernées.","Un plan de compétences couvre les rôles clés et il est financé.","Les compétences circulent entre entités et sont suivies dans le temps.","Les besoins de compétences sont anticipés avant l'arrivée des technologies."]},
+ {id:"2.2",n:"Culture organisationnelle",g:4,L:["L'IA suscite autant de méfiance que d'enthousiasme, sans cadre.","Les usages autorisés et interdits sont communiqués aux équipes.","Les équipes savent quand recourir à l'IA et quand s'en abstenir.","Le partage d'expériences, succès comme échecs, est organisé.","L'IA est intégrée à la culture ; l'organisation influence sa communauté."]},
+ {id:"2.3",n:"Métiers prêts pour l'IA",g:3,L:["Aucune réflexion sur l'évolution des métiers face à l'IA.","Les métiers les plus exposés à l'IA sont identifiés.","Des parcours d'évolution et de reconversion sont définis et engagés.","Talents, outils et pratiques circulent entre les initiatives.","L'évolution des métiers est planifiée sur un horizon pluriannuel."]}]},
+
+{id:"WKF",n:"Refonte des processus",f:"changement organisationnel",caps:[
+ {id:"3.1",n:"Expérimentation",g:1,L:["Des essais ponctuels ont lieu, sans critères ni suivi.","Les pilotes suivent un protocole avec des critères de succès définis.","Les pilotes comparent l'IA à la solution existante, mesures à l'appui.","Le passage du pilote à la production suit un processus reproductible.","Ce dispositif sert à évaluer en continu les technologies qui arrivent."]},
+ {id:"3.2",n:"Veille et évolution technologique",g:4,L:["La veille dépend de la curiosité de quelques personnes.","Une veille IA est organisée et diffusée.","Les changements technologiques déclenchent une réévaluation des choix.","Les rythmes de changement (données, modèles, systèmes) sont planifiés.","Les ruptures sont absorbées sans désorganiser les équipes."]},
+ {id:"3.3",n:"Innovation des processus métier",g:3,L:["L'IA est ajoutée aux processus existants sans les remettre en cause.","Au moins un processus métier a été redéfini autour de l'IA.","La refonte des processus est menée de façon systématique et mesurée.","Les processus repensés sont répliqués dans d'autres entités.","L'organisation redéfinit ses processus avant d'y être contrainte."]},
+ {id:"3.4",n:"Automatisation avec humain dans la boucle",g:3,L:["Le rôle de l'humain face aux sorties de l'IA n'est pas défini.","Les points de contrôle humains sont identifiés pour la production.","Le degré d'autonomie est décidé selon le risque, et documenté.","Les arbitrages autonomie / supervision reposent sur des mesures de terrain.","Le curseur d'autonomie est ajusté en continu selon les résultats observés."]},
+ {id:"3.5",n:"Mesure et analyse",g:2,L:["Aucune référence de départ : le gain de l'IA est une impression.","Une base de comparaison et des indicateurs existent par cas d'usage.","Les indicateurs sont standardisés et suivis dans la durée.","Les décisions d'investissement s'appuient sur ces mesures objectives.","Des modèles prédictifs estiment les résultats avant l'engagement."]}]},
+
+{id:"RSK",n:"Risque et gouvernance",f:"changement organisationnel",caps:[
+ {id:"4.1",n:"Conformité, politiques et normes",g:3,L:["Les obligations applicables à l'IA n'ont pas été identifiées.","Les exigences réglementaires applicables sont recensées.","Des politiques IA sont définies, appliquées et contrôlées.","La conformité est auditée et les dérogations sont tracées.","Les évolutions réglementaires sont anticipées dès la conception."]},
+ {id:"4.2",n:"Gestion des risques",g:2,L:["Les risques liés à l'IA ne sont pas formalisés.","Les risques des systèmes en production sont identifiés et documentés.","Un processus de traitement des risques est suivi, avec des responsables.","La direction porte les risques IA et lève les obstacles.","Les risques émergents sont modélisés et intégrés à la planification."]},
+ {id:"4.3",n:"IA responsable",g:3,L:["Le sujet est évoqué, sans traduction opérationnelle.","Des principes d'IA responsable sont publiés.","Des contrôles (biais, impact, recours) sont appliqués aux systèmes.","Les résultats de ces contrôles conditionnent les déploiements.","L'organisation contribue aux pratiques du secteur en la matière."]}]},
+
+{id:"DAT",n:"Données",f:"ingénierie du cycle de vie",caps:[
+ {id:"5.1",n:"Gestion des données",g:2,L:["Les données utiles à l'IA sont dispersées et sans propriétaire.","Les jeux de données des cas d'usage ont un responsable identifié.","La gouvernance couvre le cycle de vie complet des données.","Les données sont mutualisées entre initiatives, sans duplication.","L'évolution des données est anticipée : pas de surprise en production."]},
+ {id:"5.2",n:"Acquisition et qualité des données",g:2,L:["La qualité des données n'est pas évaluée avant usage.","Des contrôles de qualité existent pour les données des cas d'usage.","Des chaînes de préparation documentées alimentent les systèmes IA.","La qualité est mesurée en continu et conditionne la mise en production.","Les dérives de données sont détectées et corrigées automatiquement."]},
+ {id:"5.3",n:"Accès, sécurité et confidentialité",g:2,L:["Les données envoyées aux services IA ne sont pas encadrées.","Les règles d'accès et de confidentialité sont définies pour l'IA.","Les contrôles d'accès sont appliqués et vérifiés, tiers compris.","La surface d'attaque introduite par l'IA est évaluée et surveillée.","Les protections évoluent au rythme des usages et des menaces."]}]},
+
+{id:"ENG",n:"Ingénierie",f:"ingénierie du cycle de vie",caps:[
+ {id:"6.1",n:"Architecture IA",g:2,L:["Les composants IA sont ajoutés sans décision d'architecture.","Les choix d'architecture des systèmes IA sont documentés.","L'architecture traite explicitement l'incertitude des composants IA.","Des schémas réutilisables servent les nouvelles initiatives.","L'architecture absorbe de nouveaux paradigmes (agents) sans refonte."]},
+ {id:"6.2",n:"Intégration technologique",g:2,L:["Les intégrations sont artisanales et propres à chaque projet.","L'intégration aux systèmes existants est décrite et testée.","Des interfaces standardisées relient l'IA au système d'information.","L'intégration est industrialisée et réutilisée à l'échelle.","Remplacer un composant IA est une opération courante et maîtrisée."]},
+ {id:"6.3",n:"Transparence et explicabilité",g:3,L:["Les utilisateurs ignorent quand et comment l'IA intervient.","L'intervention de l'IA est signalée aux utilisateurs.","L'interface montre sources, limites et comportements inattendus.","Le besoin d'explicabilité est défini par niveau de risque, et vérifié.","Les pratiques évoluent avec les retours réels des utilisateurs."]},
+ {id:"6.4",n:"Test et évaluation",g:2,L:["Les systèmes IA sont jugés sur quelques essais manuels.","Des jeux de test et des critères d'acceptation existent.","L'évaluation couvre l'ambiguïté des sorties et les cas limites.","L'évaluation est automatisée et conditionne chaque mise en production.","Les protocoles d'évaluation s'adaptent en continu aux nouveaux risques."]}]},
+
+{id:"OPS",n:"Exploitation et maintien",f:"ingénierie du cycle de vie",caps:[
+ {id:"7.1",n:"Supervision",g:3,L:["Aucune surveillance spécifique des systèmes IA en production.","Les incidents liés à l'IA sont détectés et enregistrés.","La performance est suivie en continu, avec des seuils d'alerte.","La supervision alimente les décisions d'investissement et d'arrêt.","Les dérives sont anticipées avant d'atteindre les utilisateurs."]},
+ {id:"7.2",n:"Collecte des données de production",g:3,L:["Rien n'est collecté sur l'usage réel des systèmes IA.","Usages et retours utilisateurs sont collectés en production.","Ces données alimentent une boucle d'amélioration définie.","La boucle fonctionne à l'échelle de plusieurs initiatives.","Les données de production nourrissent des analyses prédictives."]},
+ {id:"7.3",n:"Gestion des modèles",g:2,L:["Les versions de modèles changent sans procédure ni vérification.","Les modèles utilisés et leurs versions sont recensés.","Un processus de qualification encadre chaque changement de modèle.","Les changements sont évalués sur des mesures comparables dans le temps.","Les nouvelles versions sont absorbées sans dégradation de service."]},
+ {id:"7.4",n:"Chaînes *Ops (MLOps, LLMOps)",g:3,L:["Les mises en production IA sont manuelles et rares.","Un chemin de déploiement existe pour les systèmes IA.","Déploiement et reconstruction sont automatisés et reproductibles.","Ces chaînes sont partagées entre équipes et initiatives.","Elles évoluent avec les technologies sans interruption de service."]}]},
+
+{id:"ECO",n:"Écosystème",f:"ingénierie du cycle de vie",caps:[
+ {id:"8.1",n:"Chaîne d'approvisionnement",g:4,L:["L'origine des composants IA utilisés n'est pas connue.","Composants, modèles et services externes sont recensés.","Les dépendances externes sont évaluées : licence, sécurité, pérennité.","La chaîne d'approvisionnement est pilotée avec les partenaires.","Les risques d'approvisionnement sont anticipés, des alternatives prêtes."]},
+ {id:"8.2",n:"Infrastructure technologique",g:4,L:["L'infrastructure IA se compose de moyens improvisés.","Des ressources dédiées (calcul, stockage) sont allouées à l'IA.","L'infrastructure IA est dimensionnée et gérée comme un service.","Elle absorbe la montée en charge de l'ensemble des initiatives.","Son évolution est planifiée face aux ruptures technologiques."]},
+ {id:"8.3",n:"Déploiement à l'échelle",g:4,L:["Aucun déploiement au-delà du périmètre d'essai.","Un déploiement en production sert un périmètre limité.","Les déploiements suivent un processus commun et prévisible.","Exigences métier, techniques et d'infrastructure sont alignées à l'échelle.","Un nouvel usage passe à l'échelle vite et de façon prévisible."]}]}];
+
+const CTX=[
+ ["Périmètre évalué","Équipe","Unité d'affaires","Secteur / programme","Organisation entière"],
+ ["Empreinte","Locale","Nationale","Régionale","Mondiale"],
+ ["Domaine","Finance / assurance","Santé","Industrie","Secteur public","Services / autre"],
+ ["Posture réglementaire","Non régulé","Semi-régulé","Fortement régulé"],
+ ["Effectif concerné","< 100","100 – 1 000","1 000 – 10 000","> 10 000"],
+ ["Horizon de planification","< 1 an","1 – 3 ans","3 – 5 ans","> 5 ans"],
+ ["Stratégie logicielle","Organisation logicielle","Fonctions informatiques seules","Développement externalisé"],
+ ["Compétence technologique cœur","Produit d'abord","IA d'abord","Mono-compétence","Multi-secteurs"],
+ ["Approche de développement IA","Acheter","Personnaliser","Construire","Hybride"],
+ ["Appétence au risque IA","Faible","Moyenne","Élevée"],
+ ["Ambition IA","Pionnier","Adopteur précoce","Suiveur","Attentiste"],
+ ["Personnel IA","Interne","Prestataires","Mixte","Aucun"]];
+
+const ALLCAPS=DIMS.flatMap(d=>d.caps.map(c=>({...c,dim:d.n,dimId:d.id})));
+let ans={},ctxv={},openDim={},openAll={};
+DIMS.forEach((d,i)=>openDim[d.id]=i<8);
+
+/* ---------- calcul ---------- */
+function score(id){const v=ans[id];return v===undefined?0:v}  // 0 = non évalué, "na" = hors périmètre
+function isNA(id){return ans[id]==="na"}
+function gatesUpTo(L){return ALLCAPS.filter(c=>c.g<=L&&!isNA(c.id))}
+function metFor(L){return gatesUpTo(L).filter(c=>score(c.id)>=L)}
+function certified(L){const g=gatesUpTo(L);return g.length>0&&g.every(c=>score(c.id)>=L)}
+function currentLevel(){let l=0;for(let L=1;L<=5;L++){if(certified(L))l=L;else break}return l}
+function blockers(L){return gatesUpTo(L).filter(c=>score(c.id)<L)
+  .sort((a,b)=>(score(a.id)===0?-1:0)-(score(b.id)===0?-1:0)||score(a.id)-score(b.id)||a.id.localeCompare(b.id))}
+function dimAvg(d){const v=d.caps.filter(c=>!isNA(c.id)&&score(c.id)>0).map(c=>score(c.id));
+  return v.length?v.reduce((a,b)=>a+b,0)/v.length:0}
+function dimMin(d){const v=d.caps.filter(c=>!isNA(c.id)&&score(c.id)>0).map(c=>score(c.id));
+  return v.length?Math.min(...v):0}
+function answered(){return ALLCAPS.filter(c=>ans[c.id]!==undefined).length}
+
+/* ---------- rendu ---------- */
+function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+
+function renderCtx(){
+  document.getElementById("ctx").innerHTML=CTX.map((c,i)=>{
+    const opts=c.slice(1).map(o=>`<option${ctxv[c[0]]===o?" selected":""}>${esc(o)}</option>`).join("");
+    return `<div><label for="cx${i}">${esc(c[0])}</label><select id="cx${i}" onchange="setCtx(${i},this.value)">
+      <option value=""${ctxv[c[0]]?"":" selected"}>—</option>${opts}</select></div>`}).join("");
+}
+function setCtx(i,v){ if(v) ctxv[CTX[i][0]]=v; else delete ctxv[CTX[i][0]]; }
+
+function renderDims(){
+  document.getElementById("dims").innerHTML=DIMS.map((d,i)=>{
+    const done=d.caps.filter(c=>ans[c.id]!==undefined).length;
+    const open=openDim[d.id];
+    const caps=open?d.caps.map(c=>capRow(c)).join(""):"";
+    return `<section>
+      <div class="sechead" onclick="openDim['${d.id}']=!openDim['${d.id}'];renderDims()">
+        <span class="ix">${String(i+1).padStart(2,"0")}</span>
+        <h3>${esc(d.n)}</h3><span class="fam">${esc(d.f)}</span>
+        <span class="meter">${done}/${d.caps.length} · plancher ${dimMin(d)||"—"}</span>
+        <span class="caret">${open?"▾":"▸"}</span>
+      </div>${caps}</section>`}).join("");
+}
+
+function capRow(c){
+  const v=ans[c.id];
+  const segs=[1,2,3,4,5].map(n=>`<button aria-pressed="${v===n}" title="Niveau ${n}" onclick="setVal('${c.id}',${n})">${n}</button>`).join("")
+    +`<button class="na" aria-pressed="${v==="na"}" title="Hors périmètre" onclick="setVal('${c.id}','na')">HP</button>`;
+  const d = v==="na" ? `<div class="desc empty">Hors périmètre — exclu du calcul du palier.</div>`
+    : (typeof v==="number" ? `<div class="desc">${esc(c.L[v-1])}</div>`
+    : `<div class="desc empty">Non renseigné. Choisissez l'énoncé qui décrit le mieux la situation actuelle.</div>`);
+  const all=openAll[c.id]?`<div class="all">${c.L.map((t,i)=>`<div><b>${i+1}</b> — ${esc(t)}</div>`).join("")}</div>`:"";
+  return `<div class="cap"><span class="id">${c.id}</span>
+    <div class="row"><div class="txt"><span class="nm">${esc(c.n)}</span><span class="gate">requis au palier ${c.g}</span></div>
+    <div class="seg">${segs}</div></div>
+    ${d}<button class="more" onclick="openAll['${c.id}']=!openAll['${c.id}'];renderDims()">${openAll[c.id]?"masquer l'échelle":"voir les 5 énoncés"}</button>${all}</div>`;
+}
+
+function setVal(id,v){ if(ans[id]===v) delete ans[id]; else ans[id]=v; focusLevel=null; renderDims(); renderAll(); }
+
+function renderSteps(){
+  const cur=currentLevel();
+  document.getElementById("steps").innerHTML=LEVELS.map((l,i)=>{
+    const L=i+1,g=gatesUpTo(L).length,m=metFor(L).length,pct=g?Math.round(m/g*100):0;
+    const cls=certified(L)?"done":(L===cur+1?"next":"");
+    const st=certified(L)?"acquis":(L===cur+1?`${g-m} domaine${g-m>1?"s":""} à combler`:`${m}/${g}`);
+    return `<button class="step ${cls}" onclick="showLevel(${L})"><span class="fill" style="width:${pct}%"></span>
+      <span class="t"><span class="num">${L}</span><span class="nm">${esc(l.n)}</span></span>
+      <span class="st">${st}</span></button>`}).join("");
+}
+
+let focusLevel=null;
+function showLevel(L){focusLevel=L;renderResults();document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"})}
+
+function radarSVG(){
+  const R=80,cx=110,cy=110,n=DIMS.length;
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r]};
+  let g="";
+  for(let ring=1;ring<=5;ring++){
+    const p=DIMS.map((_,i)=>pt(i,R*ring/5).map(x=>x.toFixed(1)).join(",")).join(" ");
+    g+=`<polygon points="${p}" fill="none" stroke="var(--rule)" stroke-width="1"/>`}
+  DIMS.forEach((_,i)=>{const [x,y]=pt(i,R);g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--rule)"/>`});
+  const poly=DIMS.map((d,i)=>pt(i,R*dimAvg(d)/5).map(x=>x.toFixed(1)).join(",")).join(" ");
+  g+=`<polygon points="${poly}" fill="var(--pine-soft)" fill-opacity=".28" stroke="var(--pine)" stroke-width="2"/>`;
+  DIMS.forEach((d,i)=>{const [x,y]=pt(i,R*dimAvg(d)/5);if(dimAvg(d))g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="var(--pine)"/>`});
+  DIMS.forEach((d,i)=>{const [x,y]=pt(i,R+14);
+    g+=`<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" font-family="var(--mono)" font-size="8.5" fill="var(--ink-soft)" text-anchor="${x>cx+4?"start":x<cx-4?"end":"middle"}">${esc(d.id)}</text>`});
+  return `<svg viewBox="0 0 220 220" style="width:100%;max-width:280px;display:block;margin:0 auto 16px" role="img" aria-label="Profil de maturité par dimension">${g}</svg>`;
+}
+
+function renderResults(){
+  const cur=currentLevel(),a=answered();
+  document.getElementById("vLevel").textContent=cur?`${cur} · ${LEVELS[cur-1].n}`:"palier 0 — non atteint";
+  document.getElementById("vNext").textContent=cur<5?`→ prochain : ${LEVELS[cur].n}`:"sommet atteint";
+  document.getElementById("vProg").textContent=`${a}/30 domaines renseignés`;
+
+  const T=document.getElementById("rTitle"),X=document.getElementById("rText");
+  if(a<5){T.textContent="Renseignez les domaines pour obtenir un palier";
+    X.textContent="Le palier se calcule au maillon faible : un seul domaine déclencheur non atteint suffit à le bloquer. Il faut donc renseigner au moins tous les domaines déclencheurs d'un palier pour qu'il puisse être validé.";}
+  else if(!cur){T.textContent="Palier 0 — sous le niveau exploratoire";
+    X.textContent="Les deux domaines qui ouvrent le palier 1 (expérimentation, compétences et formation) ne sont pas encore atteints. C'est le point de départ : rendre les essais comparables et donner aux équipes une base commune.";}
+  else{T.textContent=`Palier ${cur} — ${LEVELS[cur-1].n}`;X.textContent=LEVELS[cur-1].s+(cur<5?" Le prochain palier est indiqué à droite, avec les domaines qui le bloquent.":"")}
+
+  document.getElementById("radar").innerHTML=radarSVG();
+  document.getElementById("bars").innerHTML=DIMS.map(d=>{
+    const av=dimAvg(d);
+    return `<div class="b"><div><div class="lab">${esc(d.n)}</div><div class="track"><div class="val" style="width:${av/5*100}%"></div></div></div>
+      <div class="num">${av?av.toFixed(1):"—"} · pl. ${dimMin(d)||"—"}</div></div>`}).join("");
+
+  const target=focusLevel||Math.min(cur+1,5);
+  const bl=blockers(target);
+  const head=`<p style="font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px">
+    Palier ${target} — ${esc(LEVELS[target-1].n)} · ${bl.length===0?"aucun blocage":bl.length+" domaine"+(bl.length>1?"s":"")+" à traiter"}</p>`;
+  document.getElementById("road").innerHTML=head+(bl.length===0
+    ? `<p style="color:var(--ink-soft)">Tous les domaines déclencheurs de ce palier sont au niveau requis.</p>`
+    : `<ol>${bl.map(c=>{const s=score(c.id);
+        return `<li><span class="cn">${c.id} ${esc(c.n)}</span><br>
+        <span class="meta ${s?"":"todo"}">${s?`niveau ${s} → ${target}`:"non renseigné → à évaluer"} · ${esc(c.dim)}</span><br>
+        <span style="font-size:12.5px;color:var(--ink-soft)">Cible : ${esc(c.L[target-1])}</span></li>`}).join("")}</ol>`);
+}
+
+function renderAll(){renderSteps();renderResults()}
+
+/* ---------- export ---------- */
+function report(){
+  const cur=currentLevel();
+  let t=`ÉVALUATION DE LA MATURITÉ DE L'ADOPTION DE L'IA\n${new Date().toLocaleDateString("fr-CH")}\n\n`;
+  t+=`PALIER ATTEINT : ${cur?cur+" — "+LEVELS[cur-1].n:"0 — non atteint"}\nDomaines renseignés : ${answered()}/30\n\nCONTEXTE\n`;
+  CTX.forEach(c=>{if(ctxv[c[0]])t+=`- ${c[0]} : ${ctxv[c[0]]}\n`});
+  t+=`\nPROFIL PAR DIMENSION (moyenne / plancher)\n`;
+  DIMS.forEach(d=>{t+=`- ${d.n} : ${dimAvg(d)?dimAvg(d).toFixed(1):"—"} / ${dimMin(d)||"—"}\n`});
+  const nx=Math.min(cur+1,5),bl=blockers(nx);
+  t+=`\nFEUILLE DE ROUTE — PALIER ${nx} (${LEVELS[nx-1].n})\n`;
+  bl.forEach(c=>{const s=score(c.id);t+=`- ${c.id} ${c.n} [${c.dim}] : ${s?"niveau "+s:"non évalué"} → ${nx}\n    cible : ${c.L[nx-1]}\n`});
+  if(!bl.length)t+="- aucun blocage identifié\n";
+  t+=`\nDÉTAIL\n`;
+  ALLCAPS.forEach(c=>{t+=`${c.id} ${c.n} : ${isNA(c.id)?"hors périmètre":(ans[c.id]||"non évalué")}\n`});
+  t+=`\nStructure adaptée du modèle CMU SEI / Accenture (déc. 2025, CC BY-NC-ND 4.0). Outil non officiel.`;
+  return t;
+}
+function copyTo(txt,msg){
+  navigator.clipboard.writeText(txt).then(()=>note(msg)).catch(()=>{
+    const ta=document.getElementById("restoreArea");document.getElementById("restoreBox").style.display="block";
+    ta.value=txt;ta.select();note("Copie automatique indisponible : le texte est dans la zone ci-dessous.")});
+}
+function note(m){const n=document.getElementById("copyNote");n.textContent=m;clearTimeout(note.t);note.t=setTimeout(()=>n.textContent="",6000)}
+function copyReport(){copyTo(report(),"Rapport copié.")}
+function copyAnswers(){copyTo(JSON.stringify({ans,ctxv}),"Réponses copiées. Gardez ce texte pour reprendre plus tard.")}
+function toggleRestore(){const b=document.getElementById("restoreBox");b.style.display=b.style.display==="none"?"block":"none"}
+function doRestore(){try{const o=JSON.parse(document.getElementById("restoreArea").value);
+  ans=o.ans||{};ctxv=o.ctxv||{};renderCtx();renderDims();renderAll();note("Réponses chargées.")}
+  catch(e){note("Ce texte n'est pas une sauvegarde valide. Collez le contenu obtenu avec « Copier mes réponses ».")}}
+function resetAll(){if(!confirm("Effacer toutes les réponses ?"))return;ans={};ctxv={};focusLevel=null;renderCtx();renderDims();renderAll()}
+
+renderCtx();renderDims();renderAll();
+</script>
