@@ -11,7 +11,7 @@
         >
           M.A.IA
         </button>
-        <div class="header__subtitle heading">
+        <div v-if="vm.showSubtitle" class="header__subtitle heading">
           Maturité de l'adoption des technologies IA
         </div>
       </div>

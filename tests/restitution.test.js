@@ -458,9 +458,21 @@ describe('la progression du questionnaire', () => {
     const tool = demo('rochat')
     tool.state.screen = 'tool'
     expect(Object.keys(tool.header).sort())
-      .toEqual(['hasProgress', 'phases', 'resetDialog', 'sessionLabel', 'showPhases'])
+      .toEqual(['hasProgress', 'phases', 'resetDialog', 'sessionLabel', 'showPhases', 'showSubtitle'])
     tool.header.phases.forEach(phase => {
       expect(phase).not.toHaveProperty('desc')
+    })
+  })
+
+  // L'accueil dit lui-même ce que l'outil mesure, plus bas et plus complètement.
+  // L'en-tête se tait donc là, et seulement là.
+  it('l’en-tête ne développe l’acronyme que hors de l’accueil', () => {
+    const tool = useMaturityTool()
+    tool.state.screen = 'home'
+    expect(tool.header.showSubtitle).toBe(false)
+    ;['info', 'demo', 'tool', 'tool4', 'export'].forEach(screen => {
+      tool.state.screen = screen
+      expect(tool.header.showSubtitle, screen).toBe(true)
     })
   })
 })

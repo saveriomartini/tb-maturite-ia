@@ -531,6 +531,12 @@ export function useMaturityTool() {
       (wasRestored && hasProgress.value ? ' · restaurée' : ''),
     hasProgress: hasProgress.value,
     resetDialog: RESET_DIALOG,
+    // Le développement de l'acronyme se tait sur l'accueil, et seulement là :
+    // la page d'accueil le dit elle-même, plus bas, plus gros et plus complet —
+    // elle ajoute l'auto-évaluation et les PME, que l'en-tête ne dit pas. Deux
+    // formulations de la même chose à quarante pixels l'une de l'autre, c'est
+    // la première page de l'outil qui se répète.
+    showSubtitle: state.screen !== 'home',
     showPhases: isToolScreen(state.screen),
     // Les onglets ne portent plus que leur rang et leur nom. La première étape
     // de la phase y figurait, reprise de JOURNEY : elle redisait sur l'onglet
