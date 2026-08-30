@@ -67,8 +67,8 @@ const SKIP_DIALOG = {
 // est sans conséquence et n'a rien à confirmer.
 const DEMO_DIALOG = {
   eyebrow: 'Remplacer la session en cours',
-  text: 'La démonstration écrit une session complète : les attributs de contexte et les énoncés ' +
-    'retenus pour chaque domaine de capacité seront remplacés par ceux de l’exemple.',
+  text: 'La démonstration écrit une session complète : les attributs de contexte, la portée visée ' +
+    'et les énoncés retenus pour chaque domaine de capacité seront remplacés par ceux de l’exemple.',
   actions: [
     { id: 'cancel', label: 'Annuler' },
     { id: 'load', label: 'Charger la démonstration', arrow: '→' }

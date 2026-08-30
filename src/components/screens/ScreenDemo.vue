@@ -4,10 +4,10 @@
       <p class="eyebrow">Démonstration</p>
       <h1 class="page-head__title heading">Trois organisations, trois résultats</h1>
       <p class="page-head__lead">
-        Chaque exemple écrit une session complète — contexte, critères d’adoption validés,
-        indicateurs de maturité — et ouvre directement la restitution. Le parcours reste
-        entier derrière : les écrans de cadrage et d’évaluation se relisent, se modifient,
-        et l’en-tête réinitialise à tout moment.
+        Chaque exemple écrit une session complète — attributs de contexte, portée visée,
+        énoncés retenus — et ouvre directement la restitution. Le parcours reste entier
+        derrière : la page de l’outil se relit et se modifie, et l’en-tête réinitialise
+        à tout moment.
       </p>
     </header>
 
