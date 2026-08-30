@@ -1,4 +1,4 @@
-// — organisation évaluée —
+// — périmètre de l’évaluation —
 // Le modèle source évalue une *organizational unit*, pas nécessairement
 // l'entreprise entière : « for the selected organizational scope » ouvre la
 // dimension Organizational Strategy (docs/MODEL_EXTRAS.md, § 4.4). L'attribut
@@ -21,14 +21,21 @@
 
 import { optionLabel } from '../data/context-attributes.js'
 
-export const EVALUATION_UNIT_LABEL = 'Organisation évaluée'
+// L'intitulé est celui du cadrage, mot pour mot : c'est la même question,
+// posée là et rappelée ici. Elle s'appelait « Organisation évaluée » en
+// restitution et « Périmètre de l'évaluation » au formulaire, et deux noms pour
+// un seul attribut obligeaient le lecteur à refaire le rapprochement — celui-là
+// même dont dépend la portée qu'il accorde au verdict.
+export const EVALUATION_UNIT_LABEL = 'Périmètre de l’évaluation'
 
 // Le périmètre est facultatif au cadrage : seul le degré de transformation est
 // exigé. Non renseigné, il ne se tait pas — l'absence est justement le cas où
 // le malentendu est le plus probable, et elle se déclare donc comme telle. La
 // note dit la lecture par défaut, qui est aussi celle du calcul : un attribut
 // vide y vaut le score maximal (voir UNANSWERED_SCORE dans recommendation.js).
-export const UNDECLARED_UNIT = 'Non déclarée'
+// Masculin : la ligne s'intitule « Périmètre de l'évaluation » et non plus
+// « Organisation évaluée », et la valeur s'accorde avec son intitulé.
+export const UNDECLARED_UNIT = 'Non déclaré'
 export const UNDECLARED_NOTE =
   'Faute de périmètre déclaré, ces résultats se lisent comme portant sur l’entreprise entière.'
 

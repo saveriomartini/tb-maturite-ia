@@ -310,6 +310,39 @@ export function useMaturityTool() {
   // reprocher en séance des domaines qu'elle n'a jamais prétendu couvrir.
   const unit = computed(() => evaluationUnit(state.form))
 
+  // Sur quoi porte la mesure : les domaines en périmètre effectivement
+  // renseignés, ceux qui restent à évaluer, ceux qui en sont sortis. Les trois
+  // nombres se lisent ensemble — le premier ne veut rien dire sans les deux
+  // autres.
+  const coverage = computed(() =>
+    `${scoped.value.length - pending.value.length} domaines de capacité situés sur ` +
+    `${scoped.value.length} en périmètre` +
+    (pending.value.length ? ` · ${pending.value.length} à évaluer` : '') +
+    (outOfScopeAreas.value.length ? ` · ${outOfScopeAreas.value.length} hors périmètre` : '')
+  )
+
+  // Le périmètre en une seule ligne : ce que l'organisation a déclaré couvrir,
+  // puis ce que la mesure a effectivement couvert. Les deux vivaient sur deux
+  // lignes et sous deux intitulés, dont le second — « Couverture » — nommait un
+  // mot que rien d'autre du parcours n'emploie. Ils répondent à la même
+  // question, celle que le cadrage pose sous le nom de périmètre de
+  // l'évaluation, et une organisation qui lit « Toute l'entreprise » sans voir
+  // dans le même souffle « 0 domaines situés sur 28 » tient le verdict pour plus
+  // large qu'il n'est. Un seul intitulé, celui du cadrage, et la couverture
+  // appendue derrière la déclaration.
+  //
+  // La ligne se donne entière et en deux morceaux : une vue qui la pose d'un
+  // seul corps prend `value`, une vue qui appuie la déclaration plus que les
+  // nombres prend `unit` et `coverage`. C'est la même ligne, dans le même ordre
+  // — la jointure ne se refait pas dans un template.
+  const scopeLine = computed(() => ({
+    label: unit.value.label,
+    unit: unit.value.value,
+    coverage: coverage.value,
+    value: `${unit.value.value} · ${coverage.value}`,
+    note: unit.value.note
+  }))
+
   // Deux états à la restitution, et deux seulement : un palier du modèle, ou
   // rien encore. Le second ne dit pas « aucun » — il dit que le diagnostic n'est
   // pas assez avancé pour qualifier quoi que ce soit.
@@ -987,18 +1020,10 @@ export function useMaturityTool() {
   // nommée qu'à l'ancrage, où elle se déclare. Tant qu'elle ne l'est pas,
   // l'échelle des paliers ne porte aucune marque de cible.
   const resti1 = computed(() => ({
-    unit: unit.value,
+    scope: scopeLine.value,
     acquiredLabel: acquiredLabel.value,
     acquiredDesc: acquiredProfile.value.desc,
     acquiredPosition: acquiredPosition.value,
-    // Sur quoi porte la mesure : les domaines en périmètre effectivement
-    // renseignés, ceux qui restent à évaluer, ceux qui en sont sortis. Les trois
-    // nombres se lisent ensemble — le premier ne veut rien dire sans les deux
-    // autres.
-    coverage: `${scoped.value.length - pending.value.length} domaines de capacité situés sur ` +
-      `${scoped.value.length} en périmètre` +
-      (pending.value.length ? ` · ${pending.value.length} à évaluer` : '') +
-      (outOfScopeAreas.value.length ? ` · ${outOfScopeAreas.value.length} hors périmètre` : ''),
     // Les deux listes sont assemblées ici plutôt que dans le template : la vue
     // ne calcule rien, pas même une jointure.
     outOfScopeLabel: outOfScopeAreas.value.map(area => area.name).join(' · '),
@@ -1221,19 +1246,15 @@ export function useMaturityTool() {
     if (!pages.length) pages.push([])
     return {
       meta: `Export ${today()} · model: ${MODEL_VERSION} · session: ${state.session}`,
-      // Ce que l'export nomme avant tout autre chose : l'unité sur laquelle il
-      // porte. Relu hors de l'outil, il n'a personne pour le préciser.
-      unit: unit.value,
+      // Ce que l'export nomme avant tout autre chose : le périmètre sur lequel
+      // il porte, et ce que la mesure y a couvert. Relu hors de l'outil, il n'a
+      // personne pour le préciser, et sans cette ligne un lecteur extérieur
+      // prendrait la liste pour un bilan complet du modèle.
+      scope: scopeLine.value,
       // Seule sortie numérotée : relue hors de l'outil, elle doit situer le
       // profil dans l'échelle sans supposer qu'on la connaisse par cœur.
       targetLabel: profileExportLabel(target.value),
       acquiredLabel: acquiredProfile.value.exportLabel,
-      // Le document dit sur quoi il porte : sans cette ligne, un lecteur
-      // extérieur prendrait la liste pour un bilan complet du modèle.
-      coverage: `${scoped.value.length - pending.value.length} domaines de capacité situés sur ` +
-        `${scoped.value.length} en périmètre` +
-        (pending.value.length ? ` · ${pending.value.length} à évaluer` : '') +
-        (outOfScopeAreas.value.length ? ` · ${outOfScopeAreas.value.length} hors périmètre` : ''),
       // Le même partage qu'à l'écran : la cible dépassée, la cible tenue, et le
       // cas où rien n'est listé parce que rien n'a été mesuré.
       emptyLabel: acquired.value > target.value

@@ -12,11 +12,13 @@
             <h1 class="page__title heading">Domaines de capacité qui séparent du profil visé</h1>
           </div>
           <div class="page__levels">
-            <p class="page__level">{{ vm.unit.label }} : <span class="page__level-value">{{ vm.unit.value }}</span></p>
+            <!-- Sur une ligne : entre deux éléments, le compilateur condense en rien
+                 un blanc qui contient un retour, et le périmètre se collerait à sa
+                 couverture. -->
+            <p class="page__level">{{ vm.scope.label }} : <span class="page__level-value">{{ vm.scope.unit }}</span> <span class="page__level-coverage">· {{ vm.scope.coverage }}</span></p>
             <p class="page__level">Profil visé : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
             <p class="page__level">Profil diagnostiqué : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
-            <p class="page__coverage">{{ vm.coverage }}</p>
-            <p v-if="vm.unit.note" class="page__coverage">{{ vm.unit.note }}</p>
+            <p v-if="vm.scope.note" class="page__coverage">{{ vm.scope.note }}</p>
           </div>
         </header>
 
@@ -59,18 +61,22 @@
 // où l'on cherche l'identité d'une feuille détachée d'un dossier. La barre
 // d'outils dit ce qu'on regarde — un aperçu — et non ce que le document est.
 //
-// L'en-tête de page nomme d'abord l'organisation évaluée, puis les deux profils
-// — visé et diagnostiqué, sous les mêmes noms qu'à l'écran —, puis la
-// couverture : du plus englobant au plus fin, chaque ligne bornant celles
-// qui la suivent. Elle vient en premier parce que c'est la seule qui puisse
-// invalider la lecture des autres — un document relu sans personne pour préciser
-// le périmètre se prend sinon pour un bilan de l'entreprise entière. Elle est
-// répétée sur chaque page : une page détachée du dossier reste rattachée à son
+// L'en-tête de page nomme d'abord le périmètre de l'évaluation, puis les deux
+// profils — visé et diagnostiqué, sous les mêmes noms qu'à l'écran : du plus
+// englobant au plus fin, chaque ligne bornant celles qui la suivent. Le
+// périmètre vient en premier parce que c'est la seule ligne qui puisse invalider
+// la lecture des autres — un document relu sans personne pour préciser le
+// périmètre se prend sinon pour un bilan de l'entreprise entière. Il est répété
+// sur chaque page : une page détachée du dossier reste rattachée à son
 // périmètre.
 //
-// La couverture dit aussi ce que la liste ne contient pas : les domaines restés
-// à évaluer et ceux déclarés hors périmètre. Sans cette ligne, l'absence d'un
-// domaine se lirait comme un acquis.
+// La couverture est appendue à cette ligne plutôt que posée sous elle, comme à
+// l'écran des résultats : les deux répondent à la même question — ce qu'on a
+// prétendu couvrir, ce qu'on a couvert — et le mot « Couverture », qui les
+// séparait, ne nomme rien ailleurs dans le parcours. Elle dit aussi ce que la
+// liste ne contient pas : les domaines restés à évaluer et ceux déclarés hors
+// périmètre. Sans ces nombres, l'absence d'un domaine se lirait comme un
+// acquis.
 import AppScreen from '../AppScreen.vue'
 
 defineProps({
@@ -146,8 +152,17 @@ const emit = defineEmits(['back'])
   font-weight: 700;
 }
 
-/* Sur quoi porte la liste : un domaine non renseigné n'y figure pas, et le
-   document doit le dire pour être lu correctement hors de l'outil. */
+/* La couverture est appendue à la ligne du périmètre, mais elle ne s'y met pas
+   au même poids : ce qui est en gras sur les trois lignes de l'en-tête, c'est la
+   valeur déclarée — un périmètre, deux profils. Les nombres de couverture la
+   précisent, et trois lignes de gras à côté d'un titre en feraient le sujet de
+   la page. */
+.page__level-coverage {
+  color: var(--color-neutral-700);
+}
+
+/* Le seul commentaire de l'en-tête : la lecture par défaut quand aucun périmètre
+   n'a été déclaré. En retrait de corps sous les lignes qu'il commente. */
 .page__coverage {
   margin: 3px 0 0;
   font-size: 9px;
