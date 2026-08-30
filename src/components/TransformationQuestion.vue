@@ -2,7 +2,7 @@
   <section class="panel transformation">
     <h2 class="panel-head transformation__title">
       <span>{{ title }}</span>
-      <span class="transformation__note">une seule réponse, révisable</span>
+      <span class="transformation__note">révisable à tout moment</span>
     </h2>
 
     <div class="transformation__body">
@@ -64,7 +64,9 @@
 //
 // Elle n'est plus obligatoire, et l'astérisque a disparu avec l'exigence : sans
 // réponse, le profil visé retombe sur ce que les attributs de contexte portent,
-// et l'écran le dit. Le panneau ne se replie pas : ce qui décide de tout ce qui
+// et l'écran le dit. La glose de l'en-tête ne dit plus « une seule réponse » —
+// un groupe de boutons radio ne dit rien d'autre par sa forme — mais garde ce
+// qu'aucune forme ne montre : qu'on peut revenir dessus. Le panneau ne se replie pas : ce qui décide de tout ce qui
 // suit reste sous les yeux pendant qu'on le lit.
 //
 // — pourquoi elle garde ses pastilles —
