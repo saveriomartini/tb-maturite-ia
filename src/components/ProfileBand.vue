@@ -48,9 +48,12 @@
 //     nature, pas d'intensité ;
 //   — le compte en clair double chaque barre : « 8 sur 9 domaines attendus »,
 //     jamais « 89 % ». Un pourcentage dit une progression continue, un compte
-//     dit ce qui manque.
+//     dit ce qui manque ;
+//   — l'étiquette « acquis » ne paraît que sur les barres qui le sont.
 //
-// Et la phrase du bas dit ce que les barres ne veulent pas dire.
+// Ces quatre-là suffisent à dire qu'une barre pleine est un palier acquis, et la
+// phrase du bas a cessé de le répéter. Elle ne porte plus que ce qu'aucune barre
+// ne montre d'elle-même : qu'un seuil ne se compense pas.
 //
 // Aucune bibliothèque de graphiques : deux éléments, une largeur en pourcentage,
 // et les jetons de assets/tokens.css. La largeur est la seule chose que le

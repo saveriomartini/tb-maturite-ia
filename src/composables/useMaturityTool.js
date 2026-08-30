@@ -135,10 +135,13 @@ const LADDER_NOTE =
 // clair. Jamais d'un pourcentage : « 89 % » dit une progression continue là où
 // « 8 sur 9 » dit ce qui manque.
 const BAND_TITLE = 'Les cinq profils'
+// La note ne redit plus « une barre pleine est un palier acquis » : chaque barre
+// acquise porte l'étiquette « acquis », et une barre qui ne l'est pas ne la porte
+// pas. Reste ce qu'aucune barre ne peut montrer d'elle-même — la règle qui veut
+// qu'un seuil ne se compense pas.
 const BAND_NOTE =
-  'Une barre pleine est un palier acquis, jamais un palier presque acquis. Le trait au bout de ' +
-  'chaque rail est un seuil et non un maximum : un seul domaine manquant suffit à ne pas le ' +
-  'franchir.'
+  'Le trait au bout de chaque rail est un seuil, non un maximum : un seul domaine manquant ' +
+  'suffit à ne pas le franchir.'
 
 // Le dénominateur bouge, et c'est la seule chose que les barres ne peuvent pas
 // montrer. Un domaine déclaré hors périmètre sort du calcul et réduit ce que
