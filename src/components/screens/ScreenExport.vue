@@ -1,7 +1,7 @@
 <template>
   <AppScreen>
     <div class="toolbar">
-      <p class="toolbar__meta">Aperçu de l'export PDF — {{ vm.meta }}</p>
+      <p class="toolbar__meta">Aperçu de l'export PDF</p>
       <button type="button" class="btn btn-ghost" @click="emit('back')">Retour</button>
     </div>
 
@@ -10,7 +10,6 @@
         <header class="page__head">
           <div>
             <h1 class="page__title heading">Domaines de capacité qui séparent du profil visé</h1>
-            <p class="page__meta">{{ vm.meta }}</p>
           </div>
           <div class="page__levels">
             <p class="page__level">{{ vm.unit.label }} : <span class="page__level-value">{{ vm.unit.value }}</span></p>
@@ -52,6 +51,13 @@
 // des pratiques à mettre en place : elle nomme les domaines de capacité qui
 // séparent du profil visé et, pour chacun, l'énoncé à atteindre. C'est la même
 // matière que l'écran d'ancrage, mise à plat pour être relue hors de l'outil.
+//
+// — où vit l'identité du document, et où elle ne vit plus —
+// La ligne « Export <date> · model · session » paraissait trois fois sur une
+// même page visible : dans la barre d'outils, dans l'en-tête de page et dans son
+// pied. Elle ne vit plus qu'au pied, à côté du numéro de page, qui est l'endroit
+// où l'on cherche l'identité d'une feuille détachée d'un dossier. La barre
+// d'outils dit ce qu'on regarde — un aperçu — et non ce que le document est.
 //
 // L'en-tête de page nomme d'abord l'organisation évaluée, puis les deux profils
 // — visé et diagnostiqué, sous les mêmes noms qu'à l'écran —, puis la
@@ -120,12 +126,6 @@ const emit = defineEmits(['back'])
   font-size: 15px;
   line-height: 1.2;
   letter-spacing: normal;
-}
-
-.page__meta {
-  margin: 3px 0 0;
-  font-size: 10px;
-  color: var(--color-neutral-700);
 }
 
 /* La page A4 a une largeur fixe : la colonne de droite est bornée en dur pour
