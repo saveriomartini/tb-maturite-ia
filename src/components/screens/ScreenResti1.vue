@@ -1,23 +1,21 @@
 <template>
   <div class="summary">
+    <div class="frame">
+      <p class="frame__row">
+        <span class="frame__label eyebrow">{{ vm.scope.label }}</span>
+        <span class="frame__value">{{ vm.scope.value }}</span>
+      </p>
+      <p v-if="vm.scope.note" class="frame__note">{{ vm.scope.note }}</p>
+    </div>
+
     <header class="verdict">
-      <p class="verdict__eyebrow eyebrow">Profil diagnostiqué</p>
-      <h1 class="verdict__name heading">{{ vm.acquiredLabel }}</h1>
+      <p class="verdict__line">
+        <span class="verdict__eyebrow eyebrow">Profil diagnostiqué pour votre organisation :</span>
+        <span class="verdict__name heading">{{ vm.acquiredLabel }}</span>
+      </p>
       <p class="verdict__desc">{{ vm.acquiredDesc }}</p>
       <p v-if="vm.acquiredPosition" class="verdict__position">{{ vm.acquiredPosition }}</p>
     </header>
-
-    <div class="frame">
-      <p class="frame__row">
-        <span class="frame__label eyebrow">{{ vm.unit.label }}</span>
-        <span class="frame__value">{{ vm.unit.value }}</span>
-      </p>
-      <p v-if="vm.unit.note" class="frame__note">{{ vm.unit.note }}</p>
-      <p class="frame__row">
-        <span class="frame__label eyebrow">Couverture</span>
-        <span class="frame__value">{{ vm.coverage }}</span>
-      </p>
-    </div>
 
     <section class="section">
       <h2 class="section-head">L’échelle des paliers</h2>
@@ -79,18 +77,22 @@
 // changer d'écran, et la navigation appartient à la page.
 //
 // — la hiérarchie de la page —
-// Le verdict d'abord, seul, au plus gros corps du parcours : c'est ce que
-// quarante énoncés ont produit, et il ouvrait la page en 22px derrière un
-// intitulé « Votre profil : ». Sa description et sa position sur l'échelle de
-// transformation le suivent : elles disent ce qu'il veut dire, et vivaient
-// jusqu'ici dans la colonne de droite de l'échelle, où elles se lisaient comme
-// un commentaire de l'échelle.
+// Le périmètre d'abord, en une ligne serrée sous le titre de la section : ce sur
+// quoi la mesure porte, et ce qu'elle y a couvert. Il suivait le verdict, et un
+// lecteur qui descend s'était déjà fait une opinion du profil quand il
+// apprenait qu'il ne portait que sur une équipe et sur zéro domaine situé. Une
+// borne posée après coup ne borne rien : elle se lit comme une réserve, pas
+// comme la portée de ce qu'on vient de lire. Elle passe donc devant — au corps
+// du hors-texte, en bande serrée, présente sans jamais concurrencer.
 //
-// Vient ensuite ce qui borne la lecture — l'organisation évaluée, la couverture
-// —, en bande serrée et au corps du hors-texte. Ni l'une ni l'autre ne peut
-// disparaître : sans elles le verdict se lit comme portant sur l'entreprise
-// entière et sur le modèle entier. Mais elles ne sont pas un résultat, et rien
-// dans leur traitement ne doit le laisser croire.
+// Le verdict vient après, et reste au plus gros corps du parcours : c'est ce que
+// quarante énoncés ont produit. Son intitulé et son nom tiennent désormais une
+// seule ligne — l'intitulé à gauche, le nom aligné à droite —, ce qui laisse la
+// ligne du périmètre juste au-dessus dans le même registre de lecture : deux
+// lignes qui se répondent, l'une disant sur quoi, l'autre disant quoi. Sa
+// description et sa position sur l'échelle de transformation le suivent : elles
+// disent ce qu'il veut dire, et vivaient jusqu'ici dans la colonne de droite de
+// l'échelle, où elles se lisaient comme un commentaire de l'échelle.
 //
 // Le reste se range en sections coiffées à l'identique. Les domaines hors
 // périmètre et ceux restant à évaluer en forment une : ils bornaient la lecture
@@ -105,13 +107,20 @@
 // cible à zéro. Les quatre cas — non déclarée, plus haut, atteinte, sous le
 // palier atteint — ont chacun leur phrase, aucun n'est un défaut silencieux.
 //
-// L'organisation évaluée ouvre la page, avant le profil. Le modèle source évalue
-// une organizational unit et non forcément l'entreprise entière : une restitution
-// qui ne nomme pas son périmètre se lit comme un verdict sur tout.
+// Le périmètre ouvre la page, avant le profil. Le modèle source évalue une
+// organizational unit et non forcément l'entreprise entière : une restitution
+// qui ne nomme pas son périmètre se lit comme un verdict sur tout. Il porte
+// l'intitulé du cadrage — « Périmètre de l'évaluation » — parce que c'est la
+// même question, et que deux noms pour un attribut obligeaient à refaire le
+// rapprochement.
 //
-// La couverture suit immédiatement : combien de domaines ont été situés, combien
-// restent à évaluer, combien ont été déclarés hors périmètre. Sans ces trois
-// nombres, le profil se lirait comme portant sur le modèle entier.
+// La couverture est appendue à la même ligne, derrière la déclaration : combien
+// de domaines ont été situés, combien restent à évaluer, combien ont été
+// déclarés hors périmètre. Elle avait son intitulé propre — « Couverture », un
+// mot que rien d'autre du parcours n'emploie — sur une deuxième ligne, où elle
+// se lisait comme un second sujet. C'en est un seul : ce qu'on a prétendu
+// couvrir, et ce qu'on a couvert. Sans ces trois nombres, le profil se lirait
+// comme portant sur le modèle entier.
 //
 // Chaque palier porte son avancement — combien des domaines qu'il attend
 // l'atteignent. Le ratio ne mesure pas une acquisition : celle-ci est un seuil,
@@ -155,12 +164,17 @@ const emit = defineEmits(['focus-gate'])
 
 <style scoped>
 /* — le verdict —
-   Ce qu'on lit en premier, et de loin : le nom du profil, en tête de page et au
-   corps le plus fort de tout le parcours. Il portait 22px et l'intitulé
-   « Votre profil : » à côté de lui, si bien qu'il pesait exactement autant
-   qu'un nom de domaine dans le questionnaire. C'est la conclusion de tout le
-   parcours de saisie : elle a droit à la première ligne et à la plus grande
-   taille.
+   Le nom du profil, au corps le plus fort de tout le parcours. Il portait 22px
+   et l'intitulé « Votre profil : » à côté de lui, si bien qu'il pesait
+   exactement autant qu'un nom de domaine dans le questionnaire. C'est la
+   conclusion de tout le parcours de saisie : elle garde la plus grande taille.
+
+   Intitulé et nom tiennent une ligne, l'un contre le bord gauche et l'autre
+   contre le bord droit, alignés sur la même ligne de base. La ligne du
+   périmètre, juste au-dessus, est bâtie de même — intitulé à gauche, valeur qui
+   suit —, et les deux se lisent comme un couple : ce sur quoi porte la mesure,
+   puis ce qu'elle conclut. L'écart de corps entre les deux dit lequel des deux
+   est le résultat.
 
    La description du profil et sa position sur l'échelle de transformation le
    suivent immédiatement. Elles étaient dans la colonne de droite de l'échelle
@@ -168,18 +182,40 @@ const emit = defineEmits(['focus-gate'])
    disent en réalité ce que le verdict veut dire, et c'est ici qu'elles le
    disent. */
 .verdict {
-  max-width: 80ch;
+  margin: 18px 0 0;
+}
+
+/* `space-between` et non une colonne fixe : le nom cherche le bord droit du
+   texte, où l'œil le retrouve d'une restitution à l'autre quelle que soit la
+   longueur de l'intitulé. `wrap` pour que le nom passe à la ligne plutôt que de
+   se comprimer quand la place manque — il reste alors aligné à droite. */
+.verdict__line {
+  display: flex;
+  gap: 8px 24px;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 0;
 }
 
 .verdict__eyebrow {
-  margin: 0;
   color: var(--color-neutral-700);
 }
 
 .verdict__name {
-  margin: 6px 0 0;
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 38px;
   line-height: 1.08;
+  text-align: right;
+  text-wrap: balance;
+}
+
+/* La description reprend le bord gauche et la largeur de lecture : elle commente
+   le verdict, elle ne le prolonge pas à droite. */
+.verdict__desc,
+.verdict__position {
+  max-width: 80ch;
 }
 
 .verdict__desc {
@@ -201,14 +237,17 @@ const emit = defineEmits(['focus-gate'])
 }
 
 /* — le cadrage de la lecture —
-   L'organisation évaluée et la couverture. Ce n'est pas un résultat : c'est ce
-   sur quoi le résultat porte, et ce que la mesure a effectivement couvert. Ce
-   sont les deux bornes sans lesquelles le verdict se lirait comme portant sur
-   l'entreprise entière et sur le modèle entier — elles ne peuvent donc pas
-   disparaître. Elles passent sous le verdict, en bande serrée entre deux
-   filets, au corps du hors-texte : présentes, jamais concurrentes. */
+   Le périmètre déclaré, et ce que la mesure y a couvert. Ce n'est pas un
+   résultat : c'est ce sur quoi le résultat porte. C'est la borne sans laquelle
+   le verdict se lirait comme portant sur l'entreprise entière et sur le modèle
+   entier — elle ne peut donc pas disparaître, et elle ouvre la section, avant le
+   verdict qu'elle borne. En bande serrée entre deux filets, au corps du
+   hors-texte : présente, jamais concurrente.
+
+   Pas de marge haute : le titre coiffé de la section porte déjà son filet fort
+   et son écart, et la bande vient s'y appuyer. Le filet supérieur de la bande
+   reste, pour le cas où elle serait lue hors de cette page. */
 .frame {
-  margin: 22px 0 0;
   padding: 10px 0;
   border-top: 1px solid var(--color-divider);
   border-bottom: 1px solid var(--color-divider);
@@ -222,12 +261,8 @@ const emit = defineEmits(['focus-gate'])
   margin: 0;
 }
 
-.frame__row + .frame__row {
-  margin-top: 5px;
-}
-
-/* les deux intitulés tiennent la même colonne : de l'un à l'autre, l'œil ne
-   revient pas chercher où commence la valeur */
+/* L'intitulé tient une colonne fixe : la valeur commence au même endroit d'une
+   restitution à l'autre, et la note qui la commente s'aligne dessous. */
 .frame__label {
   flex: none;
   min-width: 190px;
@@ -352,12 +387,17 @@ const emit = defineEmits(['focus-gate'])
 }
 
 @media (max-width: 900px) {
+  /* Le nom du profil passe sous son intitulé plutôt que de se serrer contre
+     lui, et reprend le bord gauche : à cette largeur, un nom aligné à droite
+     sous un intitulé aligné à gauche ne se lit plus comme une ligne. */
   .verdict__name {
+    flex-basis: 100%;
     font-size: 30px;
+    text-align: left;
   }
 
-  /* Empilés, les intitulés du cadrage n'ont plus de colonne commune à tenir :
-     la valeur passe sous son intitulé, et la note reprend le bord de la page. */
+  /* Empilé, l'intitulé du cadrage n'a plus de colonne à tenir : la valeur passe
+     sous lui, et la note reprend le bord de la page. */
   .frame__label {
     min-width: 0;
   }
