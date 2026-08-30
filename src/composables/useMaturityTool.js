@@ -685,11 +685,14 @@ export function useMaturityTool() {
   // par profil. Le view-model ne livre donc que des constantes du modèle — quel
   // profil on consulte est une affaire d'écran, sans effet sur le diagnostic.
   const diagStart = computed(() => ({
+    // La dernière phrase annonçait que les critères d'adoption et les pratiques
+    // « restent affichés à côté » des énoncés. Ils n'y sont plus : le
+    // questionnaire ne montre que l'énoncé et, sur demande, des exemples
+    // d'artefacts. Un texte qui décrit un écran qui n'existe plus est pire
+    // qu'un texte de trop.
     intro: `Le diagnostic parcourt les ${EVALUABLE_AREAS.length} domaines de capacité évaluables du ` +
       `modèle, dans son ordre. Pour chacun, cinq énoncés décrivent cinq situations : vous retenez ` +
-      `celui qui décrit la vôtre, ou vous déclarez le domaine hors périmètre. Les critères ` +
-      `d'adoption et les pratiques que la source associe au domaine restent affichés à côté — ils ` +
-      `disent ce que le modèle y met, ils ne sont pas une liste à cocher.`,
+      `celui qui décrit la vôtre, ou vous déclarez le domaine hors périmètre.`,
     total: EVALUABLE_AREAS.length,
     // Un profil met en jeu les domaines de son rang et de tous ceux d'en
     // dessous : c'est la règle d'acquisition, lue à l'envers.

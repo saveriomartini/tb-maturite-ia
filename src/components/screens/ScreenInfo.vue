@@ -3,13 +3,10 @@
     <header class="page-head">
       <p class="eyebrow">Information</p>
       <h1 class="page-head__title heading">Le modèle et ce qu'il évalue</h1>
-      <p class="page-head__lead">
-        Cette page est là pour qui veut comprendre l'approche utilisée.
-      </p>
     </header>
 
     <section class="zone">
-      <h2 class="zone__title heading">Les trois phases du diagnostic</h2>
+      <h2 class="zone__title heading">Les quatre phases du parcours</h2>
       <JourneyMap :phases="journey.phases" />
     </section>
 
@@ -154,14 +151,6 @@ const emit = defineEmits(["toggle-level", "start", "back"]);
   margin: 6px 0 0;
   font-size: 30px;
   line-height: 1.15;
-}
-
-.page-head__lead {
-  margin: 12px 0 0;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--color-neutral-800);
-  text-wrap: pretty;
 }
 
 .zone {
