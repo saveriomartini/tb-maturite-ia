@@ -36,8 +36,12 @@ const GAP_GROUPS_PER_PAGE = 4
 // sorties — et leurs textes vivent donc ici, au même titre que les libellés de
 // boutons des autres écrans. La sortie qui poursuit ce qui a été cliqué vient en
 // second : la première est toujours celle qui ramène en arrière.
+// Le surtitre ne renomme pas l'action : le bouton qui a ouvert la boîte disait
+// déjà « réinitialiser », celui qui la conclut le redit, et un troisième rappel
+// en tête n'apprenait rien. Il coiffe donc ce qui suit — la liste de ce qu'on
+// perd, seule information de la boîte.
 const RESET_DIALOG = {
-  eyebrow: 'Réinitialiser la session',
+  eyebrow: 'Ce qui sera effacé',
   text: 'Les attributs de contexte, la portée visée et les énoncés retenus pour chaque domaine ' +
     'de capacité seront effacés.',
   actions: [
