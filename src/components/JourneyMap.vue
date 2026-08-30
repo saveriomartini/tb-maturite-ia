@@ -35,8 +35,8 @@
 </template>
 
 <script setup>
-// Carte du parcours utilisateur : les trois phases du diagnostic, et sous
-// chacune ce qui la rend pénible ou utile. Elle ouvre la page d'information, où
+// Carte du parcours utilisateur : les quatre phases — cadrage, évaluation,
+// résultats, ancrage — et sous chacune ce qui la rend pénible ou utile. Elle ouvre la page d'information, où
 // elle sert de sommaire à qui veut comprendre où il met les pieds ; elle a quitté
 // le cadrage, qu'elle retardait d'une page de lecture.
 //

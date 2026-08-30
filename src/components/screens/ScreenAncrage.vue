@@ -1,12 +1,10 @@
 <template>
   <AppScreen>
     <div class="lead">
-      <p class="eyebrow lead__eyebrow">Ancrage</p>
       <h1 class="lead__title heading">Préparer l’ancrage</h1>
       <p class="lead__text">
-        Vous avez situé vos domaines de capacité ; reste à dire jusqu’où l’adoption de l’IA doit
-        avoir porté. C’est de cette réponse que se déduit le profil visé, et donc l’écart. La phase
-        s’arrête là : elle prépare la mise en œuvre, elle ne la conduit pas.
+        C’est de la portée déclarée ci-dessous que se déduit le profil visé, et donc l’écart. La
+        phase s’arrête là : elle prépare la mise en œuvre, elle ne la conduit pas.
       </p>
     </div>
 
@@ -89,6 +87,14 @@
 </template>
 
 <script setup>
+// — ce que la page ne dit plus —
+// Le surtitre « Ancrage » redisait ce que l'onglet 4 de l'en-tête affiche, actif
+// et souligné, à l'instant où l'on est ici : le mot paraissait trois fois avec
+// le titre. Et le chapô s'ouvrait sur « vous avez situé vos domaines de
+// capacité » — un récapitulatif de l'écran précédent, qui n'apprenait rien à qui
+// vient d'en sortir. Reste ce que la page seule peut dire : d'où vient le profil
+// visé, et où s'arrête la phase.
+//
 // Phase d'ancrage. Elle pose la question de portée, en déduit le profil visé,
 // dit l'écart entre l'intention et ce que le contexte porte, nomme les domaines
 // qui séparent de la cible — avec l'énoncé à atteindre pour chacun —, et produit
@@ -145,13 +151,8 @@ const emit = defineEmits(['select-reach', 'export', 'finish', 'resume', 'back'])
 </script>
 
 <style scoped>
-.lead__eyebrow {
-  margin: 0;
-  color: var(--color-neutral-700);
-}
-
 .lead__title {
-  margin: 6px 0 0;
+  margin: 0;
   font-size: 26px;
   line-height: 1.15;
 }

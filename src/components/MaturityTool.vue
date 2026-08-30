@@ -22,25 +22,17 @@
     @back="tool.nav.home"
   />
   <ScreenTool1
-    v-else-if="screen === 'tool1'"
+    v-else-if="screen === 'tool'"
+    :vm="tool.toolPage"
     :cadrage3="tool.cadrage3"
-    @select-option="tool.actions.selectOption"
-    @dismiss-warning="tool.actions.dismissContextWarning"
-    @back="tool.nav.back"
-    @next="tool.nav.next"
-  />
-  <ScreenDiag
-    v-else-if="screen === 'tool2'"
-    :vm="tool.diag"
-    @answer="tool.actions.answerArea"
-    @open-area="tool.actions.openArea"
-    @back="tool.nav.back"
-    @next="tool.nav.next"
-  />
-  <ScreenTool3
-    v-else-if="screen === 'tool3'"
+    :diag="tool.diag"
     :resti1="tool.resti1"
     :resti2="tool.resti2"
+    @select-option="tool.actions.selectOption"
+    @dismiss-warning="tool.actions.dismissContextWarning"
+    @answer="tool.actions.answerArea"
+    @phase="tool.actions.setPhase"
+    @anchor-reached="tool.actions.clearAnchor"
     @back="tool.nav.back"
     @next="tool.nav.next"
   />
@@ -65,21 +57,22 @@
 // chaque écran ne reçoit que son propre view-model et remonte ses intentions
 // sous forme d'évènements.
 //
-// Les écrans de cadrage et de restitution ne sont plus routés individuellement :
-// ils sont devenus des sections empilées dans `info`, `tool1` et `tool3`, qui
-// portent le gabarit et la navigation. Leurs fichiers gardent leurs noms, le
-// temps qu'un renommage se justifie.
+// Les trois premières phases n'ont plus d'écran à elles : le cadrage,
+// l'évaluation et les résultats sont trois sections empilées de `tool`, que
+// ScreenTool1 compose et fait défiler. Les fichiers gardent leurs noms — le
+// découpage se juge à l'usage avant d'être figé par un renommage — mais
+// ScreenDiag et ScreenTool3 ne sont plus routés : c'est ScreenTool1 qui les
+// monte, et lui seul.
 //
-// `tool4` est la phase d'ancrage, rétablie : la portée visée s'y déclare, le
-// profil visé s'en déduit, et l'écart s'y lit. Le palier — qui fermait la
-// première série du questionnaire — a disparu avec les séries.
+// `tool4` est la phase d'ancrage. Elle reste un écran à part, et ce n'est pas un
+// oubli : elle s'ouvre sur la question de portée, dont la réponse change tout ce
+// qui la suit. Amenée par le défilement, on y répondrait en passant, sans avoir
+// vu qu'on décidait.
 import { computed } from 'vue'
 import ScreenHome from './screens/ScreenHome.vue'
 import ScreenInfo from './screens/ScreenInfo.vue'
 import ScreenDemo from './screens/ScreenDemo.vue'
 import ScreenTool1 from './screens/ScreenTool1.vue'
-import ScreenDiag from './screens/ScreenDiag.vue'
-import ScreenTool3 from './screens/ScreenTool3.vue'
 import ScreenAncrage from './screens/ScreenAncrage.vue'
 import ScreenExport from './screens/ScreenExport.vue'
 

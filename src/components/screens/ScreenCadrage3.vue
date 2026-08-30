@@ -38,14 +38,23 @@
 // écrans. Ce qu'on gagne à décrire son organisation ne se dit qu'au moment où
 // l'on s'apprête à partir sans l'avoir fait — et une seule fois.
 //
-// Le départ vers l'évaluation reste donc au pied de page, mais son garde-fou vit
-// ici : `requestNext` décide s'il faut d'abord avertir, la modale le demande, et
-// le retour au formulaire se fait sur le bloc que ce composant tient déjà. C'est
-// tout ce qu'il expose.
+// Le garde-fou vit ici : `requestNext` décide s'il faut d'abord avertir, la
+// modale le demande, et le retour au formulaire se fait sur le bloc que ce
+// composant tient déjà. C'est tout ce qu'il expose.
+//
+// Il gardait le passage du cadrage à l'évaluation ; les deux étant désormais
+// deux sections de la même page, ce passage n'existe plus, et le garde-fou est
+// posé sur celui qui reste — le départ vers l'ancrage, où le profil visé se
+// nomme et où ce que les attributs de contexte bornent devient visible.
+//
+// Le texte de la modale a suivi ce déplacement : il ne peut plus dire « avant
+// l'évaluation », qui est faite quand la boîte s'ouvre, et le retour au
+// formulaire remonte la page au lieu de la descendre.
 import { ref, useTemplateRef } from 'vue'
 import AppDialog from '../AppDialog.vue'
 import ContextAttributeForm from '../ContextAttributeForm.vue'
 import DescriptiveContext from '../DescriptiveContext.vue'
+import { scrollToElement } from '../../composables/useAnchorScroll.js'
 
 const props = defineProps({
   vm: { type: Object, required: true }
@@ -58,10 +67,10 @@ const asking = ref(false)
 
 // Le retrait sous la barre collée est une affaire de mise en page : il vit dans
 // la CSS (`scroll-margin-top`), pas dans un décalage calculé ici. Reste à dire
-// s'il faut animer — une préférence système, que le navigateur seul connaît.
+// s'il faut animer — une préférence système, que le navigateur seul connaît, et
+// que le module de défilement porte désormais pour toute la page.
 function goToForm() {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  form.value?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+  scrollToElement(form.value)
 }
 
 function requestNext() {
@@ -95,17 +104,10 @@ defineExpose({ requestNext })
    déborderait des blocs qu'elle conclut. */
 
 /* Le formulaire s'arrête sous la barre collée en haut de page, qui sinon
-   recouvrirait son en-tête à l'arrivée du défilement. La marge suit les deux
-   hauteurs de cette barre : avec les phrases des phases, puis sans elles. */
+   recouvrirait son en-tête à l'arrivée du défilement. La hauteur est le jeton
+   partagé par toutes les cibles de défilement de l'outil — voir
+   assets/tokens.css, qui dit pourquoi elle est déclarée et non mesurée. */
 .form {
-  scroll-margin-top: 148px;
-}
-
-/* Même point de rupture que l'en-tête, qui perd là les phrases de ses phases et
-   raccourcit d'autant. */
-@media (max-width: 900px) {
-  .form {
-    scroll-margin-top: 96px;
-  }
+  scroll-margin-top: var(--header-height);
 }
 </style>

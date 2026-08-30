@@ -54,10 +54,11 @@ function select(n) {
 const selected = computed(() => props.vm.profiles.find(option => option.n === profile.value) || null)
 
 const hint = computed(() => (selected.value
-  ? `« ${selected.value.label} » met en jeu ${selected.value.count} areas sur ${props.vm.total}. Les autres ` +
-    'restent affichées, éteintes. Recliquez le profil pour revenir à la carte entière.'
-  : `Aucun profil retenu : les ${props.vm.total} areas évaluables du modèle. Choisissez un profil pour voir ` +
-    'celles qu’il met en jeu.'))
+  ? `« ${selected.value.label} » met en jeu ${selected.value.count} domaines de capacité sur ` +
+    `${props.vm.total}. Les autres restent affichés, éteints. Recliquez le profil pour revenir ` +
+    'à la carte entière.'
+  : `Aucun profil retenu : les ${props.vm.total} domaines de capacité évaluables du modèle. ` +
+    'Choisissez un profil pour voir ceux qu’il met en jeu.'))
 
 // Le partage entre allumé et éteint se décide ici, faute d'être connu du
 // view-model : une dimension s'éteint quand aucune de ses areas n'est en jeu.

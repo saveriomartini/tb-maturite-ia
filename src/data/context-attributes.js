@@ -4,8 +4,13 @@
 // Le calcul du niveau cible qui exploite ce fichier est documenté dans
 // docs/NIVEAU-CIBLE.md.
 //
-// Les attributs sont regroupés selon les trois familles du modèle (fonctions
-// organisationnelles / technologiques / IA). Chaque attribut porte :
+// Les attributs sont regroupés selon les trois familles du modèle — fonctions
+// organisationnelles, technologiques, IA. À l'écran, les trois groupes ne
+// portent que « Organisation », « Technologie » et « IA » : aucun des champs
+// qu'ils réunissent n'est une fonction, et le mot de la source, calqué de
+// l'anglais *functions*, faisait chercher au lecteur des fonctions dans une
+// liste de périmètres, d'horizons et de niveaux. La famille du modèle reste
+// nommée ici, où la traçabilité se lit. Chaque attribut porte :
 //   aimm  : l'attribut correspondant de la Table 1, '' si l'attribut vient
 //           du cadrage métier (connaissances, digitalisation, ROI, pilotage,
 //           déploiement) — traçabilité vers la source, non affiché dans l'outil
@@ -23,7 +28,7 @@
 export const CONTEXT_GROUPS = [
   {
     id: 'org',
-    label: 'Fonctions organisationnelles',
+    label: 'Organisation',
     fields: [
       // Quatre options et non cinq : « un programme transverse » a été retiré le
       // 28.08.2026. C'était un calque de l'anglais *program*, qui ne nomme rien
@@ -35,7 +40,7 @@ export const CONTEXT_GROUPS = [
       // moyenne et seul « une équipe » agit, par le plafond qu'il déclenche.
       {
         id: 'scope', short: 'Périmètre', label: 'Périmètre de l’évaluation', aimm: 'Organizational scope', axis: null,
-        hint: 'Frontière de la discussion sur la maturité',
+        hint: '',
         opts: [
           ['team', 'Une équipe', 0],
           ['unit', 'Un département', 0.33],
@@ -44,8 +49,11 @@ export const CONTEXT_GROUPS = [
         ]
       },
       {
+        // Sans aide : « échéance des objectifs d'adoption visés » paraphrasait
+        // « horizon de planification » sans rien y ajouter, et les quatre
+        // options — des durées — se lisent seules.
         id: 'horizon', short: 'Horizon', label: 'Horizon de planification', aimm: 'Planning horizon', axis: 'ambition',
-        hint: 'Échéance des objectifs d’adoption visés',
+        hint: '',
         opts: [
           ['h6', 'Moins de 6 mois', 0],
           ['h12', '6 à 12 mois', 0.33],
@@ -66,7 +74,7 @@ export const CONTEXT_GROUPS = [
   },
   {
     id: 'tech',
-    label: 'Fonctions technologiques',
+    label: 'Technologie',
     fields: [
       {
         id: 'digital', short: 'Digitalisation', label: 'Niveau de digitalisation actuel', aimm: '', axis: 'capacity',
@@ -93,13 +101,23 @@ export const CONTEXT_GROUPS = [
         ]
       },
       {
+        // Sans aide affichée : la mention qui annonçait un ciblage par pratiques
+        // « encore à venir » décrivait un chantier, pas le champ. Ce que
+        // l'attribut fait au calcul se lit dans `axis: null` — il n'y entre pas
+        // — et cela reste vrai sans le dire sur l'écran de celui qui répond.
         id: 'devApproach', short: 'Développement IA', label: 'Approche de développement IA', aimm: 'Primary AI development approach', axis: null,
-        hint: 'Oriente les domaines techniques à prioriser, sans modifier le profil visé',
+        hint: '',
+        // Trois options et non quatre : « Hybride » a été retiré le 30.08.2026.
+        // L'attribut demande l'approche *principale*, et « hybride » est la
+        // réponse qu'on choisit quand on ne veut pas trancher — toute PME qui
+        // achète un outil et en personnalise un autre s'y reconnaît, si bien que
+        // l'option attirait les réponses sans rien apprendre de l'organisation.
+        // Les scores sont redistribués régulièrement sur les trois rangs
+        // restants ; l'attribut n'ayant pas d'`axis`, ils ne pèsent sur aucune
+        // moyenne.
         opts: [
           ['buy', 'Acheter sur étagère', 0],
-          ['customize', 'Personnaliser', 0.33],
-          ['hybrid', 'Hybride', 0.67,
-            'Certaines solutions sont achetées et utilisées telles quelles, d’autres sont développées ou entraînées par l’entreprise : les deux modes coexistent, chacun sur des cas d’usage identifiés.'],
+          ['customize', 'Personnaliser', 0.5],
           ['build', 'Construire en interne', 1]
         ]
       }
@@ -107,7 +125,7 @@ export const CONTEXT_GROUPS = [
   },
   {
     id: 'ai',
-    label: 'Fonctions IA',
+    label: 'IA',
     fields: [
       {
         id: 'literacy', short: 'Connaissances', label: 'Connaissances IA du conseil et de la direction', aimm: '', axis: 'capacity',
@@ -123,7 +141,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'risk', short: 'Risque', label: 'Appétit au risque', aimm: 'AI risk profile', axis: 'ambition',
-        hint: 'Degré de risque que l’organisation accepte d’assumer',
+        hint: '',
         opts: [
           ['averse', 'Prudent', 0],
           ['moderate', 'Modéré', 0.5],
@@ -132,7 +150,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'staffing', short: 'Ressources', label: 'Ressources affectées à l’IA', aimm: 'AI staffing', axis: 'capacity',
-        hint: 'Manière de doter les initiatives IA en compétences',
+        hint: '',
         opts: [
           ['none', 'Aucun rôle IA', 0],
           ['contracted', 'Externalisé', 0.33],
@@ -154,7 +172,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'deployment', short: 'Déploiement', label: 'Approche de déploiement', aimm: '', axis: 'ambition',
-        hint: 'Adoption conduite projet par projet ou à l’échelle de l’entreprise',
+        hint: '',
         opts: [
           ['project', 'Projet par projet', 0],
           ['waves', 'Par vagues successives', 0.5],
@@ -163,7 +181,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'roi', short: 'ROI', label: 'Anticipation du retour sur investissement', aimm: '', axis: 'ambition',
-        hint: 'Le ROI a-t-il été discuté en amont ou repoussé après une phase pilote ?',
+        hint: '',
         opts: [
           ['deferred', 'Reporté après la phase pilote', 0],
           ['qualitative', 'Discuté qualitativement en amont', 0.5,

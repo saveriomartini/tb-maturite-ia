@@ -326,15 +326,18 @@ describe('la lecture par dimension du radar', () => {
     })
   })
 
-  // Le radar et la grille par bloc lisent la même mesure : si les deux
-  // divergeaient, la page se contredirait d'une section à l'autre.
-  it('dit la même mesure que la grille par bloc', () => {
+  // La grille par bloc affichait les mêmes neuf dimensions et les mêmes deux
+  // nombres que le radar, quelques centimètres plus bas ; le test qui vivait ici
+  // n'avait d'autre objet que de garantir que les deux sections ne se
+  // contredisent pas. La grille est retirée, et avec elle la contradiction
+  // possible. Reste à vérifier que le radar porte bien les deux nombres en clair
+  // — c'est lui, désormais, qui les dit seul.
+  it('porte en clair les deux nombres de chaque dimension', () => {
     const tool = demo('rochat')
-    const grille = tool.resti1.blocks.flatMap(block => block.dimensions)
-    tool.resti1.radar.dimensions.forEach((dimension, index) => {
-      expect(dimension.averageLabel, dimension.id).toBe(grille[index].average)
-      expect(dimension.floorLabel, dimension.id).toBe(grille[index].floor)
-      expect(tool.resti1.radar.scale).toBe(grille[index].scale)
+    expect(tool.resti1).not.toHaveProperty('blocks')
+    tool.resti1.radar.dimensions.forEach(dimension => {
+      expect(dimension.averageLabel, dimension.id).toBeTypeOf('string')
+      expect(dimension.floorLabel, dimension.id).toBeTypeOf('string')
     })
   })
 })
@@ -391,20 +394,23 @@ describe('le questionnaire n’expose que des énoncés', () => {
   it('le view-model du questionnaire ne porte aucune clé de critères', () => {
     const tool = demo('belair')
     expect(tool.diag).not.toHaveProperty('criteria')
-    expect(tool.diag.area).not.toHaveProperty('goals')
-    expect(tool.diag.picker).not.toHaveProperty('practices')
+    expect(tool.diag.areas).toHaveLength(EVALUABLE_AREAS.length)
+    tool.diag.areas.forEach(area => {
+      expect(area, area.id).not.toHaveProperty('goals')
+      expect(area.picker, area.id).not.toHaveProperty('practices')
+    })
   })
 
   // Et il ne les porte pas davantage sous un autre nom : aucun texte de critère
   // ni de pratique du modèle ne se retrouve dans ce que l'écran reçoit.
+  // Les 28 domaines étant désormais sur la même page, c'est le view-model entier
+  // qu'on sérialise, et une seule fois : plus rien ne transite domaine par
+  // domaine, et le contrôle porte sur tout ce que l'écran reçoit d'un coup.
   it('aucun texte de critère ni de pratique ne transite par le questionnaire', () => {
     const tool = demo('belair')
+    const serialise = JSON.stringify(tool.diag)
 
-    EVALUABLE_AREAS.forEach((area, index) => {
-      tool.actions.openArea(area.id)
-      expect(tool.diag.area.id, `domaine ${index + 1}`).toBe(area.id)
-
-      const serialise = JSON.stringify(tool.diag)
+    EVALUABLE_AREAS.forEach(area => {
       const source = AREAS.find(candidate => candidate.id === area.id)
       const textes = (source.goals || []).flatMap(goal => [goal.goal, ...(goal.practices || [])])
 
@@ -415,96 +421,86 @@ describe('le questionnaire n’expose que des énoncés', () => {
     })
   })
 
-  // Ce que le rappel garde, en revanche : le rang auquel le modèle attend le
-  // domaine. Il explique pourquoi ce domaine pèse sur tel palier et pas sur tel
-  // autre, et il n'était pas exposé à l'écran jusqu'ici.
-  it('le rappel garde le rang attendu du domaine', () => {
+  // Ce que le rappel garde, en revanche : le profil à partir duquel le modèle
+  // attend le domaine. Il explique pourquoi ce domaine pèse sur tel palier et
+  // pas sur tel autre. Le libellé ne dit plus « attendu au rang 2 » — le rang
+  // d'entrée n'est pas le niveau à atteindre.
+  it('le rappel garde le profil d’entrée du domaine', () => {
     const tool = demo('belair')
-    EVALUABLE_AREAS.forEach(area => {
-      tool.actions.openArea(area.id)
-      expect(tool.diag.area.required, area.id).toBe(area.level)
+    EVALUABLE_AREAS.forEach((area, index) => {
+      const shown = tool.diag.areas[index]
+      expect(shown.id, `domaine ${index + 1}`).toBe(area.id)
+      expect(shown.requiredLabel, area.id).toBe(`* pour le profil ${area.level}`)
     })
-  })
-})
-
-describe('le verdict collant de l’en-tête', () => {
-  // Ligne 3.4 du backlog. Il ne suit que l'évaluation et les résultats : au
-  // cadrage il n'aurait qu'un profil vide à annoncer, et à l'ancrage la page
-  // porte déjà le profil visé et le profil atteint en regard.
-  it('ne paraît qu’aux phases d’évaluation et de résultats', () => {
-    const tool = demo('rochat')
-    const attendu = {
-      home: false, info: false, demo: false,
-      tool1: false, tool2: true, tool3: true, tool4: false, export: false
-    }
-    Object.keys(attendu).forEach(screen => {
-      tool.state.screen = screen
-      expect(Boolean(tool.header.verdict), screen).toBe(attendu[screen])
-    })
-  })
-
-  it('dit le palier tenu et le premier qui ne l’est pas', () => {
-    const tool = demo('rochat')
-    tool.state.screen = 'tool2'
-    expect(tool.header.verdict.acquiredLabel).toBe(tool.resti1.acquiredLabel)
-    const suivant = tool.resti1.ladder.find(step => step.next)
-    expect(tool.header.verdict.nextLabel).toBe(suivant.label)
-  })
-
-  // Au haut de l'échelle il n'y a plus de palier à annoncer, et en inventer un
-  // ferait croire que le modèle continue.
-  it('n’annonce aucun profil suivant au haut de l’échelle', () => {
-    const tool = useMaturityTool()
-    tool.state.screen = 'tool3'
-    EVALUABLE_AREAS.forEach(area => tool.actions.answerArea(area.id, MAX_RANK))
-    expect(tool.header.verdict.nextLabel).toBeNull()
-    expect(tool.resti1.ladder.some(step => step.next)).toBe(false)
-  })
-
-  it('sur une session vierge, annonce le premier palier du modèle comme suivant', () => {
-    const tool = useMaturityTool()
-    tool.state.screen = 'tool2'
-    expect(tool.header.verdict.acquiredLabel).toBe('Diagnostic en cours')
-    expect(tool.header.verdict.nextLabel).toBe(profileName(1))
-    expect(tool.header.verdict.progress).toBe(`0 / ${EVALUABLE_AREAS.length} domaines renseignés`)
   })
 })
 
 describe('la progression du questionnaire', () => {
-  // Ligne 3.3 du backlog. Deux nombres, et ils ne disent pas la même chose : où
-  // l'on en est du parcours, et combien de domaines portent une réponse. La
-  // position seule laissait croire à un avancement qui n'existait pas — on peut
-  // être au vingtième domaine sans en avoir renseigné trois.
-  it('dit la position et le nombre de domaines renseignés', () => {
+  // Ligne 3.3 du backlog. La position dans le parcours a disparu avec
+  // l'empilement — les 28 domaines sont sur la même page, il n'y a plus de
+  // vingtième domaine où être.
+  //
+  // Le compte de domaines renseignés a suivi : il vivait dans la bande de
+  // verdict de l'en-tête, retirée parce qu'elle redisait sous un troisième nom
+  // le profil que la restitution nomme, et parce que son dénominateur — les 28
+  // domaines du modèle, hors périmètre compris — n'était pas celui de la
+  // couverture affichée quelques centimètres plus bas. La couverture de la
+  // restitution est désormais le seul compte, et la barre des domaines dit à
+  // elle seule où l'on en est.
+  it('n’expose plus ni position, ni « suivant », ni verdict d’en-tête', () => {
     const tool = useMaturityTool()
-    const dernier = EVALUABLE_AREAS[EVALUABLE_AREAS.length - 1]
-    tool.actions.openArea(dernier.id)
-
-    expect(tool.diag.progress).toContain(`Domaine ${EVALUABLE_AREAS.length} / ${EVALUABLE_AREAS.length}`)
-    expect(tool.diag.progress).toContain(`0 / ${EVALUABLE_AREAS.length} domaines renseignés`)
-
-    tool.actions.answerArea(EVALUABLE_AREAS[0].id, 2)
-    expect(tool.diag.progress).toContain(`1 / ${EVALUABLE_AREAS.length} domaines renseignés`)
+    expect(tool.diag).not.toHaveProperty('progress')
+    expect(tool.diag).not.toHaveProperty('nextLabel')
+    expect(tool.actions).not.toHaveProperty('openArea')
+    expect(tool.state).not.toHaveProperty('diagIdx')
+    expect(tool.header).not.toHaveProperty('verdict')
   })
 
-  // Le hors périmètre est une réponse et non une abstention : il compte comme
-  // domaine renseigné. Ce nombre dit ce qui a été traité, pas ce qui a été
-  // mesuré — c'est la couverture de la restitution qui sépare les deux.
-  it('compte le hors périmètre comme une réponse', () => {
-    const tool = useMaturityTool()
-    tool.state.screen = 'tool2'
-    EVALUABLE_AREAS.forEach(area => tool.actions.answerArea(area.id, OUT_OF_SCOPE))
-    expect(tool.header.verdict.progress)
-      .toBe(`${EVALUABLE_AREAS.length} / ${EVALUABLE_AREAS.length} domaines renseignés`)
+  // Ce que l'en-tête garde, et rien de plus : la session, sa remise à zéro et
+  // les quatre phases. Les onglets ne portent plus la première étape de leur
+  // phase — elle redisait la consigne du questionnaire sur l'onglet 2.
+  it('l’en-tête ne porte que la session et les phases', () => {
+    const tool = demo('rochat')
+    tool.state.screen = 'tool'
+    expect(Object.keys(tool.header).sort())
+      .toEqual([
+        'hasProgress', 'phases', 'resetDialog', 'sessionLabel', 'showBrand', 'showPhases',
+        'showSession', 'showSubtitle'
+      ])
+    tool.header.phases.forEach(phase => {
+      expect(phase).not.toHaveProperty('desc')
+    })
   })
 
-  it('ne dépasse jamais le nombre de domaines du modèle', () => {
-    const sessions = [...DEMO_SESSIONS.map(scenario => demo(scenario.id)), useMaturityTool()]
-    sessions.forEach(tool => {
-      tool.state.screen = 'tool2'
-      const [compte] = tool.header.verdict.progress.split(' ')
-      expect(Number(compte)).toBeLessThanOrEqual(EVALUABLE_AREAS.length)
-      expect(Number(compte)).toBeGreaterThanOrEqual(0)
+  // L'identifiant de session ne paraît qu'une fois l'évaluation commencée : sur
+  // l'accueil il ne désigne rien. La session de démonstration fait exception,
+  // parce que ne pas la signaler ferait prendre une PME fictive pour la sienne.
+  it('l’en-tête ne montre la session que hors de l’accueil', () => {
+    const tool = useMaturityTool()
+    tool.state.screen = 'home'
+    expect(tool.header.showSession).toBe(false)
+    ;['info', 'demo', 'tool', 'tool4', 'export'].forEach(screen => {
+      tool.state.screen = screen
+      expect(tool.header.showSession, screen).toBe(true)
+    })
+    const demoTool = demo('rochat')
+    demoTool.state.screen = 'home'
+    expect(demoTool.header.showSession).toBe(true)
+  })
+
+  // L'accueil dit lui-même ce que l'outil mesure, plus bas et plus complètement,
+  // et porte le sigle en titre. L'en-tête se tait donc là, et seulement là.
+  it('l’en-tête ne porte sigle ni sous-titre sur l’accueil', () => {
+    const tool = useMaturityTool()
+    tool.state.screen = 'home'
+    expect(tool.header.showSubtitle).toBe(false)
+    // Le sigle lui-même se tait au même endroit : l'accueil le porte en titre,
+    // et le bouton n'y mènerait qu'à la page affichée.
+    expect(tool.header.showBrand).toBe(false)
+    ;['info', 'demo', 'tool', 'tool4', 'export'].forEach(screen => {
+      tool.state.screen = screen
+      expect(tool.header.showSubtitle, screen).toBe(true)
+      expect(tool.header.showBrand, screen).toBe(true)
     })
   })
 })
@@ -556,7 +552,7 @@ describe('les deux états que la restitution doit nommer', () => {
     tool.actions.selectReach(1)
     expect(tool.ancrage.passage).toBe(PASSAGES.beyond)
     expect(tool.ancrage.empty).toBe(true)
-    expect(tool.ancrage.emptyLabel).toBe('Le profil visé est en deçà du profil atteint')
+    expect(tool.ancrage.emptyLabel).toBe('Le profil visé est en deçà du profil diagnostiqué')
     expect(tool.exportPreview.emptyLabel).toContain('dépasse')
   })
 })
@@ -596,23 +592,22 @@ describe('aucune valeur affichée ne dépasse son total', () => {
 
   it('la moyenne et le plancher d’une dimension ne dépassent jamais le haut de l’échelle', () => {
     sessions().forEach(([name, tool]) => {
-      tool.resti1.blocks.forEach(block => {
-        block.dimensions.forEach(dimension => {
-          const read = value => (value === '—' ? null : Number(value.replace(',', '.')))
-          const average = read(dimension.average)
-          const floor = read(dimension.floor)
-          if (average !== null) {
-            expect(average, `${name} — ${dimension.name} (moyenne)`).toBeLessThanOrEqual(dimension.scale)
-            expect(average, `${name} — ${dimension.name} (moyenne)`).toBeGreaterThan(0)
-          }
-          if (floor !== null) {
-            expect(floor, `${name} — ${dimension.name} (plancher)`).toBeLessThanOrEqual(dimension.scale)
-          }
-          if (average !== null && floor !== null) {
-            // Le plancher est un minimum : il ne peut pas dépasser la moyenne.
-            expect(floor, `${name} — ${dimension.name}`).toBeLessThanOrEqual(average)
-          }
-        })
+      const scale = tool.resti1.radar.scale
+      tool.resti1.radar.dimensions.forEach(dimension => {
+        const read = value => (value === '—' ? null : Number(value.replace(',', '.')))
+        const average = read(dimension.averageLabel)
+        const floor = read(dimension.floorLabel)
+        if (average !== null) {
+          expect(average, `${name} — ${dimension.name} (moyenne)`).toBeLessThanOrEqual(scale)
+          expect(average, `${name} — ${dimension.name} (moyenne)`).toBeGreaterThan(0)
+        }
+        if (floor !== null) {
+          expect(floor, `${name} — ${dimension.name} (plancher)`).toBeLessThanOrEqual(scale)
+        }
+        if (average !== null && floor !== null) {
+          // Le plancher est un minimum : il ne peut pas dépasser la moyenne.
+          expect(floor, `${name} — ${dimension.name}`).toBeLessThanOrEqual(average)
+        }
       })
     })
   })
@@ -631,5 +626,5 @@ describe('aucune valeur affichée ne dépasse son total', () => {
 // plutôt que de le réécrire dans le test, faute de quoi le test cesserait de
 // vérifier le même 5 que l'écran.
 function dimensionScale(tool) {
-  return tool.resti1.blocks[0].dimensions[0].scale
+  return tool.resti1.radar.scale
 }

@@ -69,39 +69,6 @@
         <DimensionRadar :dimensions="vm.radar.dimensions" :scale="vm.radar.scale" />
       </div>
     </section>
-
-    <section class="section">
-      <h2 class="section-head">Par bloc et dimension</h2>
-      <div class="blocks">
-        <section
-          v-for="block in vm.blocks"
-          :key="block.id"
-          class="block"
-          :style="stripe(block.dimensionColors)"
-        >
-          <h3 class="block__name heading">{{ block.name }}</h3>
-          <div class="block__dims">
-            <div v-for="dimension in block.dimensions" :key="dimension.id" class="dim">
-              <p class="dim__name">{{ dimension.name }}</p>
-              <div class="dim__stats">
-                <p class="stat">
-                  <span class="stat__label">moyenne</span>
-                  <span class="stat__figure heading">
-                    <span class="stat__done">{{ dimension.average }}</span><span class="stat__total">/{{ dimension.scale }}</span>
-                  </span>
-                </p>
-                <p class="stat">
-                  <span class="stat__label">plancher</span>
-                  <span class="stat__figure heading">
-                    <span class="stat__done">{{ dimension.floor }}</span><span class="stat__total">/{{ dimension.scale }}</span>
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -184,15 +151,6 @@ defineProps({
 })
 
 const emit = defineEmits(['focus-gate'])
-
-// Bande supérieure du bloc : un segment par dimension, à parts égales sur la
-// largeur — même principe que le liseré de gauche du tableau de cadrage.
-function stripe(colors) {
-  const stops = colors
-    .map((color, index) => `${color} ${index / colors.length * 100}% ${(index + 1) / colors.length * 100}%`)
-    .join(',')
-  return { backgroundImage: `linear-gradient(to right, ${stops})` }
-}
 </script>
 
 <style scoped>
@@ -320,21 +278,6 @@ function stripe(colors) {
   background: var(--color-neutral-100);
 }
 
-.ladder__desc {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  text-wrap: pretty;
-}
-
-/* le positionnement suit la description AIMM comme une seconde voix : même
-   corps, couleur légèrement retirée, pour qu'on voie qu'il ne vient pas de la
-   même source sans avoir à le dire */
-.ladder__position {
-  margin-top: 12px;
-  color: var(--color-neutral-700);
-}
-
 /* La ligne, en toutes lettres. Elle se lit à côté de l'échelle qui la trace :
    le trait dit où elle passe, ce bloc dit pourquoi elle y passe. Encadrée à
    gauche comme la nature du passage à l'ancrage — même registre, celui d'un
@@ -408,103 +351,6 @@ function stripe(colors) {
   text-wrap: pretty;
 }
 
-.blocks {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border: 2px solid var(--color-text);
-}
-
-/* la bande de dimensions est peinte dans le bord supérieur transparent :
-   background-origin la fait déborder sous la bordure, background-size lui
-   donne exactement son épaisseur */
-.block {
-  padding: 16px 18px 18px;
-  border-top: 5px solid transparent;
-  border-right: 2px solid var(--color-text);
-  background-color: var(--color-neutral-100);
-  background-origin: border-box;
-  background-repeat: no-repeat;
-  background-size: 100% 5px;
-  background-position: left top;
-}
-
-.block:last-child {
-  border-right: 0;
-}
-
-.block__name {
-  margin: 0;
-  font-size: 15px;
-  letter-spacing: normal;
-}
-
-.block__dims {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.dim__name {
-  margin: 0;
-  font-size: 10.5px;
-  font-weight: 700;
-  line-height: 1.3;
-  text-wrap: pretty;
-}
-
-.dim__stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 18px;
-  margin-top: 4px;
-}
-
-.stat {
-  display: flex;
-  gap: 6px;
-  align-items: baseline;
-  margin: 0;
-}
-
-.stat__label {
-  font-size: 10px;
-  color: var(--color-neutral-700);
-}
-
-/* le rapport se lit en deux temps : le nombre atteint est le résultat et porte
-   la lecture, le total ne fait que lui donner son échelle. Moitié moins haut et
-   en gris, il dit « sur combien » sans disputer la place au chiffre qui compte.
-   Insécable : « 3 » et « /5 » ne se séparent jamais en fin de ligne. */
-.stat__figure {
-  margin: 0;
-  letter-spacing: normal;
-  white-space: nowrap;
-}
-
-.stat__done {
-  font-size: 18px;
-}
-
-.stat__total {
-  font-size: 11px;
-  color: var(--color-neutral-700);
-}
-
-@media (max-width: 1200px) {
-  .blocks {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .block:nth-child(2n) {
-    border-right: 0;
-  }
-
-  .block:nth-child(-n + 2) {
-    border-bottom: 2px solid var(--color-text);
-  }
-}
-
 @media (max-width: 900px) {
   .verdict__name {
     font-size: 30px;
@@ -521,8 +367,7 @@ function stripe(colors) {
   }
 
   .ladder,
-  .asides,
-  .blocks {
+  .asides {
     grid-template-columns: 1fr;
   }
 
@@ -531,12 +376,5 @@ function stripe(colors) {
     border-bottom: 2px solid var(--color-text);
   }
 
-  .block {
-    border-right: 0;
-  }
-
-  .block:not(:last-child) {
-    border-bottom: 2px solid var(--color-text);
-  }
 }
 </style>

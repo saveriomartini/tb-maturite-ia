@@ -3,6 +3,7 @@
     <div class="header__bar">
       <div class="header__brand">
         <button
+          v-if="vm.showBrand"
           type="button"
           class="brand-home"
           title="Retour à l'accueil"
@@ -11,20 +12,20 @@
         >
           M.A.IA
         </button>
-        <div class="header__subtitle heading">
+        <div v-if="vm.showSubtitle" class="header__subtitle heading">
           Maturité de l'adoption des technologies IA
         </div>
       </div>
 
       <div class="header__session meta">
-        <span>{{ vm.sessionLabel }}</span>
+        <span v-if="vm.showSession">{{ vm.sessionLabel }}</span>
         <button
           v-if="vm.hasProgress"
           type="button"
           class="header__reset"
           @click="emit('reset')"
         >
-          réinitialiser
+          reset
         </button>
       </div>
     </div>
@@ -40,43 +41,50 @@
         type="button"
         class="button-reset phase"
         :class="{ 'phase--active': phase.active }"
-        :disabled="!phase.screen"
+        :disabled="!phase.target"
         :aria-current="phase.active ? 'step' : undefined"
-        @click="emit('phase', phase.screen)"
+        @click="emit('phase', phase.target)"
       >
         <span class="phase__head">
           <span class="phase__number">{{ phase.n }}</span>
           <span class="phase__name heading">{{ phase.name }}</span>
         </span>
-        <span class="phase__desc">{{ phase.desc }}</span>
       </button>
     </nav>
-
-    <div v-if="vm.verdict" class="verdict">
-      <p class="verdict__cell">
-        <span class="verdict__label">Profil atteint</span>
-        <span class="verdict__value heading">{{ vm.verdict.acquiredLabel }}</span>
-      </p>
-      <p v-if="vm.verdict.nextLabel" class="verdict__cell verdict__cell--next">
-        <span class="verdict__label">Profil suivant</span>
-        <span class="verdict__value">{{ vm.verdict.nextLabel }}</span>
-      </p>
-      <p class="verdict__cell verdict__cell--progress">
-        <span class="verdict__value verdict__value--meta">{{ vm.verdict.progress }}</span>
-      </p>
-    </div>
   </header>
 </template>
 
 <script setup>
-// L'en-tête colle en haut de la fenêtre : marque, session, phases — et, pendant
-// l'évaluation et les résultats, le verdict en cours.
+// L'en-tête colle en haut de la fenêtre : marque, session, phases. Rien d'autre.
 //
-// Le verdict collant répond à une question qu'on se pose en descendant : où en
-// suis-je, et qu'est-ce qui vient après. Il ne remplace pas la restitution — il
-// n'en porte ni la description, ni l'échelle, ni ce qui sépare du palier suivant
-// — et il ne s'affiche pas dans les phases où il n'aurait rien à dire. Voir
-// docs/logs/BACKLOG.md, ligne 3.4.
+// — les quatre phases sur une ligne —
+// Elles sont des points d'arrivée et non plus des écrans à ouvrir : les trois
+// premières font défiler la page jusqu'à leur section, la quatrième change
+// d'écran. La barre ne sait pas laquelle fait quoi — chaque phase porte sa
+// cible, et c'est le composable qui la lit.
+//
+// La phase active n'est plus déduite de l'écran courant : sur la page qui empile
+// les trois premières, elle suit la position du défilement.
+//
+// — ce que l'en-tête ne porte plus, et où c'est passé —
+// La bande de verdict (« Profil atteint », « Profil suivant », le compte de
+// domaines renseignés) a été retirée. Elle redisait, en haut de page et sous un
+// troisième nom, ce que la restitution nomme « Profil diagnostiqué » à quelques
+// centimètres en dessous ; et son compte de domaines n'avait pas le même
+// dénominateur que la couverture affichée juste après, ce qui donnait deux
+// nombres contradictoires dans un même champ de vision.
+//
+// Ce qu'elle rendait vraiment — où en suis-je dans les vingt-huit domaines — est
+// désormais porté là où on le cherche : la barre des domaines de ScreenDiag
+// entoure celui qu'on est en train de lire, et la bande des profils tient le
+// remplissage de chaque palier pendant tout le défilement.
+//
+// Chaque onglet portait aussi la première étape de sa phase, reprise de JOURNEY.
+// Elle est tombée avec la bande : sur l'onglet « Évaluation », elle répétait la
+// consigne que StatementPicker pose déjà sur chacun des vingt-huit domaines, et
+// le même texte se lit en entier dans la carte du parcours, sur la page
+// d'information. Ces deux retraits rendent une trentaine de pixels à
+// `--header-height`, donc à tout ce qui se rejoint par le défilement.
 defineProps({
   vm: { type: Object, required: true },
 });
@@ -94,61 +102,9 @@ const emit = defineEmits(["home", "phase", "reset"]);
 }
 
 .header__bar,
-.header__phases,
-.verdict {
+.header__phases {
   max-width: 1440px;
   margin: 0 auto;
-}
-
-/* — le verdict en cours —
-   Une bande basse, sous les phases, qui ne dispute rien à la page : corps
-   réduit, filet de séparation, et le seul mot en gras est le nom du palier
-   tenu. Elle se lit d'un coup d'œil sans arrêter ce qu'on est en train de
-   faire — c'est tout ce qu'on demande à un en-tête collant. */
-.verdict {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 28px;
-  align-items: baseline;
-  padding: 7px var(--gutter) 8px;
-  border-top: 1px solid var(--color-divider);
-}
-
-.verdict__cell {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  margin: 0;
-  min-width: 0;
-}
-
-.verdict__label {
-  flex: none;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-neutral-700);
-}
-
-.verdict__value {
-  font-size: 12.5px;
-  letter-spacing: normal;
-}
-
-/* Le profil suivant est une indication de direction, pas un résultat : il se
-   tient un cran de gris sous le palier tenu, sans la graisse de titrage. */
-.verdict__cell--next .verdict__value {
-  color: var(--color-neutral-700);
-}
-
-.verdict__cell--progress {
-  margin-left: auto;
-}
-
-.verdict__value--meta {
-  font-size: 11px;
-  color: var(--color-neutral-700);
 }
 
 .header__bar {
@@ -205,9 +161,12 @@ const emit = defineEmits(["home", "phase", "reset"]);
   color: var(--color-text);
 }
 
+/* Les quatre phases sur une seule ligne, de Cadrage à Ancrage. La barre était
+   à trois colonnes pour quatre phases depuis le rétablissement de l'Ancrage, et
+   la quatrième passait à la ligne. */
 .header__phases {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding: 10px var(--gutter) 0;
 }
 
@@ -220,6 +179,15 @@ const emit = defineEmits(["home", "phase", "reset"]);
 
 .phase:disabled {
   opacity: 0.45;
+}
+
+/* Le dernier onglet ferme la barre : son filet doublerait le bord de la page. */
+.phase:last-child {
+  border-right: 0;
+}
+
+.phase:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-text) 5%, transparent);
 }
 
 .phase--active {
@@ -248,15 +216,6 @@ const emit = defineEmits(["home", "phase", "reset"]);
   font-size: 14px;
 }
 
-.phase__desc {
-  display: block;
-  max-width: 290px;
-  margin-top: 5px;
-  font-size: 10.5px;
-  line-height: 1.35;
-  color: var(--color-neutral-700);
-}
-
 @media (max-width: 1200px) {
   .phase {
     padding: 10px 12px 12px;
@@ -264,22 +223,11 @@ const emit = defineEmits(["home", "phase", "reset"]);
 }
 
 /* Sur tablette l'en-tête est collant : il doit rester court. Le numéro et le
-   nom de la phase suffisent à se repérer, la phrase d'explication a déjà été
-   lue à l'accueil. */
+   nom de la phase suffisent à se repérer. */
 @media (max-width: 900px) {
-  /* Empilée, la progression n'a plus de bord droit à tenir : elle reprend le
-     rang des deux autres cellules plutôt que de flotter seule. */
-  .verdict__cell--progress {
-    margin-left: 0;
-  }
-
-  /* le titre suffit à identifier l'outil : la ligne de description passe à la
-     trappe avant que l'en-tête collant ne mange l'écran */
+  /* le titre suffit à identifier l'outil : le développement de l'acronyme passe
+     à la trappe avant que l'en-tête collant ne mange l'écran */
   .header__subtitle {
-    display: none;
-  }
-
-  .phase__desc {
     display: none;
   }
 

@@ -1,11 +1,11 @@
 // Persistance locale de la session d'évaluation.
 //
-// L'état complet (écran courant, position dans le questionnaire, attributs de
-// contexte, portée déclarée, niveau retenu par domaine) est écrit dans
-// localStorage sous une clé versionnée. Toute donnée relue est validée avant
-// d'être réinjectée : un payload écrit par une version antérieure du modèle ne
-// doit jamais pouvoir corrompre l'état applicatif — les valeurs inconnues sont
-// écartées silencieusement, pas l'ensemble.
+// L'état complet (écran courant, attributs de contexte, portée déclarée, niveau
+// retenu par domaine) est écrit dans localStorage sous une clé versionnée. Toute
+// donnée relue est validée avant d'être réinjectée : un payload écrit par une
+// version antérieure du modèle ne doit jamais pouvoir corrompre l'état
+// applicatif — les valeurs inconnues sont écartées silencieusement, pas
+// l'ensemble.
 //
 // — pourquoi le schéma passe à 2, et pourquoi une v1 est jetée —
 //
@@ -35,6 +35,7 @@ import { watch } from 'vue'
 import { ALL_FIELDS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { DEMO_SESSIONS } from '../data/demo-sessions.js'
 import { EVALUABLE_AREAS } from '../domain/model.js'
+import { RETIRED_SCREENS } from '../domain/navigation.js'
 import { MAX_RANK, MIN_RANK, OUT_OF_SCOPE } from '../domain/scoring.js'
 
 const STORAGE_KEY = 'maia.session'
@@ -103,8 +104,18 @@ function validAnswers(v) {
 function sanitize(raw, screens) {
   if (!isPlainObject(raw)) return null
   const out = {}
-  if (screens.indexOf(raw.screen) >= 0) out.screen = raw.screen
-  if (Number.isInteger(raw.diagIdx) && raw.diagIdx >= 0) out.diagIdx = raw.diagIdx
+  // L'écran courant, avec le rattrapage des trois noms retirés par la fusion des
+  // phases : une session enregistrée avant elle porte `tool1`, `tool2` ou
+  // `tool3`, et les trois désignent la page qui les a remplacés. Sans ce
+  // rattrapage, l'écran tomberait comme inconnu et la session rouvrirait à
+  // l'accueil — la seule perte qu'une relecture aurait infligée.
+  const screen = RETIRED_SCREENS[raw.screen] || raw.screen
+  if (screens.indexOf(screen) >= 0) out.screen = screen
+  // `diagIdx` — la position dans le questionnaire — n'est plus ni écrit ni relu.
+  // Les 28 domaines sont sur la même page : il n'y a plus d'index à tenir. La
+  // clé tombe silencieusement comme toutes les inconnues, ce qui est exactement
+  // ce qu'il faut : une session venue d'avant la fusion la porte encore, et elle
+  // ne doit pas la faire rejeter.
   // Avertissement de saut déjà lu : il ne se repose pas après un rechargement.
   if (typeof raw.contextWarned === 'boolean') out.contextWarned = raw.contextWarned
   // Degré de transformation visé : il se déduit de la portée déclarée en phase
@@ -131,7 +142,6 @@ function sanitize(raw, screens) {
 function snapshot(state) {
   return {
     screen: state.screen,
-    diagIdx: state.diagIdx,
     transformation: state.transformation,
     contextWarned: state.contextWarned,
     session: state.session,

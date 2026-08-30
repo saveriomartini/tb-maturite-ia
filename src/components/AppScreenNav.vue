@@ -17,11 +17,25 @@
 </template>
 
 <script setup>
-// Pied de page de navigation, identique d'un écran à l'autre. Les écrans qui
-// proposent autre chose que « Suivant » remplissent le slot `actions`.
+// Pied de page de navigation, identique d'un écran à l'autre. Un écran qui a
+// plusieurs sorties, ou qui nomme la sienne autrement, remplit le slot
+// `actions` ; les trois qui le font aujourd'hui — information, démonstration,
+// ancrage — s'en servent pour proposer autre chose qu'une sortie unique.
 //
-// Un écran peut fermer sa sortie tant qu'il lui manque une réponse. La raison
-// se lit au survol, portée par l'enveloppe du bouton et non par le bouton
+// Le libellé par défaut « Suivant » ne s'affiche nulle part : le seul écran qui
+// se contente du bouton par défaut est la page de l'outil, et elle passe son
+// propre libellé. Il reste comme repli d'un écran à venir, pas comme un texte
+// de l'interface.
+//
+// — la sortie qu'un écran peut fermer, et qui ne l'est nulle part —
+// `nextDisabled` et `nextTitle` permettent à un écran de fermer sa sortie tant
+// qu'il lui manque une réponse, en disant au survol pourquoi. Le mécanisme est
+// entier et ne sert plus : aucun attribut de cadrage n'est exigé, et le
+// garde-fou qui remplaçait cette exigence est passé en modale. Il est conservé
+// plutôt que retiré parce que c'est une intention de conception et non un
+// oubli — mais rien, aujourd'hui, ne le déclenche.
+//
+// L'infobulle est portée par l'enveloppe du bouton et non par le bouton
 // lui-même : désactivé, il ne reçoit plus d'événement de souris, et son
 // infobulle ne s'afficherait pas partout.
 defineProps({
@@ -44,7 +58,8 @@ const emit = defineEmits(['back', 'next'])
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  /* le parent peut resserrer ou aérer le pied de page */
+  /* un parent peut resserrer ou aérer le pied de page en posant la variable ;
+     aucun ne le fait aujourd'hui, et 24px est donc la seule valeur en service */
   margin-top: var(--nav-margin-top, 24px);
 }
 
@@ -52,12 +67,15 @@ const emit = defineEmits(['back', 'next'])
   justify-content: space-between;
 }
 
+/* Aucun écran ne passe `align` aujourd'hui : cette variante attend un pied de
+   page sans retour, que le parcours n'a pas encore. */
 .nav--end {
   justify-content: flex-end;
 }
 
-/* L'enveloppe ne se voit pas : elle ne sert qu'à porter l'infobulle du bouton
-   fermé, et se comporte comme lui dans la ligne. */
+/* L'enveloppe ne se voit pas : elle est là pour porter l'infobulle du bouton
+   fermé — cas qu'aucun écran ne produit aujourd'hui — et se comporte comme lui
+   dans la ligne. */
 .nav__next-wrap {
   display: inline-flex;
 }

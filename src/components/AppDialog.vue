@@ -113,8 +113,9 @@ watch(
   background: color-mix(in srgb, var(--color-text) 8%, transparent);
 }
 
-/* La flèche dit où mène la sortie — plus bas dans la page, ou vers la suite. Une
-   sortie qui ne mène nulle part, comme une annulation, n'en porte pas.
+/* La flèche dit où mène la sortie — ailleurs dans la page, en haut comme en bas,
+   ou vers la suite du parcours. Une sortie qui ne mène nulle part, comme une
+   annulation, n'en porte pas.
    Corps et fonte sont fixés ici plutôt qu'hérités du bouton : Archivo ne dessine
    pas ces signes, et la pile de repli peut les prendre à deux fontes différentes
    — les boutons se retrouvent alors avec des flèches d'œil inégal. La boîte d'un

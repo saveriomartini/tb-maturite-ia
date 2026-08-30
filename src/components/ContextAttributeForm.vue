@@ -5,8 +5,13 @@
       <span class="form__hint">fonctionnel à l'évaluation</span>
     </h2>
 
-    <div v-for="group in groups" :key="group.id" class="group">
-      <h3 class="group__title heading">{{ group.label }}</h3>
+    <div
+      v-for="group in groups"
+      :key="group.id"
+      class="group"
+      role="group"
+      :aria-label="group.label"
+    >
       <div class="group__fields">
         <ContextField
           v-for="field in group.fields"
@@ -29,6 +34,11 @@
 // l'évaluation, elles la restreignent — quand celui de l'autre panneau dit que
 // les siennes ne servent qu'aux statistiques. Deux panneaux qui se ressemblent
 // n'ont que leur en-tête pour se distinguer.
+// Les trois familles ne sont plus titrées à l'écran. « Organisation »,
+// « Technologie », « IA » nommaient des groupes que le filet sépare déjà, et
+// dont l'appartenance ne change rien à la réponse : on répond à un champ, pas à
+// une famille. Le nom reste le libellé accessible du groupe — un lecteur d'écran
+// annonce ainsi ce que l'œil lit dans la mise en page.
 import ContextField from './ContextField.vue'
 
 defineProps({
@@ -67,18 +77,11 @@ const emit = defineEmits(['select-option'])
   border-bottom: 1px solid var(--color-divider);
 }
 
-.group__title {
-  margin: 0;
-  padding: 10px 20px 0;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-}
-
 .group__fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px 28px;
-  padding: 12px 20px 20px;
+  padding: 18px 20px 20px;
 }
 
 /* Le dernier groupe ferme le panneau : son filet doublerait la bordure. */
@@ -89,11 +92,7 @@ const emit = defineEmits(['select-option'])
 @media (max-width: 900px) {
   .group__fields {
     grid-template-columns: 1fr;
-    padding: 12px 16px 18px;
-  }
-
-  .group__title {
-    padding-inline: 16px;
+    padding: 16px 16px 18px;
   }
 }
 </style>
