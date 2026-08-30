@@ -916,6 +916,14 @@ export function useMaturityTool() {
     // ne calcule rien, pas même une jointure.
     outOfScopeLabel: outOfScopeAreas.value.map(area => area.name).join(' · '),
     pendingLabel: pending.value.map(area => area.name).join(' · '),
+    // Les deux nombres d'une dimension — la moyenne situe l'ensemble de ses
+    // domaines renseignés, le plancher nomme le plus bas — ne vivent plus qu'ici,
+    // dans le radar, qui les porte en clair sous la figure. Une seconde grille
+    // les réaffichait bloc par bloc quelques centimètres plus bas : mêmes neuf
+    // dimensions, mêmes deux nombres, et un test dont l'unique objet était de
+    // garantir que les deux sections ne se contredisent pas. Aucun des deux
+    // n'est agrégé en un score global : le modèle n'en restitue aucun.
+    //
     // L'échelle des paliers. Elle commence au premier profil du modèle et n'a
     // plus de marche de rang 0 : il n'y a rien sous « Exploration localisée »,
     // et un palier hors modèle placé là redirait ce que la couverture dit déjà.
@@ -1035,32 +1043,7 @@ export function useMaturityTool() {
           }
         })
       )
-    },
-    // Le bloc ne porte pas de niveau : il regroupe des dimensions pour la
-    // lecture, l'échelle se joue sur le périmètre entier. Chaque dimension se
-    // lit sur deux nombres qui ne disent pas la même chose — la moyenne situe
-    // l'ensemble, le plancher dit ce qui la retiendrait si elle était un palier.
-    // Aucun des deux n'est agrégé en un score global : le modèle n'en restitue
-    // aucun.
-    blocks: BLOCKS.map(block => ({
-      id: block.id,
-      name: block.name,
-      dimensionColors: block.dimensions.map(dimension => dimension.color),
-      dimensions: block.dimensions.map(dimension => {
-        const average = dimAverage(EVALUABLE_AREAS, state.answers, dimension.id)
-        const floor = dimFloor(EVALUABLE_AREAS, state.answers, dimension.id)
-        return {
-          id: dimension.id,
-          name: dimension.name,
-          color: dimension.color,
-          // Rapporté au haut de l'échelle, jamais au rang visé : une moyenne de
-          // niveaux ne peut pas dépasser 5, elle pouvait dépasser la cible.
-          average: rankLabel(average),
-          scale: MAX_RANK,
-          floor: floor === null ? '—' : String(floor)
-        }
-      })
-    }))
+    }
   }))
 
   // Le détail domaine par domaine, dans l'ordre du modèle. Trois états, et

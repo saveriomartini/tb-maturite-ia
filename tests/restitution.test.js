@@ -326,15 +326,18 @@ describe('la lecture par dimension du radar', () => {
     })
   })
 
-  // Le radar et la grille par bloc lisent la même mesure : si les deux
-  // divergeaient, la page se contredirait d'une section à l'autre.
-  it('dit la même mesure que la grille par bloc', () => {
+  // La grille par bloc affichait les mêmes neuf dimensions et les mêmes deux
+  // nombres que le radar, quelques centimètres plus bas ; le test qui vivait ici
+  // n'avait d'autre objet que de garantir que les deux sections ne se
+  // contredisent pas. La grille est retirée, et avec elle la contradiction
+  // possible. Reste à vérifier que le radar porte bien les deux nombres en clair
+  // — c'est lui, désormais, qui les dit seul.
+  it('porte en clair les deux nombres de chaque dimension', () => {
     const tool = demo('rochat')
-    const grille = tool.resti1.blocks.flatMap(block => block.dimensions)
-    tool.resti1.radar.dimensions.forEach((dimension, index) => {
-      expect(dimension.averageLabel, dimension.id).toBe(grille[index].average)
-      expect(dimension.floorLabel, dimension.id).toBe(grille[index].floor)
-      expect(tool.resti1.radar.scale).toBe(grille[index].scale)
+    expect(tool.resti1).not.toHaveProperty('blocks')
+    tool.resti1.radar.dimensions.forEach(dimension => {
+      expect(dimension.averageLabel, dimension.id).toBeTypeOf('string')
+      expect(dimension.floorLabel, dimension.id).toBeTypeOf('string')
     })
   })
 })
@@ -564,23 +567,22 @@ describe('aucune valeur affichée ne dépasse son total', () => {
 
   it('la moyenne et le plancher d’une dimension ne dépassent jamais le haut de l’échelle', () => {
     sessions().forEach(([name, tool]) => {
-      tool.resti1.blocks.forEach(block => {
-        block.dimensions.forEach(dimension => {
-          const read = value => (value === '—' ? null : Number(value.replace(',', '.')))
-          const average = read(dimension.average)
-          const floor = read(dimension.floor)
-          if (average !== null) {
-            expect(average, `${name} — ${dimension.name} (moyenne)`).toBeLessThanOrEqual(dimension.scale)
-            expect(average, `${name} — ${dimension.name} (moyenne)`).toBeGreaterThan(0)
-          }
-          if (floor !== null) {
-            expect(floor, `${name} — ${dimension.name} (plancher)`).toBeLessThanOrEqual(dimension.scale)
-          }
-          if (average !== null && floor !== null) {
-            // Le plancher est un minimum : il ne peut pas dépasser la moyenne.
-            expect(floor, `${name} — ${dimension.name}`).toBeLessThanOrEqual(average)
-          }
-        })
+      const scale = tool.resti1.radar.scale
+      tool.resti1.radar.dimensions.forEach(dimension => {
+        const read = value => (value === '—' ? null : Number(value.replace(',', '.')))
+        const average = read(dimension.averageLabel)
+        const floor = read(dimension.floorLabel)
+        if (average !== null) {
+          expect(average, `${name} — ${dimension.name} (moyenne)`).toBeLessThanOrEqual(scale)
+          expect(average, `${name} — ${dimension.name} (moyenne)`).toBeGreaterThan(0)
+        }
+        if (floor !== null) {
+          expect(floor, `${name} — ${dimension.name} (plancher)`).toBeLessThanOrEqual(scale)
+        }
+        if (average !== null && floor !== null) {
+          // Le plancher est un minimum : il ne peut pas dépasser la moyenne.
+          expect(floor, `${name} — ${dimension.name}`).toBeLessThanOrEqual(average)
+        }
       })
     })
   })
@@ -599,5 +601,5 @@ describe('aucune valeur affichée ne dépasse son total', () => {
 // plutôt que de le réécrire dans le test, faute de quoi le test cesserait de
 // vérifier le même 5 que l'écran.
 function dimensionScale(tool) {
-  return tool.resti1.blocks[0].dimensions[0].scale
+  return tool.resti1.radar.scale
 }
