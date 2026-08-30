@@ -125,10 +125,9 @@ watch(() => props.vm.anchor, consumeAnchor, { flush: 'post' })
 // le JavaScript qu'au franchissement d'un seuil.
 //
 // La bande d'observation est en pourcentages de la fenêtre et non en pixels :
-// elle n'a ainsi rien à savoir de la hauteur de l'en-tête — laquelle change
-// selon que le verdict s'y affiche ou non, et qu'il faudrait sinon mesurer. La
-// bande tient entre le cinquième et le quart du haut de la fenêtre : la section
-// qui la croise est celle qu'on est en train de lire.
+// elle n'a ainsi rien à savoir de la hauteur de l'en-tête, qu'il faudrait sinon
+// mesurer. La bande tient entre le cinquième et le quart du haut de la fenêtre :
+// la section qui la croise est celle qu'on est en train de lire.
 const SECTION_BAND = { rootMargin: '-20% 0px -75% 0px', threshold: 0 }
 
 const sectionRefs = [

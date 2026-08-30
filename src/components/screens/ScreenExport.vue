@@ -15,7 +15,7 @@
           <div class="page__levels">
             <p class="page__level">{{ vm.unit.label }} : <span class="page__level-value">{{ vm.unit.value }}</span></p>
             <p class="page__level">Profil visé : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
-            <p class="page__level">Profil actuel : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
+            <p class="page__level">Profil diagnostiqué : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
             <p class="page__coverage">{{ vm.coverage }}</p>
             <p v-if="vm.unit.note" class="page__coverage">{{ vm.unit.note }}</p>
           </div>
@@ -53,8 +53,9 @@
 // séparent du profil visé et, pour chacun, l'énoncé à atteindre. C'est la même
 // matière que l'écran d'ancrage, mise à plat pour être relue hors de l'outil.
 //
-// L'en-tête de page nomme d'abord l'organisation évaluée, puis les deux profils,
-// puis la couverture : du plus englobant au plus fin, chaque ligne bornant celles
+// L'en-tête de page nomme d'abord l'organisation évaluée, puis les deux profils
+// — visé et diagnostiqué, sous les mêmes noms qu'à l'écran —, puis la
+// couverture : du plus englobant au plus fin, chaque ligne bornant celles
 // qui la suivent. Elle vient en premier parce que c'est la seule qui puisse
 // invalider la lecture des autres — un document relu sans personne pour préciser
 // le périmètre se prend sinon pour un bilan de l'entreprise entière. Elle est

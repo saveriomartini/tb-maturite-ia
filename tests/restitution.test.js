@@ -430,113 +430,37 @@ describe('le questionnaire n’expose que des énoncés', () => {
   })
 })
 
-describe('le verdict collant de l’en-tête', () => {
-  // Ligne 3.4 du backlog. Il ne suit que l'évaluation et les résultats : au
-  // cadrage il n'aurait qu'un profil vide à annoncer, et à l'ancrage la page
-  // porte déjà le profil visé et le profil atteint en regard.
-  it('ne paraît sur aucun écran hors de l’évaluation et des résultats', () => {
-    const tool = demo('rochat')
-    const attendu = {
-      home: false, info: false, demo: false,
-      tool4: false, export: false
-    }
-    Object.keys(attendu).forEach(screen => {
-      tool.state.screen = screen
-      expect(Boolean(tool.header.verdict), screen).toBe(attendu[screen])
-    })
-  })
-
-  // Les trois premières phases étant empilées sur une même page, ce n'est plus
-  // l'écran qui décide mais la phase courante — celle que le défilement
-  // désigne. Au cadrage, le verdict n'aurait qu'un profil vide à annoncer ; il
-  // paraît dès l'évaluation et reste jusqu'aux résultats.
-  it('sur la page empilée, suit la phase courante et non l’écran', () => {
-    const tool = demo('rochat')
-    tool.state.screen = 'tool'
-    const attendu = { 1: false, 2: true, 3: true }
-    Object.keys(attendu).forEach(phase => {
-      tool.actions.setPhase(Number(phase))
-      expect(Boolean(tool.header.verdict), `phase ${phase}`).toBe(attendu[phase])
-    })
-  })
-
-  it('dit le palier tenu et le premier qui ne l’est pas', () => {
-    const tool = demo('rochat')
-    tool.state.screen = 'tool'
-    tool.actions.setPhase(2)
-    expect(tool.header.verdict.acquiredLabel).toBe(tool.resti1.acquiredLabel)
-    const suivant = tool.resti1.ladder.find(step => step.next)
-    expect(tool.header.verdict.nextLabel).toBe(suivant.label)
-  })
-
-  // Au haut de l'échelle il n'y a plus de palier à annoncer, et en inventer un
-  // ferait croire que le modèle continue.
-  it('n’annonce aucun profil suivant au haut de l’échelle', () => {
-    const tool = useMaturityTool()
-    tool.state.screen = 'tool'
-    tool.actions.setPhase(3)
-    EVALUABLE_AREAS.forEach(area => tool.actions.answerArea(area.id, MAX_RANK))
-    expect(tool.header.verdict.nextLabel).toBeNull()
-    expect(tool.resti1.ladder.some(step => step.next)).toBe(false)
-  })
-
-  it('sur une session vierge, annonce le premier palier du modèle comme suivant', () => {
-    const tool = useMaturityTool()
-    tool.state.screen = 'tool'
-    tool.actions.setPhase(2)
-    expect(tool.header.verdict.acquiredLabel).toBe('Diagnostic en cours')
-    expect(tool.header.verdict.nextLabel).toBe(profileName(1))
-    expect(tool.header.verdict.progress).toBe(`0 / ${EVALUABLE_AREAS.length} domaines renseignés`)
-  })
-})
-
 describe('la progression du questionnaire', () => {
   // Ligne 3.3 du backlog. La position dans le parcours a disparu avec
   // l'empilement — les 28 domaines sont sur la même page, il n'y a plus de
-  // vingtième domaine où être. Reste le nombre de domaines renseignés, que le
-  // verdict collé en haut de page porte seul désormais.
-  it('dit le nombre de domaines renseignés, et il suit les réponses', () => {
-    const tool = useMaturityTool()
-    tool.state.screen = 'tool'
-    tool.actions.setPhase(2)
-
-    expect(tool.header.verdict.progress).toBe(`0 / ${EVALUABLE_AREAS.length} domaines renseignés`)
-
-    tool.actions.answerArea(EVALUABLE_AREAS[0].id, 2)
-    expect(tool.header.verdict.progress).toBe(`1 / ${EVALUABLE_AREAS.length} domaines renseignés`)
-  })
-
-  // Ce que la fusion a retiré, et qui ne doit pas revenir sous un autre nom : le
-  // questionnaire ne rend plus de position, plus de « suivant », et le
-  // composable n'a plus d'action pour déplacer un index.
-  it('n’expose plus ni position ni « suivant »', () => {
+  // vingtième domaine où être.
+  //
+  // Le compte de domaines renseignés a suivi : il vivait dans la bande de
+  // verdict de l'en-tête, retirée parce qu'elle redisait sous un troisième nom
+  // le profil que la restitution nomme, et parce que son dénominateur — les 28
+  // domaines du modèle, hors périmètre compris — n'était pas celui de la
+  // couverture affichée quelques centimètres plus bas. La couverture de la
+  // restitution est désormais le seul compte, et la barre des domaines dit à
+  // elle seule où l'on en est.
+  it('n’expose plus ni position, ni « suivant », ni verdict d’en-tête', () => {
     const tool = useMaturityTool()
     expect(tool.diag).not.toHaveProperty('progress')
     expect(tool.diag).not.toHaveProperty('nextLabel')
     expect(tool.actions).not.toHaveProperty('openArea')
     expect(tool.state).not.toHaveProperty('diagIdx')
+    expect(tool.header).not.toHaveProperty('verdict')
   })
 
-  // Le hors périmètre est une réponse et non une abstention : il compte comme
-  // domaine renseigné. Ce nombre dit ce qui a été traité, pas ce qui a été
-  // mesuré — c'est la couverture de la restitution qui sépare les deux.
-  it('compte le hors périmètre comme une réponse', () => {
-    const tool = useMaturityTool()
+  // Ce que l'en-tête garde, et rien de plus : la session, sa remise à zéro et
+  // les quatre phases. Les onglets ne portent plus la première étape de leur
+  // phase — elle redisait la consigne du questionnaire sur l'onglet 2.
+  it('l’en-tête ne porte que la session et les phases', () => {
+    const tool = demo('rochat')
     tool.state.screen = 'tool'
-    tool.actions.setPhase(2)
-    EVALUABLE_AREAS.forEach(area => tool.actions.answerArea(area.id, OUT_OF_SCOPE))
-    expect(tool.header.verdict.progress)
-      .toBe(`${EVALUABLE_AREAS.length} / ${EVALUABLE_AREAS.length} domaines renseignés`)
-  })
-
-  it('ne dépasse jamais le nombre de domaines du modèle', () => {
-    const sessions = [...DEMO_SESSIONS.map(scenario => demo(scenario.id)), useMaturityTool()]
-    sessions.forEach(tool => {
-      tool.state.screen = 'tool'
-      tool.actions.setPhase(2)
-      const [compte] = tool.header.verdict.progress.split(' ')
-      expect(Number(compte)).toBeLessThanOrEqual(EVALUABLE_AREAS.length)
-      expect(Number(compte)).toBeGreaterThanOrEqual(0)
+    expect(Object.keys(tool.header).sort())
+      .toEqual(['hasProgress', 'phases', 'resetDialog', 'sessionLabel', 'showPhases'])
+    tool.header.phases.forEach(phase => {
+      expect(phase).not.toHaveProperty('desc')
     })
   })
 })
@@ -588,7 +512,7 @@ describe('les deux états que la restitution doit nommer', () => {
     tool.actions.selectReach(1)
     expect(tool.ancrage.passage).toBe(PASSAGES.beyond)
     expect(tool.ancrage.empty).toBe(true)
-    expect(tool.ancrage.emptyLabel).toBe('Le profil visé est en deçà du profil atteint')
+    expect(tool.ancrage.emptyLabel).toBe('Le profil visé est en deçà du profil diagnostiqué')
     expect(tool.exportPreview.emptyLabel).toContain('dépasse')
   })
 })

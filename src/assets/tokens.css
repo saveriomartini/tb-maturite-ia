@@ -46,11 +46,16 @@
      valeur est déclarée ici plutôt que mesurée en JavaScript : la décision du
      12.08.2026 écarte l'observation d'un gabarit en JS, et une hauteur d'en-tête
      en est un.
-     Elle est calibrée sur l'état le plus haut de l'en-tête, celui qui porte le
-     verdict en cours — la description des phases y est bornée à deux lignes, ce
-     qui rend cette hauteur stable. Atterrir un peu bas ne coûte qu'un blanc ;
-     atterrir sous la barre cacherait le titre qu'on vient chercher. */
-  --header-height: 184px;
+     La valeur est exacte, et elle peut l'être depuis le retrait de la bande de
+     verdict et de la légende sous chaque onglet : ce qui faisait varier la
+     hauteur de l'en-tête est parti avec eux, et il ne reste que des marges et
+     des interlignes fixes. L'en-tête mesure donc 110px, 106px et 98px selon le
+     point de rupture, dans les quatre phases indifféremment.
+     Elle l'est aussi parce qu'elle doit l'être : le jeton ne sert pas qu'au
+     `scroll-margin-top`, où quelques pixels de trop ne coûtent qu'un blanc — la
+     barre des domaines s'y colle, et toute marge y ouvre entre les deux barres
+     une fente par laquelle le texte défile. */
+  --header-height: 110px;
 
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -70,14 +75,19 @@
    entièrement en CSS : aucun composant n'observe la largeur de la fenêtre en
    JavaScript. */
 @media (max-width: 1200px) {
-  :root { --gutter: 24px; }
+  :root {
+    --gutter: 24px;
+    /* les onglets de phase resserrent leur rembourrage : 4px de moins */
+    --header-height: 106px;
+  }
 }
 
 @media (max-width: 900px) {
   :root {
     --gutter: 16px;
-    /* l'en-tête perd la description de ses phases et le sous-titre de la marque */
-    --header-height: 156px;
+    /* l'en-tête perd le développement de l'acronyme et resserre encore ses
+       onglets ; mesuré identique jusqu'aux fenêtres les plus étroites */
+    --header-height: 98px;
   }
 }
 

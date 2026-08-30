@@ -232,15 +232,11 @@ export function useMaturityTool() {
   const targetDeclared = computed(() => state.transformation != null)
   const targetLabel = computed(() => profileName(target.value))
 
-  // Combien de domaines portent une réponse. Le hors périmètre en est une —
-  // c'est une déclaration, pas une abstention —, il compte donc ici : ce nombre
-  // dit ce qui a été traité, pas ce qui a été mesuré. La couverture de la
-  // restitution, elle, sépare les deux, parce qu'à ce moment-là la distinction
-  // change le sens du résultat.
-  const answered = computed(() =>
-    EVALUABLE_AREAS.filter(area => area.id in state.answers).length
-  )
-
+  // Il n'y a plus qu'un compte de domaines dans l'outil, et c'est la couverture
+  // de la restitution. Un second vivait ici, pour la bande de verdict de
+  // l'en-tête : il comptait les domaines *traités*, hors périmètre compris,
+  // quand la couverture compte ce qui a été *mesuré*. Les deux étaient justes et
+  // se lisaient ensemble à l'écran, où ils se contredisaient sans le dire.
   const scoped = computed(() => inScopeAreas(EVALUABLE_AREAS, state.answers))
   const outOfScopeAreas = computed(() => EVALUABLE_AREAS.filter(area => isOutOfScope(area.id, state.answers)))
   const pending = computed(() => toAssess(EVALUABLE_AREAS, state.answers))
@@ -513,9 +509,14 @@ export function useMaturityTool() {
 
   // — view-models par écran —
 
-  // Le profil visé ne figure pas dans l'en-tête : il n'est nommé qu'à l'ancrage,
-  // une fois la portée déclarée. Les phases ne s'affichent que dans la branche
-  // outil — ailleurs elles ne désignent aucune progression.
+  // L'en-tête ne porte que la marque, la session et les phases. Le profil n'y
+  // figure sous aucune forme : le profil visé n'est nommé qu'à l'ancrage, une
+  // fois la portée déclarée, et le profil diagnostiqué appartient à la
+  // restitution, qui le nomme au plus gros corps du parcours. La bande de
+  // verdict qui le redisait ici en a été retirée — elle donnait un second nom au
+  // même palier, à quelques centimètres de celui qui le définit. Les phases,
+  // elles, ne s'affichent que dans la branche outil : ailleurs elles ne
+  // désignent aucune progression.
   const header = computed(() => ({
     // Une session de démonstration ne se distingue d'une vraie par rien de ce
     // qui s'affiche : mêmes écrans, mêmes calculs. L'en-tête est le seul endroit
@@ -527,31 +528,14 @@ export function useMaturityTool() {
     hasProgress: hasProgress.value,
     resetDialog: RESET_DIALOG,
     showPhases: isToolScreen(state.screen),
-    // — le verdict collant —
-    // Il ne suit que les phases d'évaluation et de résultats. Au cadrage, rien
-    // n'a été répondu et il n'y aurait qu'un profil vide à annoncer ; à
-    // l'ancrage, la page porte déjà le profil visé et le profil atteint en
-    // regard, et un troisième rappel en tête ferait trois verdicts pour un.
-    //
-    // Il dit trois choses, et pas une de plus : le palier tenu, le premier qui
-    // ne l'est pas, et combien de domaines portent une réponse. C'est ce qu'on
-    // veut savoir sans remonter, pendant qu'on répond ou qu'on descend une page
-    // de résultats.
-    //
-    // Le profil suivant n'existe pas au haut de l'échelle : à ce point, il n'y a
-    // plus de palier à annoncer, et en inventer un serait faire croire que le
-    // modèle continue.
-    verdict: [2, 3].includes(currentPhase.value)
-      ? {
-        acquiredLabel: acquiredProfile.value.label,
-        nextLabel: acquired.value < MAX_RANK ? profileName(acquired.value + 1) : null,
-        progress: `${answered.value} / ${EVALUABLE_AREAS.length} domaines renseignés`
-      }
-      : null,
+    // Les onglets ne portent plus que leur rang et leur nom. La première étape
+    // de la phase y figurait, reprise de JOURNEY : elle redisait sur l'onglet
+    // « Évaluation » la consigne que le questionnaire pose sur chacun de ses
+    // vingt-huit domaines, et le même texte se lit en entier dans la carte du
+    // parcours, sur la page d'information.
     phases: JOURNEY.map((phase, index) => ({
       n: phase.n,
       name: phase.name,
-      desc: phase.steps[0],
       active: currentPhase.value === index + 1,
       target: PHASE_TARGETS[index]
     }))
@@ -1128,7 +1112,7 @@ export function useMaturityTool() {
     // tenue, quand tout ce qui la retient est resté sans réponse.
     empty: targetReached.value,
     emptyLabel: acquired.value > target.value
-      ? 'Le profil visé est en deçà du profil atteint'
+      ? 'Le profil visé est en deçà du profil diagnostiqué'
       : 'Profil visé atteint',
     // Ce cas-là ne se laisse pas deviner : la cible n'est pas tenue, et pourtant
     // il n'y a rien à montrer. Le dire évite qu'on lise l'absence de liste comme
@@ -1192,7 +1176,7 @@ export function useMaturityTool() {
       // Le même partage qu'à l'écran : la cible dépassée, la cible tenue, et le
       // cas où rien n'est listé parce que rien n'a été mesuré.
       emptyLabel: acquired.value > target.value
-        ? 'Aucun domaine ne sépare du profil visé : le profil atteint le dépasse.'
+        ? 'Aucun domaine ne sépare du profil visé : le profil diagnostiqué le dépasse.'
         : targetReached.value
           ? 'Aucun domaine ne sépare du profil visé — tous les domaines qu’il met en jeu l’atteignent.'
           : 'Aucun domaine renseigné ne retient le profil visé : ce qui en sépare tient aux ' +

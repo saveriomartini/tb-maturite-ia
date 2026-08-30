@@ -16,11 +16,13 @@
             class="button-reset strip__area"
             :class="{
               'is-answered': area.answered,
-              'is-out-of-scope': area.outOfScope
+              'is-out-of-scope': area.outOfScope,
+              'is-current': area.anchor === current
             }"
             :style="area.color && area.answered ? { background: area.color } : null"
             :title="`${area.name} — ${area.state}`"
             :aria-label="`Domaine ${area.number} — ${area.name}, ${area.state}`"
+            :aria-current="area.anchor === current ? 'location' : undefined"
             @click="scrollToAnchor(area.anchor)"
           >
             <span class="strip__number">{{ area.number }}</span>
@@ -30,7 +32,13 @@
       </div>
     </nav>
 
-    <article v-for="area in vm.areas" :id="area.anchor" :key="area.id" class="domain">
+    <article
+      v-for="area in vm.areas"
+      :id="area.anchor"
+      :key="area.id"
+      ref="domainRefs"
+      class="domain"
+    >
       <header class="head">
         <div class="head__band" :style="area.color ? { background: area.color } : null" />
         <p class="head__path">
@@ -70,11 +78,22 @@
 // modèle, sur la page qui défile.
 //
 // Il n'y a plus un domaine par écran. La barre ne déplace donc plus d'index :
-// elle fait défiler jusqu'à l'ancre du domaine, et elle a perdu la marque du
-// domaine actif — sur une page qui les porte tous, il n'y en a pas un qui le
-// soit. Elle garde tout le reste, qui est ce qu'elle sait dire de chacun : le
-// rang retenu, le point du non-renseigné, la croix du hors périmètre, et la
-// couleur de dimension qui ne s'allume qu'une fois répondu.
+// elle fait défiler jusqu'à l'ancre du domaine. Elle dit de chacun le rang
+// retenu, le point du non-renseigné, la croix du hors périmètre, et la couleur
+// de dimension qui ne s'allume qu'une fois répondu.
+//
+// — le domaine qu'on est en train de lire —
+// La barre a longtemps été muette sur ce point, au motif que sur une page qui
+// porte les vingt-huit domaines il n'y en a pas un qui soit « actif ». C'est
+// vrai d'un index, et faux d'une position de lecture : il y a bien, à chaque
+// instant, un domaine qu'on regarde. La bande de verdict de l'en-tête tenait
+// cette question — où en suis-je — au prix d'un compteur qui redisait mal ce que
+// la restitution dit bien ; en la retirant, on rend la question à l'endroit où
+// on va naturellement la poser, c'est-à-dire à la barre des domaines.
+//
+// Le repère est un encadré fort, sans changement de gabarit : le cadre est posé
+// en ombre intérieure et non en bordure épaissie, faute de quoi la case
+// grandirait de deux pixels et toute la ligne se décalerait au défilement.
 //
 // C'est le second registre de navigation de la page — les phases sont le
 // premier —, et elle ne le serait pas si elle défilait hors de vue au premier
@@ -82,8 +101,11 @@
 // section : au-dessus et en dessous, elle ne désigne rien.
 //
 // La ligne de progression a suivi. Elle disait deux choses, une position — qui
-// n'existe plus — et un nombre de domaines renseignés, que le verdict collé en
-// haut de page dit déjà, mieux placé pour ça.
+// n'existe plus — et un nombre de domaines renseignés, qui a vécu un temps dans
+// la bande de verdict de l'en-tête avant d'en être retiré : son dénominateur
+// n'était pas celui de la couverture affichée en restitution, et deux comptes
+// pour une même chose valent moins qu'un seul. La couverture le porte
+// désormais, à l'endroit où elle borne la lecture des résultats.
 //
 // L'ordre de lecture d'un domaine suit l'ordre de la décision : de quoi il
 // s'agit (l'en-tête), la réponse (le sélecteur), et seulement ensuite le rappel.
@@ -103,17 +125,69 @@
 // déplient — ils ne se répondent pas, ils appuient —, et l'état est désormais
 // tenu par domaine : il suivait d'un domaine à l'autre quand un seul était à
 // l'écran, ce qui n'a plus de sens quand les vingt-huit y sont ensemble.
-import { reactive } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, useTemplateRef } from 'vue'
 import StatementPicker from '../StatementPicker.vue'
 import { scrollToAnchor } from '../../composables/useAnchorScroll.js'
 
-defineProps({
+const props = defineProps({
   vm: { type: Object, required: true }
 })
 
 const emit = defineEmits(['answer'])
 
 const open = reactive({})
+
+// — le domaine courant suit le défilement —
+//
+// Même dispositif que les phases dans ScreenTool1, et pour le même motif : ce
+// qu'on observe n'est pas un gabarit — ce que la décision du 12.08.2026 écarte —
+// mais une position de lecture, dont aucune règle de mise en page ne dépend et
+// qu'aucun sélecteur CSS ne sait exprimer. Un observateur plutôt qu'un écouteur
+// de `scroll` : il ne réveille le JavaScript qu'au franchissement d'un seuil.
+//
+// L'état est local et ne remonte nulle part. Il ne décrit pas l'évaluation, il
+// décrit ce qu'on est en train de regarder : ni persisté, ni exporté, ni visible
+// du calcul.
+//
+// La bande est en pourcentages de la fenêtre : elle n'a ainsi rien à savoir ni
+// de la hauteur de l'en-tête ni de celle de la barre, qu'il faudrait sinon
+// mesurer. Elle s'ouvre sous les deux — un cinquième de la fenêtre les couvre à
+// toutes les largeurs — et le domaine qui la croise est celui qu'on lit.
+const DOMAIN_BAND = { rootMargin: '-20% 0px -75% 0px', threshold: 0 }
+
+const domainRefs = useTemplateRef('domainRefs')
+const current = ref(null)
+let observer = null
+
+onMounted(() => {
+  const domains = domainRefs.value || []
+  if (!domains.length || typeof IntersectionObserver === 'undefined') return
+
+  // L'ordre du document, que le tableau de refs ne garantit pas : c'est lui qui
+  // départage quand deux domaines croisent la bande à la fois.
+  const order = props.vm.areas.map(area => area.anchor)
+  const crossing = new Set()
+
+  observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) crossing.add(entry.target.id)
+      else crossing.delete(entry.target.id)
+    })
+    // Le *dernier* qui croise, et non le premier : au moment où deux se
+    // touchent, c'est celui vers lequel on descend qui compte. Si aucun ne
+    // croise — entre deux domaines, ou en haut de la page —, on garde le
+    // précédent plutôt que d'éteindre le repère à chaque intervalle.
+    const lit = order.filter(anchor => crossing.has(anchor))
+    if (lit.length) current.value = lit[lit.length - 1]
+  }, DOMAIN_BAND)
+
+  domains.forEach(domain => observer.observe(domain))
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  observer = null
+})
 </script>
 
 <style scoped>
@@ -200,6 +274,21 @@ const open = reactive({})
 .strip__area:hover {
   border-color: var(--color-text);
   opacity: 1;
+}
+
+/* Le domaine qu'on est en train de lire. Le cadre est posé en ombre intérieure
+   plutôt qu'en bordure épaissie : une bordure de 2px ferait grandir la case et
+   décalerait toute la ligne au fil du défilement, ce qui est exactement ce qu'un
+   repère ne doit pas faire. Le numéro passe en gras avec lui — la case reste
+   lisible même là où l'aplat de dimension mange le contraste du cadre. */
+.strip__area.is-current {
+  border-color: var(--color-text);
+  box-shadow: inset 0 0 0 1px var(--color-text);
+  opacity: 1;
+}
+
+.strip__area.is-current .strip__number {
+  font-weight: 800;
 }
 
 .strip__number {
