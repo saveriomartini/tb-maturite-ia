@@ -55,8 +55,30 @@ describe('contrat de schéma', () => {
   })
 
   it('accepte une session de schéma 2', () => {
-    write({ v: 2, state: { screen: 'tool2', answers: { A1: 3 } } })
-    expect(loadSession(SCREENS)).toMatchObject({ screen: 'tool2', answers: { A1: 3 } })
+    write({ v: 2, state: { screen: 'tool', answers: { A1: 3 } } })
+    expect(loadSession(SCREENS)).toMatchObject({ screen: 'tool', answers: { A1: 3 } })
+  })
+
+  // Les écrans du cadrage, de l'évaluation et des résultats ont fusionné en une
+  // page qui défile. Une session enregistrée avant la fusion porte l'un de leurs
+  // trois noms : ils retombent tous sur la page qui les a remplacés, faute de
+  // quoi la relecture rouvrirait la session à l'accueil.
+  it('rattrape les trois écrans retirés par la fusion des phases', () => {
+    const retires = ['tool1', 'tool2', 'tool3']
+    retires.forEach(screen => {
+      write({ v: 2, state: { screen, answers: { A1: 3 } } })
+      expect(loadSession(SCREENS), screen).toMatchObject({ screen: 'tool', answers: { A1: 3 } })
+    })
+  })
+
+  // `diagIdx` — la position dans le questionnaire — n'a plus d'objet : les 28
+  // domaines sont sur la même page. Une session venue d'avant la fusion la porte
+  // encore, et elle ne doit ni la faire rejeter ni ressusciter la clé.
+  it('tolère `diagIdx` sans le relire', () => {
+    write({ v: 2, state: { screen: 'tool2', diagIdx: 17, answers: { A1: 3 } } })
+    const restored = loadSession(SCREENS)
+    expect(restored).toMatchObject({ screen: 'tool', answers: { A1: 3 } })
+    expect(restored.diagIdx).toBeUndefined()
   })
 
   it('repart d’une session vierge sur un contenu illisible, sans planter', () => {

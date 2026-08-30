@@ -39,6 +39,19 @@
      avec la largeur de fenêtre (voir les points de rupture ci-dessous) */
   --gutter: 40px;
 
+  /* — hauteur de la barre collée en haut de page —
+     L'en-tête colle en haut de la fenêtre. Tout ce qui se rejoint par le
+     défilement doit donc s'arrêter dessous — c'est le `scroll-margin-top` de
+     chaque cible — et la barre des domaines vient s'y coller à son tour. La
+     valeur est déclarée ici plutôt que mesurée en JavaScript : la décision du
+     12.08.2026 écarte l'observation d'un gabarit en JS, et une hauteur d'en-tête
+     en est un.
+     Elle est calibrée sur l'état le plus haut de l'en-tête, celui qui porte le
+     verdict en cours — la description des phases y est bornée à deux lignes, ce
+     qui rend cette hauteur stable. Atterrir un peu bas ne coûte qu'un blanc ;
+     atterrir sous la barre cacherait le titre qu'on vient chercher. */
+  --header-height: 184px;
+
   --radius-sm: 0px;
   --radius-md: 0px;
   --radius-lg: 0px;
@@ -61,7 +74,11 @@
 }
 
 @media (max-width: 900px) {
-  :root { --gutter: 16px; }
+  :root {
+    --gutter: 16px;
+    /* l'en-tête perd la description de ses phases et le sous-titre de la marque */
+    --header-height: 156px;
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }

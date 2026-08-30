@@ -53,11 +53,12 @@ export function buildDemoSession(id) {
   })
 
   return {
-    // On atterrit sur les résultats : c'est ce qu'on est venu voir. Le
-    // questionnaire reste derrière, à sa dernière position, pour que
-    // « précédent » ouvre sur des écrans remplis plutôt qu'au début du parcours.
-    screen: 'tool3',
-    diagIdx: Math.max(0, EVALUABLE_AREAS.length - 1),
+    // On atterrit sur la page de l'outil, où le cadrage, l'évaluation et les
+    // résultats se suivent. C'est la restitution qu'on vient voir, et c'est bien
+    // là que la démonstration s'ouvre — mais la section se rejoint par le
+    // défilement, qui est une position de lecture et non un état de session : le
+    // composable la pose au chargement, le scénario n'écrit que des entrées.
+    screen: 'tool',
     form: { ...scenario.form },
     // La portée déclarée à l'ancrage fixe l'intention ; le profil visé s'en
     // déduit, borné par la recommandation issue du contexte. Le scénario

@@ -5,7 +5,7 @@
 // son propre view-model calculé (`computed`), donc paresseux : seul celui de
 // l'écran affiché est évalué.
 
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
 import { INFO } from '../data/info.js'
@@ -17,7 +17,9 @@ import {
 import {
   BLOCKS, EVALUABLE_AREAS, LEVELS, levelDescription, profileExportLabel, profileName
 } from '../domain/model.js'
-import { NEXT_OF, PHASE_ENTRY, PHASE_OF, SCREENS, isToolScreen, previousScreen } from '../domain/navigation.js'
+import {
+  NEXT_OF, PHASE_ANCHORS, PHASE_OF, PHASE_TARGETS, SCREENS, areaAnchor, isToolScreen, previousScreen
+} from '../domain/navigation.js'
 import { buildDemoSession, demoScenarios } from '../domain/demo-session.js'
 import { buildRecommendation } from '../domain/recommendation.js'
 import { evaluationUnit } from '../domain/scope.js'
@@ -103,6 +105,40 @@ const LADDER_NOTE =
   'n’y a pas d’acquisition partielle. Les nombres ci-dessus disent de combien il s’en est fallu, ' +
   'pas où vous en êtes sur ce palier.'
 
+// — la bande des profils —
+//
+// Cinq barres qui se remplissent au fil des réponses, collées à droite pendant
+// tout le défilement. Ce qu'elles mesurent est déjà calculé : `gateProgress`
+// rend, pour un palier, combien des domaines qu'il attend l'atteignent.
+//
+// Toute la difficulté est dans la lecture, et elle ne se contourne pas. Une
+// barre aux quatre cinquièmes se lit « presque acquis », or un palier ne
+// s'acquiert pas par degrés : un seul domaine manquant suffit à ne pas le
+// franchir, et c'est pour ce motif exact que le lot 3 a retiré les jauges de
+// l'échelle des paliers (décision du 18.08.2026). La bande porte donc le seuil
+// de façon lisible — le bord droit de chaque rail est un trait fort, que le
+// remplissage atteint ou n'atteint pas — et double chaque barre du compte en
+// clair. Jamais d'un pourcentage : « 89 % » dit une progression continue là où
+// « 8 sur 9 » dit ce qui manque.
+const BAND_TITLE = 'Les cinq profils'
+const BAND_NOTE =
+  'Une barre pleine est un palier acquis, jamais un palier presque acquis. Le trait au bout de ' +
+  'chaque rail est un seuil et non un maximum : un seul domaine manquant suffit à ne pas le ' +
+  'franchir.'
+
+// Le dénominateur bouge, et c'est la seule chose que les barres ne peuvent pas
+// montrer. Un domaine déclaré hors périmètre sort du calcul et réduit ce que
+// chaque palier attend : une barre avance alors sans qu'aucune réponse ait
+// changé. C'est cohérent avec la règle — un domaine hors périmètre ne retient
+// aucun palier — et illisible si rien ne le dit.
+function scopeNote(count) {
+  if (!count) return null
+  const plural = count > 1
+  return `${count} domaine${plural ? 's' : ''} déclaré${plural ? 's' : ''} hors périmètre ` +
+    `${plural ? 'sortent' : 'sort'} du calcul : chaque profil en attend d’autant moins. Une barre ` +
+    'peut donc avancer sans qu’aucune réponse ait changé.'
+}
+
 // Le questionnaire pose la même question sur chaque domaine, et cette question
 // n'est pas « à quel niveau êtes-vous ? » : on demande laquelle des cinq
 // situations décrit l'organisation. Le rang se déduit, il ne se choisit pas —
@@ -134,12 +170,12 @@ const OUT_OF_SCOPE_NOTE =
 // d'ancrage. À null — c'est-à-dire tant que la question n'a pas été posée —, le
 // profil visé suit la seule recommandation issue du contexte.
 //
-// `wave`, `seen` et `offScope` ont disparu avec les séries : les 28 domaines
-// sont présentés d'affilée, dans l'ordre du modèle, et aucun n'est hors cadrage.
+// `wave`, `seen` et `offScope` ont disparu avec les séries ; `diagIdx` a suivi
+// avec l'empilement. Les 28 domaines sont sur la même page, dans l'ordre du
+// modèle : il n'y a plus de position à tenir, donc plus rien à en persister.
 function defaultState() {
   return {
     screen: 'home',
-    diagIdx: 0,
     answers: {},
     openLevels: {},
     form: {},
@@ -222,10 +258,28 @@ export function useMaturityTool() {
   // l'ancrage.
   const contextComplete = computed(() => ALL_FIELDS.every(field => state.form[field.id] != null))
 
-  // L'index courant est borné par sécurité : une session restaurée peut porter
-  // une position écrite par un modèle plus long.
-  const diagIndex = computed(() => Math.min(state.diagIdx, EVALUABLE_AREAS.length - 1))
-  const currentArea = computed(() => EVALUABLE_AREAS[diagIndex.value] || null)
+  // — la position de lecture —
+  // La phase courante et l'ancre à rejoindre décrivent ce qu'on est en train de
+  // regarder, jamais ce qu'on a répondu : elles ne sont donc pas dans `state` et
+  // ne suivent pas la session. Un rechargement rouvre la page en haut, ce qui
+  // est le comportement attendu d'une page qui défile.
+  //
+  // `activePhase` ne vaut que sur `tool`, la page qui empile les trois premières
+  // phases. Elle est posée par la navigation — un clic sur une phase, un retour
+  // au questionnaire depuis l'ancrage — et par la page elle-même, qui suit la
+  // position du défilement et la renvoie par `setPhase`.
+  //
+  // `pendingAnchor` est une intention de lecture que le composable ne peut pas
+  // exécuter lui-même : faire défiler est une affaire de DOM, donc de composant.
+  // Il la pose, la page la consomme et la rend.
+  const activePhase = ref(1)
+  const pendingAnchor = ref(null)
+
+  // La phase courante : celle de l'écran quand il n'en porte qu'une, celle du
+  // défilement quand la page en empile trois.
+  const currentPhase = computed(() =>
+    state.screen === 'tool' ? activePhase.value : (PHASE_OF[state.screen] || 0)
+  )
 
   // L'unité sur laquelle porte l'évaluation. Elle ne pèse sur aucun calcul —
   // `scope` continue de n'agir que comme plafond dans la recommandation — mais
@@ -350,7 +404,6 @@ export function useMaturityTool() {
   // — navigation et mutations —
 
   function go(screen) {
-    if (screen === 'home') state.diagIdx = 0
     state.screen = screen
     scrollToTop()
   }
@@ -359,39 +412,31 @@ export function useMaturityTool() {
     home: () => go('home'),
     info: () => go('info'),
     demo: () => go('demo'),
-    start: () => go('tool1'),
-    phase: screen => { if (screen) go(screen) },
+    start: () => go('tool'),
+    // Une phase se rejoint de deux façons selon qu'elle est une section ou un
+    // écran, et la cible dit laquelle. L'ancre n'est pas suivie ici : le
+    // composable ne touche pas au DOM, il pose l'intention et la page la
+    // consomme.
+    phase(target) {
+      if (!target) return
+      activePhase.value = target.n
+      if (target.screen !== state.screen) go(target.screen)
+      pendingAnchor.value = target.anchor || null
+    },
     back() {
-      // Dans le questionnaire, « précédent » recule d'un domaine avant de
-      // quitter l'écran.
-      if (state.screen === 'tool2' && diagIndex.value > 0) {
-        state.diagIdx = diagIndex.value - 1
-        scrollToTop()
-        return
-      }
       go(previousScreen(state.screen))
     },
     next() {
-      if (state.screen === 'tool2') {
-        if (diagIndex.value + 1 < EVALUABLE_AREAS.length) {
-          state.diagIdx = diagIndex.value + 1
-          scrollToTop()
-          return
-        }
-        // Dernier domaine : tout a été présenté, les résultats suivent. Il n'y a
-        // plus de palier à traverser — il n'y a plus qu'une série.
-        go('tool3')
-        return
-      }
       go(NEXT_OF[state.screen] || 'tool4')
     },
     // Reprendre le questionnaire depuis l'ancrage, sur le premier domaine resté
     // sans réponse : c'est ce qu'on vient y chercher. À défaut — tout est
-    // renseigné —, on repart du début plutôt que de ne rien faire.
+    // renseigné —, on repart du haut de la section plutôt que de ne rien faire.
     resumeQuestionnaire() {
-      const index = EVALUABLE_AREAS.findIndex(area => !(area.id in state.answers))
-      state.diagIdx = index >= 0 ? index : 0
-      go('tool2')
+      const area = EVALUABLE_AREAS.find(candidate => !(candidate.id in state.answers))
+      activePhase.value = 2
+      go('tool')
+      pendingAnchor.value = area ? areaAnchor(area.id) : PHASE_ANCHORS[1]
     },
     exportPreview: () => go('export'),
     finish: () => go('home')
@@ -422,12 +467,15 @@ export function useMaturityTool() {
     selectOption(fieldId, value) {
       state.form = { ...state.form, [fieldId]: state.form[fieldId] === value ? null : value }
     },
-    // La barre navigue par identifiant : les 28 domaines y figurent tous, et
-    // aucun n'est hors du parcours depuis que le profil visé ne les ordonne plus.
-    openArea(id) {
-      const index = EVALUABLE_AREAS.findIndex(area => area.id === id)
-      if (index >= 0) state.diagIdx = index
-      scrollToTop()
+    // La phase courante sur la page empilée. Elle est posée depuis la vue, qui
+    // seule sait où en est le défilement ; le composable n'observe rien.
+    setPhase(n) {
+      activePhase.value = n
+    },
+    // L'intention de lecture est rendue dès que la page l'a suivie, sans quoi
+    // redemander la même ancre ne changerait rien et ne ferait plus défiler.
+    clearAnchor() {
+      pendingAnchor.value = null
     },
     // L'avertissement de saut est consommé dès qu'il a été lu, quelle que soit
     // la sortie choisie : il dit ce que coûte un formulaire vide, pas ce que
@@ -454,6 +502,12 @@ export function useMaturityTool() {
       clearSession()
       Object.assign(state, defaultState(), session)
       scrollToTop()
+      // La démonstration s'ouvre sur la restitution : c'est ce qu'on vient y
+      // voir. Ce n'est pas un état de session mais une position de lecture — le
+      // scénario n'écrit que des entrées —, elle est donc posée ici et non dans
+      // `buildDemoSession`, qui reste une fonction pure.
+      activePhase.value = 3
+      pendingAnchor.value = PHASE_ANCHORS[2]
     }
   }
 
@@ -487,7 +541,7 @@ export function useMaturityTool() {
     // Le profil suivant n'existe pas au haut de l'échelle : à ce point, il n'y a
     // plus de palier à annoncer, et en inventer un serait faire croire que le
     // modèle continue.
-    verdict: [2, 3].includes(PHASE_OF[state.screen])
+    verdict: [2, 3].includes(currentPhase.value)
       ? {
         acquiredLabel: acquiredProfile.value.label,
         nextLabel: acquired.value < MAX_RANK ? profileName(acquired.value + 1) : null,
@@ -498,8 +552,8 @@ export function useMaturityTool() {
       n: phase.n,
       name: phase.name,
       desc: phase.steps[0],
-      active: PHASE_OF[state.screen] === index + 1,
-      screen: PHASE_ENTRY[index]
+      active: currentPhase.value === index + 1,
+      target: PHASE_TARGETS[index]
     }))
   }))
 
@@ -673,16 +727,28 @@ export function useMaturityTool() {
       .filter(block => block.dimensions.length > 0)
   }))
 
+  // — l'évaluation (phase 2) —
+  // Les 28 domaines de capacité s'empilent sur la même page, dans l'ordre du
+  // modèle. Il n'y a plus un domaine par écran, donc plus de position à tenir,
+  // plus de progression à annoncer et plus de « suivant » à proposer : la seule
+  // sortie de la page est l'ancrage, et elle est en bas.
+  //
+  // Chaque domaine garde exactement ce qu'il portait — bloc, dimension, nom,
+  // description, rang attendu, exemples d'artefacts, et le sélecteur des cinq
+  // énoncés avec sa sortie hors périmètre. Rien de ce qui se répond n'est
+  // replié : vingt-huit domaines font une page très longue, et c'est le prix
+  // assumé de la forme, l'affaire des deux barres de navigation et non d'un
+  // repli qui masquerait les énoncés.
   const diag = computed(() => {
-    const area = currentArea.value
-    const level = area ? areaLevel(area.id, state.answers) : 0
-    const outOfScope = area ? isOutOfScope(area.id, state.answers) : false
-
     // La barre de parcours ne connaît que deux termes : le bloc, qui coiffe, et
     // le domaine, numéroté dans l'ordre du modèle. Elle montre les 28 domaines
     // évaluables — il n'y en a plus qui soient hors du parcours — et dit l'état
     // de chacun : non renseigné, niveau retenu, hors périmètre. La marque tient
     // en un caractère, à côté du numéro qui, lui, ne change jamais.
+    //
+    // Ce qu'elle a perdu : le domaine actif. Elle ne déplace plus un index, elle
+    // fait défiler jusqu'à une ancre — et sur une page qui les porte tous, il
+    // n'y a pas un domaine courant, il y a celui qu'on regarde.
     const groupsByBlock = new Map()
     EVALUABLE_AREAS.forEach((modelArea, index) => {
       let group = groupsByBlock.get(modelArea.blockId)
@@ -694,68 +760,125 @@ export function useMaturityTool() {
       const areaRank = areaLevel(modelArea.id, state.answers)
       group.areas.push({
         id: modelArea.id,
+        anchor: areaAnchor(modelArea.id),
         number: index + 1,
         name: modelArea.name,
         color: areaOut ? null : modelArea.dimColor,
         answered: areaRank > 0,
         outOfScope: areaOut,
         mark: areaOut ? '×' : (areaRank || '·'),
-        state: areaOut ? 'hors périmètre' : (areaRank ? `niveau ${areaRank}` : 'non renseigné'),
-        active: area ? modelArea.id === area.id : false
+        state: areaOut ? 'hors périmètre' : (areaRank ? `niveau ${areaRank}` : 'non renseigné')
       })
     })
 
     return {
-      // Deux nombres, et ils ne disent pas la même chose : où l'on en est du
-      // parcours, et combien de domaines portent une réponse. On peut être au
-      // vingtième domaine sans en avoir renseigné trois — la position seule
-      // laissait croire à un avancement qui n'existait pas.
-      progress: `Domaine ${diagIndex.value + 1} / ${EVALUABLE_AREAS.length}` +
-        ` · ${answered.value} / ${EVALUABLE_AREAS.length} domaines renseignés`,
-      nextLabel: diagIndex.value + 1 < EVALUABLE_AREAS.length ? 'Suivant' : 'Terminer',
       blockGroups: [...groupsByBlock.values()],
-      // Ce que le domaine est : de quoi lire les énoncés sans avoir à les
-      // deviner. Le rappel n'accuse rien — la réponse est juste au-dessus.
-      area: {
-        id: area ? area.id : '',
-        name: area ? area.name : '',
-        desc: area ? area.desc : '',
-        color: area ? area.dimColor : null,
-        dim: area ? area.dim : '',
-        block: area ? area.block : '',
-        exampleArtifacts: area ? area.exampleArtifacts || [] : [],
-        // Le rang auquel le modèle attend ce domaine. Il ne se cache pas : il
-        // explique pourquoi un domaine pèse sur tel palier et pas sur tel autre.
-        required: area ? area.level : 0
-      },
-      // L'unité de réponse : cinq énoncés, un retenu, plus la sortie « hors
-      // périmètre ». L'échelle entière reste visible — on choisit parmi cinq
-      // situations, on ne parcourt pas une jauge.
-      picker: {
-        question: PICKER_QUESTION,
-        hint: PICKER_HINT,
-        statements: area
-          ? (STATEMENTS[area.id] || []).map(statement => ({
-            value: statement.n,
-            text: statement.text,
-            active: level === statement.n
-          }))
-          : [],
-        outOfScope: {
-          value: OUT_OF_SCOPE,
-          label: OUT_OF_SCOPE_LABEL,
-          note: OUT_OF_SCOPE_NOTE,
-          active: outOfScope
+      // Les 28 domaines, chacun avec son ancre. C'est la seule liste de la page
+      // qui soit dans l'ordre du modèle et complète : la barre ci-dessus la
+      // regroupe par bloc pour se lire, celle-ci se parcourt.
+      areas: EVALUABLE_AREAS.map((area, index) => {
+        const level = areaLevel(area.id, state.answers)
+        return {
+          id: area.id,
+          anchor: areaAnchor(area.id),
+          number: index + 1,
+          // Ce que le domaine est : de quoi lire les énoncés sans avoir à les
+          // deviner. Le rappel n'accuse rien — la réponse est juste au-dessus.
+          name: area.name,
+          desc: area.desc,
+          color: area.dimColor,
+          dim: area.dim,
+          block: area.block,
+          exampleArtifacts: area.exampleArtifacts || [],
+          // Le rang auquel le modèle attend ce domaine. Il ne se cache pas : il
+          // explique pourquoi un domaine pèse sur tel palier et pas sur tel
+          // autre.
+          required: area.level,
+          // L'unité de réponse : cinq énoncés, un retenu, plus la sortie « hors
+          // périmètre ». L'échelle entière reste visible — on choisit parmi cinq
+          // situations, on ne parcourt pas une jauge.
+          picker: {
+            question: PICKER_QUESTION,
+            hint: PICKER_HINT,
+            statements: (STATEMENTS[area.id] || []).map(statement => ({
+              value: statement.n,
+              text: statement.text,
+              active: level === statement.n
+            })),
+            outOfScope: {
+              value: OUT_OF_SCOPE,
+              label: OUT_OF_SCOPE_LABEL,
+              note: OUT_OF_SCOPE_NOTE,
+              active: isOutOfScope(area.id, state.answers)
+            }
+          }
         }
-      }
-      // Les critères d'adoption et les pratiques ne sont plus exposés ici. Ils
-      // restent dans model-data.json et le modèle continue de les porter — c'est
-      // le report littéral de la source, il ne s'amincit pas —, mais l'unité de
-      // réponse est l'énoncé, et lui seul. Affichés à côté des énoncés, ils
-      // rouvraient la lecture en liste de conditions et donnaient à croire qu'on
-      // répondait sur eux.
+        // Les critères d'adoption et les pratiques ne sont plus exposés ici. Ils
+        // restent dans model-data.json et le modèle continue de les porter —
+        // c'est le report littéral de la source, il ne s'amincit pas —, mais
+        // l'unité de réponse est l'énoncé, et lui seul. Affichés à côté des
+        // énoncés, ils rouvraient la lecture en liste de conditions et donnaient
+        // à croire qu'on répondait sur eux.
+      })
     }
   })
+
+  // — la bande des profils —
+  // Une barre par profil du modèle. Les deux drapeaux ne disent pas la même
+  // chose et il faut les deux :
+  //
+  //   `full`     — le remplissage touche le seuil. Il exige `expected > 0` :
+  //                sans cette garde, un palier dont tous les domaines attendus
+  //                sont hors périmètre ferait 0 sur 0, que rien ne distingue
+  //                d'une barre pleine.
+  //   `acquired` — le palier est tenu, au sens de domain/scoring.js.
+  //
+  // La marque « acquis » exige les deux, et c'est structurel : `acquiredLevel`
+  // enjambe un palier sans domaine attendu, si bien qu'un profil pourrait être
+  // compté tenu alors que sa barre est vide. Exiger `full` interdit qu'une barre
+  // se marque acquise sans être pleine, quelles que soient les réponses.
+  const band = computed(() => ({
+    title: BAND_TITLE,
+    bars: LEVELS.map(level => {
+      const progress = gateProgress(EVALUABLE_AREAS, state.answers, level.n)
+      const full = progress.expected > 0 && progress.done === progress.expected
+      return {
+        n: level.n,
+        label: level.name,
+        done: progress.done,
+        expected: progress.expected,
+        full,
+        acquired: full && level.n <= acquired.value,
+        // Le compte en clair, qui double la barre. Il nomme le dénominateur —
+        // c'est lui qui bouge quand un domaine sort du périmètre.
+        count: progress.expected
+          ? `${progress.done} sur ${progress.expected} domaines attendus`
+          : 'aucun domaine attendu n’est en périmètre'
+      }
+    }),
+    scopeNote: scopeNote(outOfScopeAreas.value.length),
+    note: BAND_NOTE
+  }))
+
+  // — la page qui empile les trois premières phases —
+  // Elle ne porte que ce qu'aucune des trois sections ne peut savoir seule :
+  // leurs ancres et leurs intitulés, l'ancre à rejoindre quand on arrive
+  // d'ailleurs, et le libellé de la seule sortie qu'elle propose. Les intitulés
+  // viennent de JOURNEY, comme ceux de l'en-tête : les onglets de phases et les
+  // titres de sections doivent nommer la même chose du même mot.
+  const toolPage = computed(() => ({
+    sections: PHASE_ANCHORS.map((anchor, index) => ({
+      // Le rang vient de PHASE_TARGETS et non de JOURNEY : c'est un nombre, et
+      // c'est celui que l'observateur de défilement renverra par `setPhase`.
+      // JOURNEY, qui est du texte, écrit le sien en chaîne.
+      n: PHASE_TARGETS[index].n,
+      name: JOURNEY[index].name,
+      anchor
+    })),
+    anchor: pendingAnchor.value,
+    nextLabel: 'Passer à l’ancrage',
+    band: band.value
+  }))
 
   // — résultats (phase 3) —
   // Ce que le diagnostic constate, et rien de ce qu'on vise : la cible n'est
@@ -1094,6 +1217,7 @@ export function useMaturityTool() {
     cadrage1,
     cadrage3,
     diagStart,
+    toolPage,
     diag,
     resti1,
     resti2,

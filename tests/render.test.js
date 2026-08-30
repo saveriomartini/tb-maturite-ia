@@ -69,7 +69,7 @@ describe('rendu des écrans', () => {
   // Une session vierge : aucun domaine renseigné, aucune portée déclarée. C'est
   // le cas où les moyennes n'existent pas et où l'écart n'a rien à nommer — le
   // plus susceptible de faire lire un `null` comme un nombre.
-  it.each(['tool3', 'tool4', 'export'])('rend « %s » sur une session vierge', async screen => {
+  it.each(['tool', 'tool4', 'export'])('rend « %s » sur une session vierge', async screen => {
     const { html, warnings } = await render(screen, { answers: {}, transformation: null, form: {} })
     expect(warnings).toEqual([])
     expect(html.length).toBeGreaterThan(0)
@@ -87,7 +87,7 @@ describe('rendu des écrans', () => {
     ;['A23', 'A24', 'A25'].forEach(id => { answers[id] = 'na' })
     ;['A10', 'A11', 'A12'].forEach(id => { delete answers[id] })
 
-    const { html, warnings } = await render('tool3', { answers })
+    const { html, warnings } = await render('tool', { answers })
     expect(warnings).toEqual([])
     // Deux axes sans valeur, et chacun dit laquelle des deux absences c'est.
     expect(html).toContain('tous hors périmètre')

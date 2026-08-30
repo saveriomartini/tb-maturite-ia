@@ -1,87 +1,94 @@
 <template>
-  <AppScreen spacing="tight">
-    <div class="toolbar">
-      <nav class="strip" aria-label="Domaines de capacité du diagnostic">
-        <div
-          v-for="group in vm.blockGroups"
-          :key="group.key"
-          class="strip__group"
-          :style="{ flexGrow: group.areas.length }"
-        >
-          <p class="strip__block" :title="group.name">{{ group.name }}</p>
-          <div class="strip__areas">
-            <button
-              v-for="area in group.areas"
-              :key="area.id"
-              type="button"
-              class="button-reset strip__area"
-              :class="{
-                'is-active': area.active,
-                'is-answered': area.answered,
-                'is-out-of-scope': area.outOfScope
-              }"
-              :style="area.color && area.answered ? { background: area.color } : null"
-              :title="`${area.name} — ${area.state}`"
-              :aria-label="`Domaine ${area.number} — ${area.name}, ${area.state}`"
-              @click="emit('open-area', area.id)"
-            >
-              <span class="strip__number">{{ area.number }}</span>
-              <span class="strip__mark" aria-hidden="true">{{ area.mark }}</span>
-            </button>
-          </div>
+  <div class="evaluation">
+    <nav class="strip" aria-label="Domaines de capacité du diagnostic">
+      <div
+        v-for="group in vm.blockGroups"
+        :key="group.key"
+        class="strip__group"
+        :style="{ flexGrow: group.areas.length }"
+      >
+        <p class="strip__block" :title="group.name">{{ group.name }}</p>
+        <div class="strip__areas">
+          <button
+            v-for="area in group.areas"
+            :key="area.id"
+            type="button"
+            class="button-reset strip__area"
+            :class="{
+              'is-answered': area.answered,
+              'is-out-of-scope': area.outOfScope
+            }"
+            :style="area.color && area.answered ? { background: area.color } : null"
+            :title="`${area.name} — ${area.state}`"
+            :aria-label="`Domaine ${area.number} — ${area.name}, ${area.state}`"
+            @click="scrollToAnchor(area.anchor)"
+          >
+            <span class="strip__number">{{ area.number }}</span>
+            <span class="strip__mark" aria-hidden="true">{{ area.mark }}</span>
+          </button>
         </div>
-      </nav>
-      <p class="toolbar__progress">{{ vm.progress }}</p>
-    </div>
+      </div>
+    </nav>
 
-    <header class="head">
-      <div class="head__band" :style="vm.area.color ? { background: vm.area.color } : null" />
-      <p class="head__path">
-        <span>{{ vm.area.block }} · {{ vm.area.dim }}</span>
-        <span class="head__rank">attendu au rang {{ vm.area.required }}</span>
-      </p>
-      <h1 class="head__area heading">{{ vm.area.name }}</h1>
-      <p class="head__desc">{{ vm.area.desc }}</p>
-    </header>
+    <article v-for="area in vm.areas" :id="area.anchor" :key="area.id" class="domain">
+      <header class="head">
+        <div class="head__band" :style="area.color ? { background: area.color } : null" />
+        <p class="head__path">
+          <span>{{ area.block }} · {{ area.dim }}</span>
+          <span class="head__rank">attendu au rang {{ area.required }}</span>
+        </p>
+        <h3 class="head__area heading">{{ area.name }}</h3>
+        <p class="head__desc">{{ area.desc }}</p>
+      </header>
 
-    <StatementPicker :vm="vm.picker" @select="emit('answer', vm.area.id, $event)" />
+      <StatementPicker :vm="area.picker" @select="emit('answer', area.id, $event)" />
 
-    <aside v-if="vm.area.exampleArtifacts.length" class="artifacts">
-      <p class="artifacts__label">
-        Exemples d'artefacts
-        <button
-          type="button"
-          class="button-reset artifacts__toggle"
-          :aria-expanded="artifactsOpen"
-          :aria-controls="artifactsId"
-          :aria-label="`${artifactsOpen ? 'Masquer' : 'Afficher'} les exemples d'artefacts`"
-          @click="artifactsOpen = !artifactsOpen"
-        >
-          {{ artifactsOpen ? '−' : '+' }}
-        </button>
-      </p>
-      <ul v-show="artifactsOpen" :id="artifactsId" class="artifacts__list">
-        <li v-for="artifact in vm.area.exampleArtifacts" :key="artifact">{{ artifact }}</li>
-      </ul>
-    </aside>
-
-    <div class="work__nav">
-      <button type="button" class="btn btn-ghost" @click="emit('back')">Précédent</button>
-      <button type="button" class="btn btn-primary work__button" @click="emit('next')">
-        {{ vm.nextLabel }}
-      </button>
-    </div>
-  </AppScreen>
+      <aside v-if="area.exampleArtifacts.length" class="artifacts">
+        <p class="artifacts__label">
+          Exemples d'artefacts
+          <button
+            type="button"
+            class="button-reset artifacts__toggle"
+            :aria-expanded="Boolean(open[area.id])"
+            :aria-controls="`artifacts-${area.id}`"
+            :aria-label="`${open[area.id] ? 'Masquer' : 'Afficher'} les exemples d'artefacts — ${area.name}`"
+            @click="open[area.id] = !open[area.id]"
+          >
+            {{ open[area.id] ? '−' : '+' }}
+          </button>
+        </p>
+        <ul v-show="open[area.id]" :id="`artifacts-${area.id}`" class="artifacts__list">
+          <li v-for="artifact in area.exampleArtifacts" :key="artifact">{{ artifact }}</li>
+        </ul>
+      </aside>
+    </article>
+  </div>
 </template>
 
 <script setup>
-// Le questionnaire, un domaine de capacité par écran.
+// Le questionnaire : les 28 domaines de capacité empilés, dans l'ordre du
+// modèle, sur la page qui défile.
 //
-// L'ordre de lecture suit l'ordre de la décision : où l'on en est (la barre), de
-// quel domaine il s'agit (l'en-tête), la réponse (le sélecteur), et seulement
-// ensuite le rappel. Celui-ci est passé *sous* la réponse : tant qu'il était en
-// colonne à gauche, il se lisait comme la question, alors qu'il n'est qu'un
-// appui.
+// Il n'y a plus un domaine par écran. La barre ne déplace donc plus d'index :
+// elle fait défiler jusqu'à l'ancre du domaine, et elle a perdu la marque du
+// domaine actif — sur une page qui les porte tous, il n'y en a pas un qui le
+// soit. Elle garde tout le reste, qui est ce qu'elle sait dire de chacun : le
+// rang retenu, le point du non-renseigné, la croix du hors périmètre, et la
+// couleur de dimension qui ne s'allume qu'une fois répondu.
+//
+// C'est le second registre de navigation de la page — les phases sont le
+// premier —, et elle ne le serait pas si elle défilait hors de vue au premier
+// domaine. Elle se colle donc sous l'en-tête, et seulement le temps de sa
+// section : au-dessus et en dessous, elle ne désigne rien.
+//
+// La ligne de progression a suivi. Elle disait deux choses, une position — qui
+// n'existe plus — et un nombre de domaines renseignés, que le verdict collé en
+// haut de page dit déjà, mieux placé pour ça.
+//
+// L'ordre de lecture d'un domaine suit l'ordre de la décision : de quoi il
+// s'agit (l'en-tête), la réponse (le sélecteur), et seulement ensuite le rappel.
+// Celui-ci est sous la réponse : tant qu'il était en colonne à gauche, il se
+// lisait comme la question, alors qu'il n'est qu'un appui.
 //
 // Ce que le rappel dit, et il n'y a plus rien d'autre : le bloc, la dimension,
 // le nom, la description, le rang auquel le modèle attend le domaine, et des
@@ -91,55 +98,58 @@
 // et donnaient à croire qu'on répondait sur eux. L'unité de réponse est
 // l'énoncé, et lui seul.
 //
-// L'écran n'a donc plus qu'une colonne de contenu sous le sélecteur : la grille
-// à deux colonnes du rappel n'avait plus de second occupant.
-//
-// Il n'y a plus de domaine hors cadrage à consulter : les 28 sont dans le
-// parcours, et ce qu'une organisation retire de la mesure, c'est elle qui le
-// déclare — par la réponse « hors périmètre », qui vit dans le sélecteur.
-//
-// Les exemples d'artefacts se déplient : au repos, le rappel ne dit que ce
-// qu'est le domaine. L'état est local et suit d'un domaine à l'autre — qui a
-// demandé les artefacts une fois les veut en général partout.
-import { ref, useId } from 'vue'
-import AppScreen from '../AppScreen.vue'
+// Rien de ce qui se répond n'est replié : vingt-huit domaines font une page très
+// longue, et c'est le prix assumé de la forme. Seuls les exemples d'artefacts se
+// déplient — ils ne se répondent pas, ils appuient —, et l'état est désormais
+// tenu par domaine : il suivait d'un domaine à l'autre quand un seul était à
+// l'écran, ce qui n'a plus de sens quand les vingt-huit y sont ensemble.
+import { reactive } from 'vue'
 import StatementPicker from '../StatementPicker.vue'
+import { scrollToAnchor } from '../../composables/useAnchorScroll.js'
 
 defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['answer', 'open-area', 'back', 'next'])
+const emit = defineEmits(['answer'])
 
-const artifactsOpen = ref(false)
-const artifactsId = `artifacts-${useId()}`
+const open = reactive({})
 </script>
 
 <style scoped>
-/* La barre tient toute la largeur du plan de travail qu'elle coiffe : le
-   repère de parcours se lit en regard du panneau, pas en médaillon. */
-.toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+/* Hauteur de la barre une fois collée, déclarée une fois pour les deux endroits
+   qui en dépendent : la barre s'en sert pour se poser sous l'en-tête, chaque
+   domaine pour s'arrêter sous les deux. Comme la hauteur de l'en-tête
+   (assets/tokens.css), elle est déclarée et non mesurée — la décision du
+   12.08.2026 écarte l'observation d'un gabarit en JavaScript. */
+.evaluation {
+  --strip-height: 66px;
 }
 
-.toolbar__progress {
-  margin: 0 0 0 auto;
-  font-size: 11px;
-  color: var(--color-neutral-700);
+/* La barre tient toute la largeur du plan de travail qu'elle coiffe : le
+   repère de parcours se lit en regard des domaines, pas en médaillon.
+
+   Collée sous l'en-tête, elle reste atteignable pendant les vingt-huit
+   domaines. Elle est opaque et fermée d'un filet : sans quoi les énoncés
+   passeraient dessous en transparence. Son rang la place sous l'en-tête, qui
+   tient le sien à 5 : deux barres collantes ne doivent pas se disputer le
+   dessus. */
+.strip {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 4;
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-bg);
 }
 
 /* Deux niveaux : le bloc coiffe, sans être cliquable ; seuls les domaines
    numérotés en dessous portent la navigation. Chaque bloc pèse le nombre de
    domaines qu'il présente, si bien que toutes les cases gardent la même largeur
    d'un bout à l'autre de la barre. */
-.strip {
-  display: flex;
-  gap: 6px;
-  align-items: stretch;
-}
-
 .strip__group {
   display: flex;
   flex-direction: column;
@@ -187,6 +197,11 @@ const artifactsId = `artifacts-${useId()}`
   opacity: 0.78;
 }
 
+.strip__area:hover {
+  border-color: var(--color-text);
+  opacity: 1;
+}
+
 .strip__number {
   font-size: 10px;
   font-weight: 600;
@@ -206,12 +221,6 @@ const artifactsId = `artifacts-${useId()}`
   color: var(--color-text);
 }
 
-.strip__area.is-active {
-  border: 2px solid var(--color-text);
-  font-weight: 800;
-  opacity: 1;
-}
-
 /* Hors périmètre : la case garde sa place et son numéro — le modèle ne rétrécit
    pas — mais perd sa couleur de dimension. C'est une réponse, pas un manque :
    elle reste pleinement lisible. */
@@ -226,11 +235,15 @@ const artifactsId = `artifacts-${useId()}`
   background: var(--color-neutral-300);
 }
 
-/* L'en-tête du domaine : la bande de dimension, le chemin, le rang attendu, le
-   nom, la description. C'est tout ce qu'il faut avoir lu avant de choisir un
-   énoncé. */
-.head {
-  margin-top: 20px;
+/* Un domaine dans l'empilement. Le filet fort le sépare du précédent : c'est la
+   seule chose qui dise, sur une page très longue, qu'on a changé de question. Il
+   s'arrête sous les deux barres collées — celle de l'en-tête et celle des
+   domaines —, faute de quoi le défilement déposerait son titre dessous. */
+.domain {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 2px solid var(--color-text);
+  scroll-margin-top: calc(var(--header-height) + var(--strip-height));
 }
 
 .head__band {
@@ -327,19 +340,6 @@ const artifactsId = `artifacts-${useId()}`
   margin-top: 4px;
 }
 
-.work__nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 2px solid var(--color-text);
-}
-
-.work__button {
-  min-width: 150px;
-}
-
 @media (max-width: 1200px) {
   .artifacts__list {
     columns: 2;
@@ -365,13 +365,21 @@ const artifactsId = `artifacts-${useId()}`
     font-size: 9px;
   }
 
-  .artifacts__list {
-    columns: 1;
+  /* Sous 900px, la barre cesse d'être collée : l'en-tête y prend déjà le tiers
+     de la hauteur utile, et deux barres collantes ne laisseraient pas de quoi
+     lire un énoncé. Elle reste en tête de section, atteignable par l'onglet
+     « Évaluation ». Les domaines n'ont alors plus qu'une barre sous laquelle
+     s'arrêter, d'où la hauteur nulle. */
+  .strip {
+    position: static;
   }
 
-  .work__nav {
-    flex-wrap: wrap;
-    gap: 12px;
+  .evaluation {
+    --strip-height: 0px;
+  }
+
+  .artifacts__list {
+    columns: 1;
   }
 }
 </style>

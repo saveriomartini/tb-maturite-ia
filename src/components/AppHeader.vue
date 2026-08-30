@@ -40,9 +40,9 @@
         type="button"
         class="button-reset phase"
         :class="{ 'phase--active': phase.active }"
-        :disabled="!phase.screen"
+        :disabled="!phase.target"
         :aria-current="phase.active ? 'step' : undefined"
-        @click="emit('phase', phase.screen)"
+        @click="emit('phase', phase.target)"
       >
         <span class="phase__head">
           <span class="phase__number">{{ phase.n }}</span>
@@ -71,6 +71,15 @@
 <script setup>
 // L'en-tête colle en haut de la fenêtre : marque, session, phases — et, pendant
 // l'évaluation et les résultats, le verdict en cours.
+//
+// — les quatre phases sur une ligne —
+// Elles sont des points d'arrivée et non plus des écrans à ouvrir : les trois
+// premières font défiler la page jusqu'à leur section, la quatrième change
+// d'écran. La barre ne sait pas laquelle fait quoi — chaque phase porte sa
+// cible, et c'est le composable qui la lit.
+//
+// La phase active n'est plus déduite de l'écran courant : sur la page qui empile
+// les trois premières, elle suit la position du défilement.
 //
 // Le verdict collant répond à une question qu'on se pose en descendant : où en
 // suis-je, et qu'est-ce qui vient après. Il ne remplace pas la restitution — il
@@ -205,9 +214,12 @@ const emit = defineEmits(["home", "phase", "reset"]);
   color: var(--color-text);
 }
 
+/* Les quatre phases sur une seule ligne, de Cadrage à Ancrage. La barre était
+   à trois colonnes pour quatre phases depuis le rétablissement de l'Ancrage, et
+   la quatrième passait à la ligne. */
 .header__phases {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding: 10px var(--gutter) 0;
 }
 
@@ -220,6 +232,15 @@ const emit = defineEmits(["home", "phase", "reset"]);
 
 .phase:disabled {
   opacity: 0.45;
+}
+
+/* Le dernier onglet ferme la barre : son filet doublerait le bord de la page. */
+.phase:last-child {
+  border-right: 0;
+}
+
+.phase:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-text) 5%, transparent);
 }
 
 .phase--active {
@@ -248,8 +269,18 @@ const emit = defineEmits(["home", "phase", "reset"]);
   font-size: 14px;
 }
 
+/* La description est bornée à deux lignes. Ce n'est pas une coquetterie : la
+   hauteur de l'en-tête collant est déclarée en jeton (`--header-height`) et sert
+   de retrait à tout ce qui se rejoint par le défilement. Laissée libre, elle
+   varierait avec la largeur de la fenêtre et le jeton deviendrait faux — ou il
+   faudrait mesurer l'en-tête en JavaScript, ce que la décision du 12.08.2026
+   écarte. */
 .phase__desc {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
   max-width: 290px;
   margin-top: 5px;
   font-size: 10.5px;

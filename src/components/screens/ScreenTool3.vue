@@ -1,33 +1,32 @@
 <template>
-  <AppScreen class="tool3">
+  <div class="results">
     <ScreenResti1 :vm="resti1" :focused-gate="focusedGate" @focus-gate="focusedGate = $event" />
 
     <section class="zone">
       <ScreenResti2 :vm="resti2" :focus="focus" />
     </section>
-
-    <AppScreenNav next-label="Passer à l'ancrage" @back="emit('back')" @next="emit('next')" />
-  </AppScreen>
+  </div>
 </template>
 
 <script setup>
-// Page de résultats : la synthèse en haut, le détail par domaine en dessous.
-// Les deux se lisaient auparavant sur deux écrans séparés, ce qui obligeait à
+// Les résultats : la synthèse en haut, le détail par domaine en dessous. Les
+// deux se lisaient auparavant sur deux écrans séparés, ce qui obligeait à
 // naviguer pour rapprocher un chiffre global de sa décomposition.
 //
-// La page dit ce que le diagnostic constate, et rien de ce qu'on vise : l'écart
-// appartient à la phase suivante, où la portée visée se déclare enfin. Le pied
-// de page y mène.
+// Ce n'est plus un écran mais la troisième section de la page de l'outil : elle
+// n'a donc plus ni gabarit ni pied de page — ScreenTool1 porte les deux, et la
+// seule sortie de la page est l'ancrage, en bas.
+//
+// La section dit ce que le diagnostic constate, et rien de ce qu'on vise :
+// l'écart appartient à la phase suivante, où la portée visée se déclare enfin.
 //
 // — la focalisation —
 // Cliquer un palier dans l'échelle allume, dans le détail par domaine, ce qui
 // retient ce palier. C'est la seule chose que les deux vues ont à se dire, et
-// c'est cette page qui la tient : elle seule les voit toutes les deux. L'état
+// c'est cette section qui la tient : elle seule les voit toutes les deux. L'état
 // est local et ne suit pas la session — il ne décrit pas l'évaluation, il décrit
 // ce qu'on est en train de regarder.
 import { computed, ref } from 'vue'
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
 import ScreenResti1 from './ScreenResti1.vue'
 import ScreenResti2 from './ScreenResti2.vue'
 
@@ -35,8 +34,6 @@ const props = defineProps({
   resti1: { type: Object, required: true },
   resti2: { type: Object, required: true }
 })
-
-const emit = defineEmits(['back', 'next'])
 
 const focusedGate = ref(null)
 
@@ -52,10 +49,10 @@ const focus = computed(() => {
 
 <style scoped>
 /* Le détail par domaine est une section de la page comme les autres : il porte
-   désormais son propre titre coiffé (.section-head), et n'a donc plus besoin du
-   filet fort qui l'annonçait — deux traits pleins à 22px l'un de l'autre se
-   lisaient comme une rupture de page. Reste l'écart vertical, celui de toutes
-   les sections de la synthèse. */
+   son propre titre coiffé (.section-head), et n'a donc pas besoin du filet fort
+   qui l'annonçait — deux traits pleins à 22px l'un de l'autre se lisaient comme
+   une rupture de page. Reste l'écart vertical, celui de toutes les sections de
+   la synthèse. */
 .zone {
   margin-top: 34px;
 }
