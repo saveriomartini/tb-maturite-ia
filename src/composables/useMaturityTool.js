@@ -50,13 +50,23 @@ const RESET_DIALOG = {
   ]
 }
 
+// L'avertissement ne se pose plus au même endroit du parcours, et son texte a dû
+// suivre. Il gardait le passage du cadrage à l'évaluation et disait « décrire son
+// organisation AVANT l'évaluation » ; depuis la fusion, il garde la sortie de la
+// page vers l'ancrage, et l'évaluation est déjà faite quand la boîte s'ouvre. Ce
+// qui reste vrai — et c'est tout ce qu'elle a à dire — est que ces attributs
+// bornent le profil qu'on proposera de viser, à l'écran suivant.
+//
+// Le retour au formulaire remonte la page : le formulaire ouvre la première
+// section, la sortie ferme la dernière. La flèche disait « plus bas » quand elle
+// gardait un écran de cadrage qui précédait le sien.
 const SKIP_DIALOG = {
   eyebrow: 'Cadrage incomplet',
-  text: 'Décrire son organisation AVANT l’évaluation change ce que l’outil peut en dire : il s’en ' +
-    'sert pour borner le profil qu’il vous proposera de viser, à la fin du parcours, et pour ' +
-    'situer votre résultat dans votre contexte plutôt que dans l’absolu.',
+  text: 'L’outil se sert des attributs de contexte pour borner le profil qu’il vous proposera de ' +
+    'viser, à l’écran suivant, et pour situer votre résultat dans votre contexte plutôt que dans ' +
+    'l’absolu.',
   actions: [
-    { id: 'describe', label: 'Décrire mon organisation', arrow: '↓' },
+    { id: 'describe', label: 'Décrire mon organisation', arrow: '↑' },
     { id: 'skip', label: 'Ignorer et continuer', arrow: '→' }
   ]
 }

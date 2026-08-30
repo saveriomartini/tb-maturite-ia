@@ -46,6 +46,10 @@
 // deux sections de la même page, ce passage n'existe plus, et le garde-fou est
 // posé sur celui qui reste — le départ vers l'ancrage, où le profil visé se
 // nomme et où ce que les attributs de contexte bornent devient visible.
+//
+// Le texte de la modale a suivi ce déplacement : il ne peut plus dire « avant
+// l'évaluation », qui est faite quand la boîte s'ouvre, et le retour au
+// formulaire remonte la page au lieu de la descendre.
 import { ref, useTemplateRef } from 'vue'
 import AppDialog from '../AppDialog.vue'
 import ContextAttributeForm from '../ContextAttributeForm.vue'
