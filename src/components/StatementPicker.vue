@@ -60,6 +60,11 @@
 // Un clic vaut une réponse : le composant n'a pas d'état, il émet la valeur et
 // reçoit en retour le view-model qui dit laquelle est retenue. Recliquer la
 // réponse retenue l'annule, mais c'est le parent qui en décide.
+//
+// Les deux notes de la colonne de droite paraissent une fois par domaine, soit
+// vingt-huit fois sur la page : tout ce qu'elles portent de superflu se paie
+// d'autant. Elles ont été ramenées à ce qu'aucune forme ne montre — qu'une
+// réponse se reprend, et ce que le hors périmètre fait au calcul.
 defineProps({
   vm: { type: Object, required: true }
 })

@@ -158,18 +158,26 @@ function scopeNote(count) {
 // situations décrit l'organisation. Le rang se déduit, il ne se choisit pas —
 // même parti que la grille dont les énoncés sont dérivés.
 const PICKER_QUESTION = 'Laquelle de ces situations décrit le mieux votre organisation ?'
-const PICKER_HINT =
-  'Une seule réponse. Recliquer celle qui est retenue l’annule — le domaine redevient ' +
-  'non renseigné, et la mesure le dira plutôt que de le compter comme un manque.'
+// Cette consigne paraît vingt-huit fois, une par domaine : tout ce qu'elle porte
+// de superflu est donc payé vingt-huit fois. « Une seule réponse » est parti —
+// un groupe de boutons radio ne dit rien d'autre par sa forme. Ce qui reste est
+// la seule chose qu'aucune forme ne montre : qu'une réponse se reprend. La
+// conséquence sur la mesure était dite trois fois sur la même page — ici, sous
+// le hors périmètre, et en restitution ; elle reste là où elle décide, c'est-à-
+// dire en restitution.
+const PICKER_HINT = 'Recliquer la réponse retenue l’annule : le domaine redevient non renseigné.'
 
 // Le hors périmètre est une réponse, pas une abstention : il déclare que le
 // domaine ne concerne pas l'organisation. Il sort alors du calcul — jamais
 // compté comme acquis, jamais compté comme manquant — et se retrouve nommé à
 // part en restitution. C'est ce que dit la note sous le bouton.
 const OUT_OF_SCOPE_LABEL = 'Ce domaine ne concerne pas mon organisation'
+// Vingt-huit fois elle aussi. La seconde phrase — « la restitution le déclare à
+// part » — annonçait un écran que cet écran-ci n'a pas à annoncer, et que la
+// restitution dit elle-même sous « Ce que la mesure laisse de côté ». Reste ce
+// qui se décide au moment du clic : ce que ce choix fait au calcul.
 const OUT_OF_SCOPE_NOTE =
-  'Le domaine sort du calcul : il ne retient aucun palier et n’en fait franchir aucun. ' +
-  'La restitution le déclare à part.'
+  'Le domaine sort du calcul : il ne retient aucun palier et n’en fait franchir aucun.'
 
 // État initial. `answers` porte une réponse par domaine — le rang de l'énoncé
 // retenu, ou `'na'` — et remplace la table des pratiques cochées : l'unité de
