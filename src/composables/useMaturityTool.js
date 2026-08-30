@@ -24,7 +24,7 @@ import { buildDemoSession, demoScenarios } from '../domain/demo-session.js'
 import { buildRecommendation } from '../domain/recommendation.js'
 import { evaluationUnit } from '../domain/scope.js'
 import {
-  MAX_RANK, OUT_OF_SCOPE, acquiredLevel, areaLevel, blockers, blockersByGate, dimAverage,
+  MAX_RANK, OUT_OF_SCOPE, acquiredLevel, areaLevel, blockersByGate, dimAverage,
   dimFloor, gateProgress, inScopeAreas, isOutOfScope, toAssess
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
@@ -85,39 +85,18 @@ const DEMO_DIALOG = {
   ]
 }
 
-// — l'échelle des paliers, ce qu'elle dit de la cible —
-//
-// Quatre cas, et chacun se dit pour lui-même : sans texte, l'absence de marque
-// de cible se lirait comme une cible à zéro, et une cible marquée *sous* le
-// palier atteint se lirait comme une erreur de l'outil. Aucun n'est laissé à un
-// défaut muet.
-//
-// Ces textes ne commentent que l'échelle. Ce que le passage vers la cible
-// engage — sa nature, son coût — appartient à la phase d'ancrage, qui est aussi
-// la seule à l'avoir demandé : le redire ici répondrait à une question qui n'a
-// pas encore été posée.
-const LADDER_TARGET = {
-  undeclared:
-    'Aucun profil visé n’est encore déclaré : la question de portée se pose à l’étape suivante. ' +
-    'L’échelle ne porte donc aucune marque de cible — l’outil ne vise pas à votre place.',
-  above:
-    'Le profil visé est marqué plus haut sur l’échelle. Ce qui vous en sépare, domaine par ' +
-    'domaine, se lit à l’étape suivante.',
-  reached:
-    'Le profil visé est celui que le diagnostic constate : les deux marques tombent au même cran.',
-  below:
-    'Le profil visé est marqué sous le palier atteint : vos réponses décrivent une organisation ' +
-    'qui a construit plus haut que la portée déclarée ne l’exige. Ce n’est pas une incohérence, ' +
-    'et le modèle l’autorise — le meilleur profil n’est pas le plus haut.'
-}
-
-// Ce que l'avancement d'un palier veut dire, et ce qu'il ne veut pas dire. La
-// phrase est à l'écran et non en commentaire : c'est au lecteur qu'elle
-// s'adresse, parce que « 8 sur 9 » se lit spontanément comme « presque acquis ».
-const LADDER_NOTE =
-  'Un palier s’acquiert d’un seul coup, quand tous les domaines qu’il attend l’atteignent : il ' +
-  'n’y a pas d’acquisition partielle. Les nombres ci-dessus disent de combien il s’en est fallu, ' +
-  'pas où vous en êtes sur ce palier.'
+// Le commentaire de l'échelle et la prose « profil visé » qui l'accompagnait
+// (quatre cas : non déclaré, plus haut, atteint, sous le palier atteint) sont
+// partis le 31.08.2026 avec `LADDER_NOTE` et `LADDER_TARGET` : la première
+// redisait en phrase ce que le remplissage de chaque palier montre déjà, la
+// seconde ce que la marque « cible » du diagramme montre déjà sur le
+// rectangle visé. Les deux étaient nées d'un risque réel — un diagramme muet
+// sur sa cible se lit comme une cible à zéro (docs/logs/BACKLOG.md, ligne
+// 3.5) — mais ce risque tenait à l'ancienne échelle en liste, où la marque de
+// cible se perdait dans une colonne de texte. Le diagramme actuel porte la
+// marque « cible » sur le rectangle lui-même, à la même place que « diagnostic »
+// : elle se lit sans phrase d'appoint, muette uniquement quand il n'y a
+// réellement rien à marquer.
 
 // — la bande des profils —
 //
@@ -314,9 +293,15 @@ export function useMaturityTool() {
   // renseignés, ceux qui restent à évaluer, ceux qui en sont sortis. Les trois
   // nombres se lisent ensemble — le premier ne veut rien dire sans les deux
   // autres.
+  //
+  // Le rapport se disait « N domaines de capacité situés sur M en périmètre ».
+  // Deux mots pour rien : « en périmètre » redit l'intitulé sous lequel la ligne
+  // est rangée — celui du cadrage —, et « situés » nomme l'opération que le
+  // dénominateur qualifie déjà. Un seul participe, à la fin, où il porte sur le
+  // rapport entier plutôt que sur son seul numérateur.
   const coverage = computed(() =>
-    `${scoped.value.length - pending.value.length} domaines de capacité situés sur ` +
-    `${scoped.value.length} en périmètre` +
+    `${scoped.value.length - pending.value.length} domaines de capacité sur ` +
+    `${scoped.value.length} évalués` +
     (pending.value.length ? ` · ${pending.value.length} à évaluer` : '') +
     (outOfScopeAreas.value.length ? ` · ${outOfScopeAreas.value.length} hors périmètre` : '')
   )
@@ -327,7 +312,8 @@ export function useMaturityTool() {
   // mot que rien d'autre du parcours n'emploie. Ils répondent à la même
   // question, celle que le cadrage pose sous le nom de périmètre de
   // l'évaluation, et une organisation qui lit « Toute l'entreprise » sans voir
-  // dans le même souffle « 0 domaines situés sur 28 » tient le verdict pour plus
+  // dans le même souffle « 0 domaines de capacité sur 28 évalués » tient le
+  // verdict pour plus
   // large qu'il n'est. Un seul intitulé, celui du cadrage, et la couverture
   // appendue derrière la déclaration.
   //
@@ -1044,27 +1030,32 @@ export function useMaturityTool() {
     // l'atteignent. Ce ratio n'entre nulle part dans l'acquisition, qui reste un
     // seuil : il dit de combien il s'en est fallu, pas « presque acquis ». Et il
     // ne peut pas dépasser son total, par construction.
+    //
+    // Il ne se lit plus en toutes lettres depuis la refonte du 31.08.2026 : « X
+    // des Y domaines attendus y sont » redisait, palier par palier, ce que le
+    // tableau par domaine détaille déjà plus bas — et sur cinq paliers, cinq
+    // fois la même phrase. `progress` reste le seul survivant : c'est un compte
+    // brut, pas une phrase, et le remplissage de chaque rectangle en a encore
+    // besoin.
+    //
+    // La focalisation du détail par domaine par un clic sur un palier est partie
+    // avec elle : le diagramme à deux dimensions qui a remplacé la liste seule ne
+    // s'y prêtait plus, et la faire vivre sur l'une des deux formes et pas
+    // l'autre aurait laissé deux comportements différents pour la même donnée.
+    // `blockers` ne sert donc plus qu'à l'ancrage, via `blockersByGate`.
     ladder: LEVELS.map(level => {
       const progress = gateProgress(EVALUABLE_AREAS, state.answers, level.n)
-      const missing = progress.expected - progress.done
-      // Les domaines renseignés que ce palier attend et qui n'y sont pas. Même
-      // retrait qu'à l'ancrage : `blockers` rend aussi les domaines restés sans
-      // réponse — à raison, ils retiennent le palier — mais les focaliser les
-      // ferait lire comme des manques constatés, alors qu'ils sont une mesure
-      // qui n'a pas eu lieu. Ils sont annoncés à part, avec de quoi y retourner.
-      const blocking = blockers(EVALUABLE_AREAS, state.answers, level.n)
-        .filter(entry => entry.level > 0)
       return {
         n: level.n,
         label: level.name,
         acquired: level.n === acquired.value,
         isTarget: targetDeclared.value && level.n === target.value,
         reached: level.n <= acquired.value,
-        // Les trois états de l'échelle. « Suivant » est le premier palier non
-        // tenu : c'est le seul dont il y ait quelque chose à dire tout de
-        // suite, les autres supposant celui-là franchi. Il n'existe pas quand
-        // le haut de l'échelle est atteint.
-        next: level.n === acquired.value + 1,
+        // Les paliers qui supposent tous que celui d'avant soit franchi, sans
+        // qu'aucune réponse ne s'y décide aujourd'hui : ils reculent d'un cran,
+        // par la couleur. Le palier immédiatement suivant reste en pleine
+        // teinte — c'est le seul dont il y ait quelque chose à dire tout de
+        // suite — sans qu'un état nommé le distingue plus explicitement.
         upcoming: level.n > acquired.value + 1,
         // Le retrait ne vaut que pour ce qui est à la fois au-dessus de la cible
         // et au-dessus du palier atteint. Un palier tenu mais plus haut que la
@@ -1074,27 +1065,7 @@ export function useMaturityTool() {
         // La ligne se trace *au-dessus* du premier palier révolutionnaire,
         // c'est-à-dire entre le deuxième et le troisième.
         opensLine: level.n === REVOLUTIONARY_FROM,
-        progress,
-        // L'avancement en toutes lettres, et jamais en jauge ni en pourcentage :
-        // une barre aux quatre cinquièmes se lit « presque acquis », alors qu'un
-        // seul domaine manquant suffit à ne pas franchir le seuil. Le texte dit
-        // ce qu'il compte, et l'écart dit de combien il s'en est fallu.
-        progressLabel: progress.expected
-          ? `${progress.done} des ${progress.expected} domaines attendus y sont`
-          : 'aucun domaine attendu n’est en périmètre',
-        shortfall: progress.expected && missing > 0
-          ? `il en manque ${missing}`
-          : null,
-        // De quoi focaliser le détail par domaine sur ce que ce palier retient.
-        // La liste est vide sur un palier tenu — il n'y a rien à montrer — et le
-        // libellé vaut alors null : l'écran n'a pas à fabriquer une phrase pour
-        // un cas qui ne se produit pas.
-        blocking: blocking.map(entry => entry.id),
-        focusLabel: blocking.length
-          ? `${blocking.length} domaine${blocking.length > 1 ? 's' : ''} renseigné` +
-            `${blocking.length > 1 ? 's' : ''} retien${blocking.length > 1 ? 'nent' : 't'} ` +
-            `« ${level.name} »`
-          : null
+        progress
       }
     }),
     // La ligne qui partage l'échelle. Elle ne dépend d'aucune réponse : elle est
@@ -1102,18 +1073,6 @@ export function useMaturityTool() {
     line: {
       label: REVOLUTIONARY_LINE.label,
       text: REVOLUTIONARY_LINE.text
-    },
-    ladderNote: LADDER_NOTE,
-    // Où en est la cible sur cette échelle. Quatre cas, tous dits.
-    targetState: {
-      label: targetDeclared.value ? targetLabel.value : null,
-      text: !targetDeclared.value
-        ? LADDER_TARGET.undeclared
-        : acquired.value > target.value
-          ? LADDER_TARGET.below
-          : acquired.value === target.value
-            ? LADDER_TARGET.reached
-            : LADDER_TARGET.above
     },
     radar: radar.value
   }))

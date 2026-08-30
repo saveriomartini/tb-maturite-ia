@@ -136,42 +136,18 @@ describe('l’échelle des paliers', () => {
     expect(vierge.resti1.line.text).toBeTruthy()
   })
 
-  // L'acquisition est un seuil : l'avancement dit de combien il s'en est fallu,
-  // jamais où l'on en serait « sur » un palier. Le view-model ne rend donc aucun
-  // ratio prêt à remplir une jauge, et l'écart n'est nommé que s'il en reste un.
-  it('l’avancement d’un palier acquis n’annonce aucun manque', () => {
+  // Le commentaire en quatre phrases (non déclarée, plus haut, atteinte, sous
+  // le palier atteint) est parti le 31.08.2026 : le diagramme porte la marque
+  // « cible » sur le rectangle visé, aussi visible que « diagnostic », et n'a
+  // plus besoin d'une phrase d'appoint pour le dire. Seule la marque elle-même
+  // reste à vérifier : présente quand la portée est déclarée, absente sinon —
+  // jamais un défaut silencieux qui se lirait comme une cible à zéro.
+  it('marque le palier cible sur l’échelle seulement quand la portée est déclarée', () => {
     const tool = demo('terravia')
-    tool.resti1.ladder.forEach(step => {
-      if (step.reached) expect(step.shortfall, step.label).toBeNull()
-      expect(step.progressLabel, step.label).toBeTruthy()
-    })
-  })
-
-  // Les quatre positions de la cible sur l'échelle, chacune avec son texte :
-  // non déclarée, plus haut, atteinte, sous le palier atteint. Aucune n'est
-  // laissée à un défaut muet — une échelle sans marque de cible et sans phrase
-  // se lirait comme une cible à zéro.
-  it('dit toujours où en est la cible, et les quatre cas diffèrent', () => {
-    const tool = demo('terravia')
-
-    const declared = tool.resti1.targetState.text
-    expect(tool.resti1.targetState.label).toBe(tool.ancrage.targetLabel)
+    expect(tool.resti1.ladder.some(step => step.isTarget)).toBe(true)
 
     tool.actions.selectReach(tool.state.transformation) // annule la portée
-    const undeclared = tool.resti1.targetState
-    expect(undeclared.label).toBeNull()
-    expect(undeclared.text).toBeTruthy()
     expect(tool.resti1.ladder.some(step => step.isTarget)).toBe(false)
-
-    tool.actions.selectReach(1)
-    const below = tool.resti1.targetState.text
-
-    const belair = demo('belair')
-    const above = belair.resti1.targetState.text
-
-    const textes = new Set([declared, undeclared.text, below, above])
-    expect(textes.size).toBe(4)
-    textes.forEach(texte => expect(texte).toBeTruthy())
   })
 
   // Un palier tenu mais plus haut que la portée déclarée n'est pas un excédent
@@ -185,26 +161,26 @@ describe('l’échelle des paliers', () => {
   })
 })
 
-describe('l’échelle : états, remplissage, focalisation', () => {
-  // Les trois états de la ligne 3.5 du backlog. Ils partagent l'échelle sans se
-  // recouvrir : chaque palier est tenu, ou le suivant, ou à venir — et un seul
-  // porte la marque du diagnostic.
-  it('acquis, suivant et à venir se partagent l’échelle sans se recouvrir', () => {
+describe('l’échelle : états, remplissage', () => {
+  // Deux états visibles, et ils ne se recouvrent pas : un palier est tenu, ou il
+  // ne l'est pas. « Suivant » — le premier palier non tenu — n'est plus un état
+  // nommé depuis le 31.08.2026 : il ne portait qu'un libellé retiré de
+  // l'affichage, redondant avec le contraste que `upcoming` porte déjà par la
+  // couleur. Ce test ne vérifie donc plus que l'exclusivité qui reste.
+  it('un seul palier est acquis, et acquis exclut à venir', () => {
     DEMO_SESSIONS.forEach(scenario => {
       const tool = demo(scenario.id)
       tool.resti1.ladder.forEach(step => {
-        const etats = [step.reached, step.next, step.upcoming].filter(Boolean)
-        expect(etats, `${scenario.name} — ${step.label}`).toHaveLength(1)
+        if (step.acquired) expect(step.upcoming, `${scenario.name} — ${step.label}`).toBe(false)
       })
       expect(tool.resti1.ladder.filter(step => step.acquired)).toHaveLength(1)
-      expect(tool.resti1.ladder.filter(step => step.next)).toHaveLength(1)
     })
   })
 
-  it('une session vierge n’a aucun palier tenu, et le premier est le suivant', () => {
+  it('une session vierge n’a aucun palier tenu, et le premier palier n’est pas mis en retrait', () => {
     const tool = useMaturityTool()
     expect(tool.resti1.ladder.some(step => step.reached)).toBe(false)
-    expect(tool.resti1.ladder[0].next).toBe(true)
+    expect(tool.resti1.ladder[0].upcoming).toBe(false)
   })
 
   // Le remplissage est proportionnel à gateProgress. Il ne peut pas déborder :
@@ -220,51 +196,6 @@ describe('l’échelle : états, remplissage, focalisation', () => {
         if (step.reached && expected) expect(done, step.label).toBe(expected)
       })
     })
-  })
-
-  // La focalisation n'expose que des domaines renseignés. Un domaine sans
-  // réponse retient bel et bien le palier — `blockers` le rend, à raison — mais
-  // le focaliser le ferait lire comme un manque constaté, alors qu'il est une
-  // mesure qui n'a pas eu lieu. Même retrait qu'à l'ancrage.
-  it('ne focalise jamais un domaine resté sans réponse', () => {
-    const tool = demo('rochat')
-    const sansReponse = EVALUABLE_AREAS
-      .filter(area => !(area.id in tool.state.answers))
-      .map(area => area.id)
-    expect(sansReponse.length).toBeGreaterThan(0)
-
-    const focalises = tool.resti1.ladder.flatMap(step => step.blocking)
-    sansReponse.forEach(id => expect(focalises).not.toContain(id))
-  })
-
-  it('ne focalise jamais un domaine hors périmètre', () => {
-    const tool = demo('rochat')
-    const hors = EVALUABLE_AREAS
-      .filter(area => tool.state.answers[area.id] === OUT_OF_SCOPE)
-      .map(area => area.id)
-    expect(hors.length).toBeGreaterThan(0)
-
-    const focalises = tool.resti1.ladder.flatMap(step => step.blocking)
-    hors.forEach(id => expect(focalises).not.toContain(id))
-  })
-
-  // Un palier tenu ne retient rien : il n'y a rien à focaliser, et le libellé
-  // vaut null plutôt qu'une phrase fabriquée pour un cas qui ne se produit pas.
-  it('un palier tenu n’offre rien à focaliser', () => {
-    const tool = demo('terravia')
-    tool.resti1.ladder.forEach(step => {
-      if (!step.reached) return
-      expect(step.blocking, step.label).toHaveLength(0)
-      expect(step.focusLabel, step.label).toBeNull()
-    })
-  })
-
-  it('un palier qui retient des domaines les annonce et les compte juste', () => {
-    const tool = demo('rochat')
-    const suivant = tool.resti1.ladder.find(step => step.next)
-    expect(suivant.blocking.length).toBeGreaterThan(0)
-    expect(suivant.focusLabel).toContain(String(suivant.blocking.length))
-    expect(suivant.focusLabel).toContain(suivant.label)
   })
 })
 

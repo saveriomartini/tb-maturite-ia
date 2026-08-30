@@ -13,34 +13,24 @@
         <span class="verdict__eyebrow eyebrow">Profil diagnostiqué pour votre organisation :</span>
         <span class="verdict__name heading">{{ vm.acquiredLabel }}</span>
       </p>
-      <p class="verdict__desc">{{ vm.acquiredDesc }}</p>
-      <p v-if="vm.acquiredPosition" class="verdict__position">{{ vm.acquiredPosition }}</p>
+      <div class="verdict__box">
+        <p class="verdict__desc">{{ vm.acquiredDesc }}</p>
+        <p v-if="vm.acquiredPosition" class="verdict__position">{{ vm.acquiredPosition }}</p>
+      </div>
     </header>
 
     <section class="section">
       <h2 class="section-head">L’échelle des paliers</h2>
       <div class="ladder">
-        <div class="scale">
-          <MaturityLadder
-            :steps="vm.ladder"
-            :line-label="vm.line.label"
-            :note="vm.ladderNote"
-            :focused="focusedGate"
-            @focus="emit('focus-gate', $event)"
-          />
-        </div>
+        <MaturityLadder
+          :steps="vm.ladder"
+          :line-label="vm.line.label"
+        />
 
         <div class="ladder__body">
           <div class="line">
             <p class="line__eyebrow eyebrow">{{ vm.line.label }}</p>
             <p class="line__text">{{ vm.line.text }}</p>
-          </div>
-
-          <div class="target">
-            <p class="target__eyebrow eyebrow">
-              Profil visé<template v-if="vm.targetState.label"> : {{ vm.targetState.label }}</template>
-            </p>
-            <p class="target__text">{{ vm.targetState.text }}</p>
           </div>
         </div>
       </div>
@@ -102,10 +92,15 @@
 // d'ancrage, après cet écran, parce qu'on ne peut pas demander à une
 // organisation jusqu'où elle veut aller avant de lui avoir montré où elle est.
 // L'échelle ne porte donc la marque « cible » que si la question a déjà été
-// répondue — au retour, par exemple. Elle le *dit* alors, plutôt que de laisser
-// l'absence de marque parler : une échelle muette sur sa cible se lit comme une
-// cible à zéro. Les quatre cas — non déclarée, plus haut, atteinte, sous le
-// palier atteint — ont chacun leur phrase, aucun n'est un défaut silencieux.
+// répondue — au retour, par exemple.
+//
+// Cette marque vivait aussi en toutes lettres sous l'échelle, en quatre phrases
+// selon le cas (non déclarée, plus haut, atteinte, sous le palier atteint) :
+// une échelle muette sur sa cible se lit comme une cible à zéro, et c'était
+// vrai tant que la marque se perdait dans une colonne de texte. Le retrait du
+// 31.08.2026 (voir useMaturityTool.js) tient à ce que le diagramme actuel porte
+// la marque « cible » sur le rectangle visé lui-même, aussi visible que
+// « diagnostic » — la phrase d'appoint redisait ce que l'œil voit déjà.
 //
 // Le périmètre ouvre la page, avant le profil. Le modèle source évalue une
 // organizational unit et non forcément l'entreprise entière : une restitution
@@ -128,8 +123,8 @@
 // acquis », il n'est pas acquis. Il dit de combien il s'en est fallu, ce qui est
 // une autre information — et il ne peut pas dépasser son total. D'où l'absence
 // de jauge : rien sur cette échelle ne se remplit par degrés, le repère de rang
-// est plein ou vide, et une note sous la colonne dit ce que les nombres ne
-// veulent pas dire.
+// est plein ou vide, et une note sous l'échelle dit ce que le remplissage ne
+// veut pas dire.
 //
 // La ligne évolutif / révolutionnaire se trace entre le deuxième et le troisième
 // palier. C'est la seule information de l'échelle qui dise que tous les crans ne
@@ -152,14 +147,8 @@ import DimensionRadar from '../DimensionRadar.vue'
 import MaturityLadder from '../MaturityLadder.vue'
 
 defineProps({
-  vm: { type: Object, required: true },
-  // Le palier dont le détail par domaine est focalisé plus bas. La synthèse ne
-  // le retient pas : c'est la page qui compose l'échelle et le détail qui le
-  // tient, elle seule voyant les deux.
-  focusedGate: { type: Number, default: null }
+  vm: { type: Object, required: true }
 })
-
-const emit = defineEmits(['focus-gate'])
 </script>
 
 <style scoped>
@@ -183,6 +172,21 @@ const emit = defineEmits(['focus-gate'])
    disent. */
 .verdict {
   margin: 18px 0 0;
+}
+
+/* Le commentaire du verdict tient sa propre boîte, au même filet que les autres
+   encadrés de la page (.ladder, .panel) : il se détache du nom qu'il commente
+   plutôt que de s'y fondre en simple suite de paragraphes, et gagne le droit de
+   courir sur toute la largeur disponible. Une pleine largeur nue aurait fait
+   filer la ligne bien au-delà de ce qu'un œil suit sans se perdre au retour —
+   d'où le corps et l'interligne relevés, et la justification qui tient les deux
+   bords plutôt que de laisser le bord droit s'effriter sur une ligne aussi
+   longue. */
+.verdict__box {
+  margin-top: 14px;
+  padding: 20px 24px;
+  border: 2px solid var(--color-text);
+  background: var(--color-neutral-100);
 }
 
 /* `space-between` et non une colonne fixe : le nom cherche le bord droit du
@@ -211,29 +215,32 @@ const emit = defineEmits(['focus-gate'])
   text-wrap: balance;
 }
 
-/* La description reprend le bord gauche et la largeur de lecture : elle commente
-   le verdict, elle ne le prolonge pas à droite. */
 .verdict__desc,
 .verdict__position {
-  max-width: 80ch;
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.65;
+  text-align: justify;
+  hyphens: auto;
 }
 
 .verdict__desc {
-  margin: 14px 0 0;
-  font-size: 14.5px;
-  line-height: 1.5;
-  text-wrap: pretty;
+  margin-bottom: 12px;
+}
+
+.verdict__desc:last-child {
+  margin-bottom: 0;
 }
 
 /* la position suit la description comme une seconde voix : même corps, couleur
    légèrement retirée, pour qu'on voie qu'elle ne vient pas de la même source
    sans avoir à le dire */
 .verdict__position {
-  margin: 12px 0 0;
-  font-size: 14.5px;
-  line-height: 1.5;
   color: var(--color-neutral-700);
-  text-wrap: pretty;
+}
+
+.verdict__position:last-child {
+  margin-bottom: 0;
 }
 
 /* — le cadrage de la lecture —
@@ -292,31 +299,34 @@ const emit = defineEmits(['focus-gate'])
   margin-top: 34px;
 }
 
+/* L'échelle vivait sur 380px, à côté du texte qui la commente : assez pour une
+   liste de rangs empilés, pas pour une échelle à deux dimensions. Reproduire
+   Venkatraman (1994) demande de la largeur — c'est le champ des bénéfices
+   potentiels qui s'ouvre d'un palier à l'autre, un axe que 380px ne peut pas
+   montrer. L'échelle prend donc toute la largeur de la section, et le texte
+   qui la commente passe dessous plutôt qu'à côté ; tout ce qui se passe à
+   l'intérieur du diagramme appartient à MaturityLadder. */
 .ladder {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  border: 2px solid var(--color-text);
-}
-
-/* Le fond de la colonne est explicite : l'étiquette de la ligne évolutif /
-   révolutionnaire s'y découpe en masquant le trait derrière elle, et un fond
-   hérité ne lui donnerait rien à masquer. Tout ce qui se passe à l'intérieur
-   appartient à MaturityLadder. */
-.scale {
-  background: var(--color-neutral-100);
-  border-right: 2px solid var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
 .ladder__body {
-  max-width: 760px;
-  padding: 20px 24px;
-  background: var(--color-neutral-100);
+  padding-top: 2px;
 }
 
-/* La ligne, en toutes lettres. Elle se lit à côté de l'échelle qui la trace :
-   le trait dit où elle passe, ce bloc dit pourquoi elle y passe. Encadrée à
+/* La ligne, en toutes lettres. Elle se lit sous l'échelle qui la trace : le
+   trait dit où elle passe, ce bloc dit pourquoi elle y passe. Encadrée à
    gauche comme la nature du passage à l'ancrage — même registre, celui d'un
-   texte qui peut modifier une décision d'investissement. */
+   texte qui peut modifier une décision d'investissement.
+
+   Sans max-width depuis le 31.08.2026 : c'est désormais le seul bloc de
+   `.ladder__body`, qui a hérité de la pleine largeur de la section quand
+   l'échelle est devenue un diagramme — le garder à 80ch aurait laissé un vide
+   à droite sans qu'aucune colonne voisine ne le justifie. La ligne s'étend
+   donc jusqu'au bord, plus longue qu'une mesure de lecture confortable à
+   cette largeur ; c'est un choix explicite plutôt qu'un oubli du plafond. */
 .line {
   padding-left: 12px;
   border-left: 2px solid var(--color-text);
@@ -328,31 +338,9 @@ const emit = defineEmits(['focus-gate'])
 }
 
 .line__text {
-  max-width: 80ch;
   margin: 0;
   font-size: 12.5px;
   line-height: 1.5;
-  text-wrap: pretty;
-}
-
-/* Où en est la cible sur cette échelle — y compris quand il n'y en a pas
-   encore. Le cas se dit toujours : une échelle sans marque de cible et sans
-   phrase se lirait comme une cible à zéro. */
-.target {
-  margin-top: 16px;
-}
-
-.target__eyebrow {
-  margin: 0 0 5px;
-  color: var(--color-neutral-700);
-}
-
-.target__text {
-  max-width: 80ch;
-  margin: 0;
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--color-neutral-800);
   text-wrap: pretty;
 }
 
@@ -396,6 +384,21 @@ const emit = defineEmits(['focus-gate'])
     text-align: left;
   }
 
+  /* La boîte garde sa pleine largeur, mais celle-ci se resserre avec la
+     gouttière — jusqu'à une colonne trop étroite pour que la justification
+     répartisse le blanc sans creuser de trous entre les mots. Elle repasse en
+     drapeau, comme le reste de la page à cette largeur. */
+  .verdict__box {
+    padding: 16px;
+  }
+
+  .verdict__desc,
+  .verdict__position {
+    text-align: left;
+    hyphens: auto;
+    text-wrap: pretty;
+  }
+
   /* Empilé, l'intitulé du cadrage n'a plus de colonne à tenir : la valeur passe
      sous lui, et la note reprend le bord de la page. */
   .frame__label {
@@ -406,15 +409,8 @@ const emit = defineEmits(['focus-gate'])
     padding-left: 0;
   }
 
-  .ladder,
   .asides {
     grid-template-columns: 1fr;
   }
-
-  .scale {
-    border-right: 0;
-    border-bottom: 2px solid var(--color-text);
-  }
-
 }
 </style>

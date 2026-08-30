@@ -29,6 +29,14 @@
 // et « la ligne entre degrés évolutifs et révolutionnaires », qui se
 // comprennent sans référence. Les commentaires, eux, gardent la source : c'est
 // ici que la traçabilité se lit, pas à l'écran.
+//
+// Exception, depuis le 31.08.2026 (docs/logs/DECISIONS-brouillon.md) : le
+// diagramme de MaturityLadder.vue reproduit directement la figure de
+// Venkatraman et porte sa légende de source. Ce n'est plus une phrase du
+// parcours qui invoque une autorité, c'est le crédit d'une figure reprise —
+// la nuance qui justifie l'exception à la règle ci-dessus. Elle ne vaut que
+// pour cet écran ; le reste du fichier continue de nommer la ligne sans
+// nommer sa source.
 
 // Rang à partir duquel on est au-dessus de la ligne. Il ne se déduit d'aucun
 // calcul : c'est la frontière que Venkatraman trace dans sa figure, reportée sur

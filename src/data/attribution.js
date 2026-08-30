@@ -63,8 +63,7 @@ export const WORK = {
   author: 'Saverio Martini',
   school: 'HEG-Arc',
   module: 'module 66-62',
-  session: 'session SP temps partiel 2025-2026',
-  direction: 'Maria Sokhn'
+  session: 'session SP temps partiel 2025-2026'
 }
 
 // Forme courte, pour un pied de page où ni la liste des sources ni la page de
@@ -75,7 +74,7 @@ export const WORK = {
 // c'est elle qui manque à un lecteur qui tombe sur une page exportée.
 export const SHORT =
   WORK.kind + ' de ' + WORK.author + ', ' + WORK.school + ' (' + WORK.module + ', ' +
-  WORK.session + '), sous la direction de ' + WORK.direction + '. ' +
+  WORK.session + '). ' +
   'D’après Ozkaya et al. (2026), The AI Adoption Maturity Model v1.0 (CMU SEI, ' +
   LICENSE + ').'
 

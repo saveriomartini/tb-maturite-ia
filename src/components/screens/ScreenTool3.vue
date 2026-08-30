@@ -1,9 +1,9 @@
 <template>
   <div class="results">
-    <ScreenResti1 :vm="resti1" :focused-gate="focusedGate" @focus-gate="focusedGate = $event" />
+    <ScreenResti1 :vm="resti1" />
 
     <section class="zone">
-      <ScreenResti2 :vm="resti2" :focus="focus" />
+      <ScreenResti2 :vm="resti2" />
     </section>
   </div>
 </template>
@@ -20,30 +20,18 @@
 // La section dit ce que le diagnostic constate, et rien de ce qu'on vise :
 // l'écart appartient à la phase suivante, où la portée visée se déclare enfin.
 //
-// — la focalisation —
-// Cliquer un palier dans l'échelle allume, dans le détail par domaine, ce qui
-// retient ce palier. C'est la seule chose que les deux vues ont à se dire, et
-// c'est cette section qui la tient : elle seule les voit toutes les deux. L'état
-// est local et ne suit pas la session — il ne décrit pas l'évaluation, il décrit
-// ce qu'on est en train de regarder.
-import { computed, ref } from 'vue'
+// La focalisation d'un palier sur le détail par domaine — cliquer un palier
+// dans l'échelle pour allumer ce qu'il retient — a disparu le 31.08.2026 avec
+// le clic lui-même (voir MaturityLadder.vue) : le diagramme à deux dimensions
+// qui a remplacé la liste seule ne s'y prêtait plus. Cette section ne tient
+// donc plus d'état partagé entre les deux vues qu'elle compose ; chacune se lit
+// pour elle-même.
 import ScreenResti1 from './ScreenResti1.vue'
 import ScreenResti2 from './ScreenResti2.vue'
 
-const props = defineProps({
+defineProps({
   resti1: { type: Object, required: true },
   resti2: { type: Object, required: true }
-})
-
-const focusedGate = ref(null)
-
-// Le palier focalisé, tel que le tableau en a besoin : son libellé et les
-// domaines qu'il retient. Les deux viennent du view-model, qui les a déjà
-// calculés pour l'échelle — rien n'est dérivé ici que la jointure.
-const focus = computed(() => {
-  const step = props.resti1.ladder.find(candidate => candidate.n === focusedGate.value)
-  if (!step || !step.focusLabel) return null
-  return { label: step.focusLabel, areas: step.blocking }
 })
 </script>
 

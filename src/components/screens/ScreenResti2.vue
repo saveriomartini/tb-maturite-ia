@@ -2,12 +2,7 @@
   <div class="detail">
     <h2 class="section-head">Par domaine de capacité</h2>
 
-    <p v-if="focus" class="focus">
-      <span class="focus__label eyebrow">Focalisation</span>
-      <span class="focus__text">{{ focus.label }}. Recliquer le palier dans l’échelle l’annule.</span>
-    </p>
-
-    <div class="list" :class="{ 'is-focused': Boolean(focus) }">
+    <div class="list">
       <table class="table">
         <thead>
           <tr>
@@ -22,7 +17,7 @@
           <tr
             v-for="row in vm.rows"
             :key="row.id"
-            :class="{ 'is-out-of-scope': row.outOfScope, 'is-lit': isLit(row) }"
+            :class="{ 'is-out-of-scope': row.outOfScope }"
           >
             <td
               class="cell-dimension"
@@ -77,45 +72,16 @@
 // perdu pour autant — il ordonne les lignes, et la couleur de dimension le redit
 // sur le bord gauche.
 //
-// — la focalisation —
-// Cliquer un palier dans l'échelle allume ici les domaines qui le retiennent.
-// Aucune ligne n'est retirée : le tableau reste le relevé complet des 28
-// domaines, et une liste qui rétrécirait sous le clic ferait perdre ce qu'elle
-// est. Les lignes non concernées reculent, elles ne disparaissent pas.
-const props = defineProps({
-  vm: { type: Object, required: true },
-  // Le palier focalisé et les domaines qu'il retient, ou null. La page qui
-  // compose l'échelle et le tableau le tient : ce composant n'en décide pas.
-  focus: { type: Object, default: null }
+// La focalisation depuis l'échelle des paliers — cliquer un palier pour
+// allumer ici les domaines qu'il retient — a disparu le 31.08.2026 avec le
+// clic lui-même (voir MaturityLadder.vue). Ce tableau ne reçoit donc plus rien
+// de l'échelle ; il reste le relevé complet des 28 domaines, lu pour lui-même.
+defineProps({
+  vm: { type: Object, required: true }
 })
-
-function isLit(row) {
-  return Boolean(props.focus) && props.focus.areas.includes(row.id)
-}
 </script>
 
 <style scoped>
-/* Ce que la focalisation montre, en toutes lettres, et comment en sortir : sans
-   cette ligne, un tableau à demi éteint se lit comme un défaut d'affichage. */
-.focus {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  align-items: baseline;
-  margin: 0 0 10px;
-  padding-left: 12px;
-  border-left: 3px solid var(--color-text);
-}
-
-.focus__label {
-  color: var(--color-neutral-700);
-}
-
-.focus__text {
-  font-size: 12px;
-  color: var(--color-neutral-800);
-}
-
 /* le cadre appartenait au bloc ; il passe à la liste, qui est désormais le seul
    objet de la section. Le défilement horizontal est une sécurité : sur un
    écran étroit, les colonnes chiffrées ne se compriment pas jusqu'à
@@ -197,29 +163,5 @@ function isLit(row) {
 
 .mark--at-rank {
   background: var(--color-text);
-}
-
-/* — focalisation —
-   Les lignes que le palier retient gardent leur pleine lisibilité et prennent un
-   liseré ; les autres reculent sans sortir du tableau. On éteint le voisinage
-   plutôt que de le retirer : le relevé reste complet, et l'on continue de voir
-   sur quoi la focalisation se détache. */
-.list.is-focused .cell-area,
-.list.is-focused .cell-required,
-.list.is-focused .cell-level,
-.list.is-focused .cell-dimension {
-  opacity: 0.4;
-}
-
-.list.is-focused .is-lit .cell-area,
-.list.is-focused .is-lit .cell-required,
-.list.is-focused .is-lit .cell-level,
-.list.is-focused .is-lit .cell-dimension {
-  opacity: 1;
-}
-
-.list.is-focused .is-lit .cell-area {
-  font-weight: 700;
-  box-shadow: inset 3px 0 0 var(--color-text);
 }
 </style>
