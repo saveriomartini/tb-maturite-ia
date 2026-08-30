@@ -135,13 +135,12 @@ const LADDER_NOTE =
 // clair. Jamais d'un pourcentage : « 89 % » dit une progression continue là où
 // « 8 sur 9 » dit ce qui manque.
 const BAND_TITLE = 'Les cinq profils'
-// La note ne redit plus « une barre pleine est un palier acquis » : chaque barre
-// acquise porte l'étiquette « acquis », et une barre qui ne l'est pas ne la porte
-// pas. Reste ce qu'aucune barre ne peut montrer d'elle-même — la règle qui veut
-// qu'un seuil ne se compense pas.
-const BAND_NOTE =
-  'Le trait au bout de chaque rail est un seuil, non un maximum : un seul domaine manquant ' +
-  'suffit à ne pas le franchir.'
+// La bande n'a plus de note. Elle a d'abord cessé de redire « une barre pleine
+// est un palier acquis », que la barre pleine dit d'elle-même ;
+// elle a fini par cesser de redire que le trait du bout est un seuil et non un
+// maximum, ce que montrent le trait fort, le remplissage qui passe au noir en
+// l'atteignant et le compte « 8 sur 9 ». Une consigne de lecture sous un dessin
+// qui se lit tout seul n'apprend rien et se fait sauter.
 
 // Le dénominateur bouge, et c'est la seule chose que les barres ne peuvent pas
 // montrer. Un domaine déclaré hors périmètre sort du calcul et réduit ce que
@@ -161,26 +160,27 @@ function scopeNote(count) {
 // situations décrit l'organisation. Le rang se déduit, il ne se choisit pas —
 // même parti que la grille dont les énoncés sont dérivés.
 const PICKER_QUESTION = 'Laquelle de ces situations décrit le mieux votre organisation ?'
-// Cette consigne paraît vingt-huit fois, une par domaine : tout ce qu'elle porte
-// de superflu est donc payé vingt-huit fois. « Une seule réponse » est parti —
-// un groupe de boutons radio ne dit rien d'autre par sa forme. Ce qui reste est
-// la seule chose qu'aucune forme ne montre : qu'une réponse se reprend. La
-// conséquence sur la mesure était dite trois fois sur la même page — ici, sous
-// le hors périmètre, et en restitution ; elle reste là où elle décide, c'est-à-
-// dire en restitution.
-const PICKER_HINT = 'Recliquer la réponse retenue l’annule : le domaine redevient non renseigné.'
 
 // Le hors périmètre est une réponse, pas une abstention : il déclare que le
 // domaine ne concerne pas l'organisation. Il sort alors du calcul — jamais
 // compté comme acquis, jamais compté comme manquant — et se retrouve nommé à
-// part en restitution. C'est ce que dit la note sous le bouton.
+// part en restitution.
+//
+// Deux libellés pour un seul bouton, et ce n'est pas un doublon. Le bouton vit
+// désormais dans la barre de titre de l'encadré, à côté de la question : « aucune »
+// y répond en un mot, ce qu'une phrase de sept mots ne saurait faire dans une
+// barre de dix pixels. La phrase entière reste le nom accessible du bouton — un
+// lecteur d'écran qui l'atteint hors du contexte de la question n'entendrait
+// autrement qu'un adjectif seul.
+//
+// Les deux notes qui accompagnaient ce bouton ont été retirées le 30.08.2026.
+// L'une disait qu'une réponse se reprend en la recliquant, l'autre ce que le
+// hors périmètre fait au calcul ; elles paraissaient vingt-huit fois, une par
+// domaine, pour une règle qui se découvre au premier clic et une conséquence que
+// la restitution énonce là où elle décide, sous « Ce que la mesure laisse de
+// côté ».
 const OUT_OF_SCOPE_LABEL = 'Ce domaine ne concerne pas mon organisation'
-// Vingt-huit fois elle aussi. La seconde phrase — « la restitution le déclare à
-// part » — annonçait un écran que cet écran-ci n'a pas à annoncer, et que la
-// restitution dit elle-même sous « Ce que la mesure laisse de côté ». Reste ce
-// qui se décide au moment du clic : ce que ce choix fait au calcul.
-const OUT_OF_SCOPE_NOTE =
-  'Le domaine sort du calcul : il ne retient aucun palier et n’en fait franchir aucun.'
+const OUT_OF_SCOPE_SHORT = 'aucune'
 
 // État initial. `answers` porte une réponse par domaine — le rang de l'énoncé
 // retenu, ou `'na'` — et remplace la table des pratiques cochées : l'unité de
@@ -552,12 +552,23 @@ export function useMaturityTool() {
       (wasRestored && hasProgress.value ? ' · restaurée' : ''),
     hasProgress: hasProgress.value,
     resetDialog: RESET_DIALOG,
+    // L'identifiant de session se tait sur l'accueil : il désigne une évaluation
+    // en cours, et l'accueil est la page où il n'y en a pas encore. Sept
+    // caractères hexadécimaux en tête de la première page ne renseignent
+    // personne — ils demandent d'abord ce qu'ils sont. L'exception est la
+    // session de démonstration : la seule chose que l'en-tête ait le devoir de
+    // dire, il la dit partout, accueil compris.
+    showSession: state.screen !== 'home' || state.demo != null,
     // Le développement de l'acronyme se tait sur l'accueil, et seulement là :
     // la page d'accueil le dit elle-même, plus bas, plus gros et plus complet —
     // elle ajoute l'auto-évaluation et les PME, que l'en-tête ne dit pas. Deux
     // formulations de la même chose à quarante pixels l'une de l'autre, c'est
     // la première page de l'outil qui se répète.
     showSubtitle: state.screen !== 'home',
+    // Le sigle non plus ne paraît pas sur l'accueil. Il y est un bouton de
+    // retour vers la page où l'on est déjà, sous un titre qui dit le même mot
+    // en corps de titre, à deux centimètres au-dessous.
+    showBrand: state.screen !== 'home',
     showPhases: isToolScreen(state.screen),
     // Les onglets ne portent plus que leur rang et leur nom. La première étape
     // de la phase y figurait, reprise de JOURNEY : elle redisait sur l'onglet
@@ -805,28 +816,46 @@ export function useMaturityTool() {
           name: area.name,
           desc: area.desc,
           color: area.dimColor,
+          // La dimension, et elle seule : le bloc a été retiré du chemin porté
+          // par chaque carte. Il y était rappelé vingt-huit fois pour désigner
+          // ce que la barre des domaines, en tête de section, groupe déjà sous
+          // son nom — et le nom du bloc, en anglais, ouvrait un chemin dont la
+          // suite est en français. La dimension reste : c'est elle qui donne sa
+          // couleur au bandeau et qui situe le domaine dans les neuf.
           dim: area.dim,
-          block: area.block,
           exampleArtifacts: area.exampleArtifacts || [],
-          // Le rang auquel le modèle attend ce domaine. Il ne se cache pas : il
-          // explique pourquoi un domaine pèse sur tel palier et pas sur tel
-          // autre.
-          required: area.level,
+          // Le profil à partir duquel le modèle attend ce domaine. La carte
+          // disait « attendu au rang 2 », et c'était faux dans la moitié des
+          // lectures : le rang 2 n'est pas ce que le domaine doit atteindre,
+          // c'est le profil à partir duquel il entre dans le compte. Un domaine
+          // entré au profil 2 doit être au niveau 3 pour que le profil 3 soit
+          // acquis, au niveau 4 pour le profil 4 — la règle de gateProgress, où
+          // les domaines attendus sont ceux dont le rang d'entrée est atteint ou
+          // dépassé, et où chacun doit être au niveau du profil visé.
+          requiredLabel: `* pour le profil ${area.level}`,
           // L'unité de réponse : cinq énoncés, un retenu, plus la sortie « hors
           // périmètre ». L'échelle entière reste visible — on choisit parmi cinq
           // situations, on ne parcourt pas une jauge.
           picker: {
             question: PICKER_QUESTION,
-            hint: PICKER_HINT,
+            // `active` est l'énoncé retenu, `reached` ceux que ce choix suppose
+            // dépassés. Les cinq situations sont cumulatives — se reconnaître
+            // dans la troisième, c'est avoir passé la première et la deuxième —
+            // et l'écran ne le disait pas : les quatre autres se présentaient
+            // toutes de la même façon, comme si retenir la troisième laissait
+            // les deux premières en suspens. Rien n'est coché à la place de
+            // l'utilisateur pour autant : `active` reste seul, une réponse par
+            // domaine, et c'est elle seule qui est persistée et calculée.
             statements: (STATEMENTS[area.id] || []).map(statement => ({
               value: statement.n,
               text: statement.text,
-              active: level === statement.n
+              active: level === statement.n,
+              reached: level > 0 && statement.n < level
             })),
             outOfScope: {
               value: OUT_OF_SCOPE,
               label: OUT_OF_SCOPE_LABEL,
-              note: OUT_OF_SCOPE_NOTE,
+              short: OUT_OF_SCOPE_SHORT,
               active: isOutOfScope(area.id, state.answers)
             }
           }
@@ -851,10 +880,60 @@ export function useMaturityTool() {
   //                d'une barre pleine.
   //   `acquired` — le palier est tenu, au sens de domain/scoring.js.
   //
-  // La marque « acquis » exige les deux, et c'est structurel : `acquiredLevel`
-  // enjambe un palier sans domaine attendu, si bien qu'un profil pourrait être
-  // compté tenu alors que sa barre est vide. Exiger `full` interdit qu'une barre
-  // se marque acquise sans être pleine, quelles que soient les réponses.
+  // La marque d'acquisition — pleine teinte sur le rang, sur le nom et sur le
+  // remplissage — exige les deux, et c'est structurel : `acquiredLevel` enjambe
+  // un palier sans domaine attendu, si bien qu'un profil pourrait être compté
+  // tenu alors que sa barre est vide. Exiger `full` interdit qu'une barre se
+  // marque acquise sans être pleine, quelles que soient les réponses.
+
+  // Les neuf dimensions à plat, en nombres et non en libellés : le radar et les
+  // barres ont besoin de valeurs pour placer un point et calculer une largeur.
+  // C'est la même mesure que celle des blocs de la restitution, dans l'autre
+  // sens de lecture — là, groupée par bloc et rendue en toutes lettres ; ici,
+  // les neuf ensemble, ce qui est le seul moyen de les comparer entre elles.
+  //
+  // La donnée vit ici, hors de la restitution, parce qu'elle sert désormais
+  // deux fois : la figure pleine ferme la page de résultats, et la même figure
+  // en réduction accompagne la bande des profils pendant qu'on répond. Une
+  // seconde construction pour la seconde figure aurait fini par diverger de la
+  // première, et c'est le genre d'écart qu'aucun écran ne montre.
+  //
+  // `null` reste `null` et ne devient jamais 0. Une dimension dont aucun domaine
+  // en périmètre n'est renseigné n'a pas été mesurée : un zéro s'y lirait comme
+  // le pire résultat possible, alors que rien n'a été mesuré. C'est la figure
+  // qui doit s'en accommoder, pas la donnée qui doit mentir.
+  const radar = computed(() => ({
+    scale: MAX_RANK,
+    dimensions: BLOCKS.flatMap(block =>
+      block.dimensions.map(dimension => {
+        const average = dimAverage(EVALUABLE_AREAS, state.answers, dimension.id)
+        const floor = dimFloor(EVALUABLE_AREAS, state.answers, dimension.id)
+        const rated = inScopeAreas(EVALUABLE_AREAS, state.answers)
+          .filter(area => area.dimId === dimension.id && areaLevel(area.id, state.answers) > 0)
+        const inDimension = EVALUABLE_AREAS.filter(area => area.dimId === dimension.id)
+        return {
+          id: dimension.id,
+          name: dimension.name,
+          color: dimension.color,
+          block: block.name,
+          average,
+          floor,
+          averageLabel: rankLabel(average),
+          floorLabel: floor === null ? '—' : String(floor),
+          // Pourquoi il n'y a pas de valeur, quand il n'y en a pas. Les deux
+          // absences ne sont pas la même chose et la figure ne peut les montrer
+          // ni l'une ni l'autre : elle n'a qu'un trou à offrir.
+          missing: average === null
+            ? (inDimension.every(area => isOutOfScope(area.id, state.answers))
+              ? 'tous hors périmètre'
+              : 'aucun domaine renseigné')
+            : null,
+          rated: `${rated.length} sur ${inDimension.length}`
+        }
+      })
+    )
+  }))
+
   const band = computed(() => ({
     title: BAND_TITLE,
     bars: LEVELS.map(level => {
@@ -875,7 +954,12 @@ export function useMaturityTool() {
       }
     }),
     scopeNote: scopeNote(outOfScopeAreas.value.length),
-    note: BAND_NOTE
+    // La vignette du radar, sous les cinq barres. Les barres comptent des
+    // domaines par palier — combien franchissent le seuil — et ne disent rien de
+    // l'endroit où l'on est fort ou faible ; la vignette dit ce relief-là, sur
+    // les neuf dimensions, et se déforme à mesure qu'on répond. Les deux lisent
+    // les mêmes réponses par deux bouts, et aucune ne remplace l'autre.
+    radar: radar.value
   }))
 
   // — la page qui empile les trois premières phases —
@@ -1006,47 +1090,7 @@ export function useMaturityTool() {
             ? LADDER_TARGET.reached
             : LADDER_TARGET.above
     },
-    // Les neuf dimensions à plat, en nombres et non en libellés : le radar et
-    // les barres ont besoin de valeurs pour placer un point et calculer une
-    // largeur. C'est la même mesure que celle des blocs ci-dessous, dans l'autre
-    // sens de lecture — là, groupée par bloc et rendue en toutes lettres ; ici,
-    // les neuf ensemble, ce qui est le seul moyen de les comparer entre elles.
-    //
-    // `null` reste `null` et ne devient jamais 0. Une dimension dont aucun
-    // domaine en périmètre n'est renseigné n'a pas été mesurée : un zéro s'y
-    // lirait comme le pire résultat possible, alors que rien n'a été mesuré.
-    // C'est la figure qui doit s'en accommoder, pas la donnée qui doit mentir.
-    radar: {
-      scale: MAX_RANK,
-      dimensions: BLOCKS.flatMap(block =>
-        block.dimensions.map(dimension => {
-          const average = dimAverage(EVALUABLE_AREAS, state.answers, dimension.id)
-          const floor = dimFloor(EVALUABLE_AREAS, state.answers, dimension.id)
-          const rated = inScopeAreas(EVALUABLE_AREAS, state.answers)
-            .filter(area => area.dimId === dimension.id && areaLevel(area.id, state.answers) > 0)
-          const inDimension = EVALUABLE_AREAS.filter(area => area.dimId === dimension.id)
-          return {
-            id: dimension.id,
-            name: dimension.name,
-            color: dimension.color,
-            block: block.name,
-            average,
-            floor,
-            averageLabel: rankLabel(average),
-            floorLabel: floor === null ? '—' : String(floor),
-            // Pourquoi il n'y a pas de valeur, quand il n'y en a pas. Les deux
-            // absences ne sont pas la même chose et la figure ne peut les
-            // montrer ni l'une ni l'autre : elle n'a qu'un trou à offrir.
-            missing: average === null
-              ? (inDimension.every(area => isOutOfScope(area.id, state.answers))
-                ? 'tous hors périmètre'
-                : 'aucun domaine renseigné')
-              : null,
-            rated: `${rated.length} sur ${inDimension.length}`
-          }
-        })
-      )
-    }
+    radar: radar.value
   }))
 
   // Le détail domaine par domaine, dans l'ordre du modèle. Trois états, et

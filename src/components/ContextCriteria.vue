@@ -1,9 +1,10 @@
 <template>
-  <div v-show="open || visible.length" class="detail">
+  <div v-show="open || chosen" class="detail">
     <p v-if="hint && open" class="detail__hint">{{ hint }}</p>
-    <dl v-if="visible.length" class="criteria">
+
+    <dl v-if="open && criteria.length" class="criteria">
       <div
-        v-for="criterion in visible"
+        v-for="criterion in criteria"
         :key="criterion.value"
         class="criteria__row"
         :class="{ 'is-active': criterion.active }"
@@ -12,6 +13,8 @@
         <dd class="criteria__def">{{ criterion.text }}</dd>
       </div>
     </dl>
+
+    <p v-else-if="chosen" class="criteria__lead">{{ chosen.text }}</p>
   </div>
 </template>
 
@@ -38,6 +41,13 @@
 // Le « + » garde son rôle : deux options voisines ne se départagent pas sur leur
 // seul intitulé, et il faut pouvoir les comparer avant de choisir.
 //
+// — pourquoi le critère retenu n'est pas nommé —
+// Replié, le bloc ne porte que le texte du critère, sans son intitulé : celui-ci
+// est déjà dans le champ, à trois pixels au-dessus, et « Faible — Faible : les
+// processus… » se lisait comme un bégaiement. Déplié, les intitulés reviennent :
+// cinq textes de trois lignes à la file ne se rapportent à rien sans le nom de
+// l'option qu'ils définissent.
+//
 // L'état ouvert/fermé appartient au champ qui porte le bouton, pas à ce bloc :
 // il ne décrit pas l'évaluation et ne survit pas à la session.
 import { computed } from 'vue'
@@ -48,9 +58,7 @@ const props = defineProps({
   open: { type: Boolean, default: false }
 })
 
-const visible = computed(() =>
-  props.open ? props.criteria : props.criteria.filter(criterion => criterion.active)
-)
+const chosen = computed(() => props.criteria.find(criterion => criterion.active) || null)
 </script>
 
 <style scoped>
@@ -100,5 +108,15 @@ const visible = computed(() =>
 
 .criteria__def::before {
   content: ' — ';
+}
+
+/* Le critère de l'option retenue, seul et sans son nom : c'est ce que le champ
+   dit du fait qu'il vérifie, en pleine teinte comme la ligne active de la liste
+   dépliée. */
+.criteria__lead {
+  margin: 7px 0 0;
+  font-size: 10.5px;
+  line-height: 1.45;
+  text-wrap: pretty;
 }
 </style>

@@ -421,14 +421,16 @@ describe('le questionnaire n’expose que des énoncés', () => {
     })
   })
 
-  // Ce que le rappel garde, en revanche : le rang auquel le modèle attend le
-  // domaine. Il explique pourquoi ce domaine pèse sur tel palier et pas sur tel
-  // autre, et il n'était pas exposé à l'écran jusqu'ici.
-  it('le rappel garde le rang attendu du domaine', () => {
+  // Ce que le rappel garde, en revanche : le profil à partir duquel le modèle
+  // attend le domaine. Il explique pourquoi ce domaine pèse sur tel palier et
+  // pas sur tel autre. Le libellé ne dit plus « attendu au rang 2 » — le rang
+  // d'entrée n'est pas le niveau à atteindre.
+  it('le rappel garde le profil d’entrée du domaine', () => {
     const tool = demo('belair')
     EVALUABLE_AREAS.forEach((area, index) => {
-      expect(tool.diag.areas[index].id, `domaine ${index + 1}`).toBe(area.id)
-      expect(tool.diag.areas[index].required, area.id).toBe(area.level)
+      const shown = tool.diag.areas[index]
+      expect(shown.id, `domaine ${index + 1}`).toBe(area.id)
+      expect(shown.requiredLabel, area.id).toBe(`* pour le profil ${area.level}`)
     })
   })
 })
@@ -461,21 +463,44 @@ describe('la progression du questionnaire', () => {
     const tool = demo('rochat')
     tool.state.screen = 'tool'
     expect(Object.keys(tool.header).sort())
-      .toEqual(['hasProgress', 'phases', 'resetDialog', 'sessionLabel', 'showPhases', 'showSubtitle'])
+      .toEqual([
+        'hasProgress', 'phases', 'resetDialog', 'sessionLabel', 'showBrand', 'showPhases',
+        'showSession', 'showSubtitle'
+      ])
     tool.header.phases.forEach(phase => {
       expect(phase).not.toHaveProperty('desc')
     })
   })
 
-  // L'accueil dit lui-même ce que l'outil mesure, plus bas et plus complètement.
-  // L'en-tête se tait donc là, et seulement là.
-  it('l’en-tête ne développe l’acronyme que hors de l’accueil', () => {
+  // L'identifiant de session ne paraît qu'une fois l'évaluation commencée : sur
+  // l'accueil il ne désigne rien. La session de démonstration fait exception,
+  // parce que ne pas la signaler ferait prendre une PME fictive pour la sienne.
+  it('l’en-tête ne montre la session que hors de l’accueil', () => {
+    const tool = useMaturityTool()
+    tool.state.screen = 'home'
+    expect(tool.header.showSession).toBe(false)
+    ;['info', 'demo', 'tool', 'tool4', 'export'].forEach(screen => {
+      tool.state.screen = screen
+      expect(tool.header.showSession, screen).toBe(true)
+    })
+    const demoTool = demo('rochat')
+    demoTool.state.screen = 'home'
+    expect(demoTool.header.showSession).toBe(true)
+  })
+
+  // L'accueil dit lui-même ce que l'outil mesure, plus bas et plus complètement,
+  // et porte le sigle en titre. L'en-tête se tait donc là, et seulement là.
+  it('l’en-tête ne porte sigle ni sous-titre sur l’accueil', () => {
     const tool = useMaturityTool()
     tool.state.screen = 'home'
     expect(tool.header.showSubtitle).toBe(false)
+    // Le sigle lui-même se tait au même endroit : l'accueil le porte en titre,
+    // et le bouton n'y mènerait qu'à la page affichée.
+    expect(tool.header.showBrand).toBe(false)
     ;['info', 'demo', 'tool', 'tool4', 'export'].forEach(screen => {
       tool.state.screen = screen
       expect(tool.header.showSubtitle, screen).toBe(true)
+      expect(tool.header.showBrand, screen).toBe(true)
     })
   })
 })

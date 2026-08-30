@@ -3,6 +3,7 @@
     <div class="header__bar">
       <div class="header__brand">
         <button
+          v-if="vm.showBrand"
           type="button"
           class="brand-home"
           title="Retour à l'accueil"
@@ -17,14 +18,14 @@
       </div>
 
       <div class="header__session meta">
-        <span>{{ vm.sessionLabel }}</span>
+        <span v-if="vm.showSession">{{ vm.sessionLabel }}</span>
         <button
           v-if="vm.hasProgress"
           type="button"
           class="header__reset"
           @click="emit('reset')"
         >
-          réinitialiser
+          reset
         </button>
       </div>
     </div>

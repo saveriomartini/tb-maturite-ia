@@ -75,8 +75,13 @@ import ContextCriteria from './ContextCriteria.vue'
 // Valeur de l'option « non renseigné ». Une chaîne vide, parce qu'un `<option>`
 // ne porte que des chaînes ; elle est retraduite en `null` avant de remonter,
 // puisque c'est ainsi que le formulaire dit qu'un attribut n'a pas de réponse.
+//
+// Son libellé est un tiret et non les mots « non renseigné » : c'est l'état de
+// départ des treize champs, et treize fois la même phrase au-dessus d'un
+// formulaire vierge le faisait lire comme une liste de manques. Le tiret est le
+// signe employé partout ailleurs dans l'outil pour une valeur absente.
 const UNSET = ''
-const UNSET_LABEL = 'Non renseigné'
+const UNSET_LABEL = '—'
 
 const props = defineProps({
   field: { type: Object, required: true }

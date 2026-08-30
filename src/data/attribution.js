@@ -52,17 +52,37 @@ export const DISCLAIMER =
   'Accenture. Il applique un modèle publié ; il n’en est ni une publication, ni une ' +
   'certification, ni une évaluation reconnue par ses auteurs.'
 
-// Forme courte, pour un pied de page où la liste complète ne tient pas : les
-// quatre sources en une ligne, puis le démenti. C'est la version affichée par
-// défaut ; SOURCES reste disponible pour l'export et l'écran d'information, où
-// la place existe.
+// L'identité du travail dont l'outil est le livrable. Elle a sa place au pied de
+// l'écran pour la même raison que l'attribution des sources : un résultat lu
+// hors de l'outil doit dire de qui il vient et dans quel cadre il a été produit.
+// Un prototype de Travail de Bachelor n'engage que son auteur et son école, et
+// c'est exactement ce qu'il faut faire savoir.
+export const WORK = {
+  title: 'Instrument de diagnostic de maturité IA pour PME',
+  kind: 'Travail de Bachelor',
+  author: 'Saverio Martini',
+  school: 'HEG-Arc',
+  module: 'module 66-62',
+  session: 'session SP temps partiel 2025-2026',
+  direction: 'Maria Sokhn'
+}
+
+// Forme courte, pour un pied de page où ni la liste des sources ni la page de
+// titre du rapport ne tiennent. L'arbitrage y est inversé par rapport à SOURCES :
+// du côté des sources on ne garde que le référentiel de base et sa licence — les
+// trois emprunts se lisent à l'écran d'information, personne ne les cherche dans
+// un pied de page ; du côté du travail on donne l'identité complète, parce que
+// c'est elle qui manque à un lecteur qui tombe sur une page exportée.
 export const SHORT =
-  'D’après Ozkaya et al. (2026), The AI Adoption Maturity Model v1.0 (CMU SEI, ' + LICENSE +
-  ') ; Venkatraman (1994) ; Elia et al. (2024) ; Bettoni et al. (2021).'
+  WORK.kind + ' de ' + WORK.author + ', ' + WORK.school + ' (' + WORK.module + ', ' +
+  WORK.session + '), sous la direction de ' + WORK.direction + '. ' +
+  'D’après Ozkaya et al. (2026), The AI Adoption Maturity Model v1.0 (CMU SEI, ' +
+  LICENSE + ').'
 
 export const ATTRIBUTION = {
   license: LICENSE,
   sources: SOURCES,
   disclaimer: DISCLAIMER,
+  work: WORK,
   short: SHORT
 }

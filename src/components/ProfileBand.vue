@@ -10,8 +10,8 @@
         :class="{ 'is-acquired': bar.acquired }"
       >
         <p class="bar__head">
+          <span class="bar__rank heading">{{ bar.n }}</span>
           <span class="bar__label heading">{{ bar.label }}</span>
-          <span v-if="bar.acquired" class="tag tag--solid bar__tag">acquis</span>
         </p>
         <span class="bar__track" aria-hidden="true">
           <span class="bar__fill" :style="{ width: fillWidth(bar) }" />
@@ -21,7 +21,12 @@
     </ol>
 
     <p v-if="vm.scopeNote" class="band__scope">{{ vm.scopeNote }}</p>
-    <p class="band__note">{{ vm.note }}</p>
+
+    <section class="band__radar">
+      <h2 class="band__title">Les neuf dimensions</h2>
+      <DimensionRadar :dimensions="vm.radar.dimensions" :scale="vm.radar.scale" compact />
+      <p class="band__legend">moyenne des domaines renseignés, de 1 à {{ vm.radar.scale }}</p>
+    </section>
   </aside>
 </template>
 
@@ -49,11 +54,34 @@
 //   — le compte en clair double chaque barre : « 8 sur 9 domaines attendus »,
 //     jamais « 89 % ». Un pourcentage dit une progression continue, un compte
 //     dit ce qui manque ;
-//   — l'étiquette « acquis » ne paraît que sur les barres qui le sont.
+//   — le rang du profil ouvre chaque ligne. Il n'est pas décoratif : les cinq
+//     profils sont ordonnés, le second ne s'acquiert pas sans le premier, et
+//     c'est ce rang que l'échelle des paliers et la restitution emploient pour
+//     les nommer.
 //
-// Ces quatre-là suffisent à dire qu'une barre pleine est un palier acquis, et la
-// phrase du bas a cessé de le répéter. Elle ne porte plus que ce qu'aucune barre
-// ne montre d'elle-même : qu'un seuil ne se compense pas.
+// L'étiquette « acquis » a été retirée de la barre pleine : elle nommait en un
+// mot ce que la barre montre déjà par son remplissage noir au ras du seuil, et
+// le compte juste dessous le dit en clair — « 3 sur 3 domaines attendus » ne se
+// lit pas autrement. Le rang a pris sa place en tête de ligne, où il apprend
+// quelque chose que rien d'autre ne disait.
+//
+// Ces traits suffisent, et la phrase du bas a fini par disparaître : elle
+// disait en mots que le trait est un seuil et non un maximum, ce que le trait
+// lui-même dit à qui regarde une barre pleine à côté d'une barre qui ne l'est
+// pas. Reste sous les barres la seule note qui apprenne quelque chose — celle du
+// périmètre, quand un domaine en sort et que le dénominateur bouge.
+//
+// — la vignette du radar —
+// Sous les barres, la même figure que celle qui ferme la page de résultats, en
+// réduction. Elle ne double pas les barres : celles-ci comptent, par palier,
+// combien de domaines franchissent le seuil, et ne peuvent pas dire où
+// l'organisation est forte et où elle est creuse. La vignette montre ce relief
+// et se déforme au fil des réponses, ce qui est ce qu'on veut voir pendant qu'on
+// répond.
+//
+// Sans intitulés d'axes, elle ne se lit pas seule — c'est assumé : la page de
+// résultats porte la figure entière, nommée et chiffrée. Ici elle situe, elle
+// n'énonce pas.
 //
 // Aucune bibliothèque de graphiques : deux éléments, une largeur en pourcentage,
 // et les jetons de assets/tokens.css. La largeur est la seule chose que le
@@ -62,6 +90,8 @@
 //
 // Le rail est `aria-hidden` : il ne dit rien qu'une capacité d'assistance
 // puisse lire, et tout ce qu'il montre est écrit juste dessous.
+import DimensionRadar from './DimensionRadar.vue'
+
 defineProps({
   vm: { type: Object, required: true }
 })
@@ -115,9 +145,23 @@ function fillWidth(bar) {
 .bar__head {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: 8px;
   margin: 0 0 4px;
+}
+
+/* Le rang tient une colonne fixe : les cinq noms s'alignent alors sur le même
+   bord, et la colonne des rangs se lit de haut en bas comme la suite qu'elle
+   est. */
+.bar__rank {
+  flex: none;
+  width: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-neutral-600);
+}
+
+.bar.is-acquired .bar__rank {
+  color: var(--color-text);
 }
 
 .bar__label {
@@ -132,10 +176,6 @@ function fillWidth(bar) {
    des directions. */
 .bar.is-acquired .bar__label {
   color: var(--color-text);
-}
-
-.bar__tag {
-  flex: none;
 }
 
 /* Le rail, et son seuil. Le bord droit est le trait fort du texte : c'est lui
@@ -172,21 +212,37 @@ function fillWidth(bar) {
   text-wrap: pretty;
 }
 
-.band__scope,
-.band__note {
-  margin: 16px 0 0;
+/* La vignette ferme la bande, séparée des barres par le même filet que celui
+   qui détache la note de périmètre : ce qui suit le filet ne se lit plus comme
+   la légende du cinquième profil. */
+.band__radar {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.band__radar .band__title {
+  margin-bottom: 8px;
+}
+
+/* Ce que la vignette montre, en une ligne : sans axes nommés, la figure ne dit
+   pas d'elle-même quelle mesure elle porte. */
+.band__legend {
+  margin: 8px 0 0;
   font-size: 10.5px;
-  line-height: 1.5;
+  line-height: 1.4;
   color: var(--color-neutral-700);
   text-wrap: pretty;
 }
 
-/* La phrase qui dit ce que les barres ne veulent pas dire ferme la bande, et
-   son filet la détache du dernier compte : sans lui elle se lirait comme la
-   note du cinquième profil. */
-.band__note {
+.band__scope {
+  margin: 16px 0 0;
   padding-top: 12px;
   border-top: 1px solid var(--color-divider);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+  text-wrap: pretty;
 }
 
 /* Sous 900px, la bande n'a plus la place d'être collée : l'en-tête y prend déjà

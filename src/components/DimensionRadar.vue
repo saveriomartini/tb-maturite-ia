@@ -1,10 +1,11 @@
 <template>
-  <div class="radar">
+  <div class="radar" :class="{ 'radar--compact': compact }">
     <div class="radar__figure">
-      <svg class="radar__svg" :viewBox="`0 0 ${WIDTH} ${HEIGHT}`" role="img" aria-labelledby="radar-title">
-        <title id="radar-title">
-          Les neuf dimensions du modèle : moyenne et plancher de chacune, sur une échelle de 1 à
-          {{ scale }}
+      <svg class="radar__svg" :viewBox="viewBox" role="img" :aria-labelledby="titleId">
+        <title :id="titleId">
+          Les neuf dimensions du modèle :
+          {{ compact ? 'moyenne de chacune' : 'moyenne et plancher de chacune' }}, sur une échelle
+          de 1 à {{ scale }}
         </title>
 
         <polygon
@@ -40,7 +41,7 @@
         />
 
         <path
-          v-for="(segment, index) in floorShape.segments"
+          v-for="(segment, index) in compact ? [] : floorShape.segments"
           :key="`floor-${index}`"
           :d="segment.d"
           fill="none"
@@ -64,7 +65,7 @@
         />
 
         <rect
-          v-for="mark in floorShape.marks"
+          v-for="mark in compact ? [] : floorShape.marks"
           :key="`floor-mark-${mark.id}`"
           :x="mark.x - 4.5"
           :y="mark.y - 4.5"
@@ -80,14 +81,14 @@
           :key="`average-mark-${mark.id}`"
           :cx="mark.x"
           :cy="mark.y"
-          r="4.5"
+          :r="compact ? 3 : 4.5"
           fill="var(--color-neutral-100)"
           stroke="var(--color-text)"
           stroke-width="2.5"
         />
 
         <text
-          v-for="tick in ticks"
+          v-for="tick in compact ? [] : ticks"
           :key="`tick-${tick.rank}`"
           :x="tick.x"
           :y="tick.y"
@@ -97,7 +98,7 @@
         >{{ tick.rank }}</text>
 
         <text
-          v-for="axis in axes"
+          v-for="axis in compact ? [] : axes"
           :key="`label-${axis.id}`"
           :text-anchor="axis.anchor"
           font-size="11.5"
@@ -117,7 +118,7 @@
         </text>
       </svg>
 
-      <p class="legend">
+      <p v-if="!compact" class="legend">
         <span class="legend__item">
           <svg class="legend__swatch" viewBox="0 0 34 12" aria-hidden="true">
             <line x1="1" y1="6" x2="33" y2="6" stroke="var(--color-text)" stroke-width="2.5" />
@@ -135,7 +136,7 @@
       </p>
     </div>
 
-    <ul class="bars">
+    <ul v-if="!compact" class="bars">
       <li v-for="row in bars" :key="row.id" class="bar" :style="{ '--dimension-color': row.color }">
         <p class="bar__name">{{ row.name }}</p>
 
@@ -202,11 +203,37 @@
 // Le dessin est entièrement calculé en `computed` et rendu par le gabarit : rien
 // n'y touche au DOM, si bien que la figure se rend aussi hors navigateur — c'est
 // ce que vérifie tests/render.test.js.
-import { computed } from 'vue'
+//
+// — la réduction —
+// La même figure sert deux fois : pleine sur la page de résultats, réduite dans
+// la bande des profils pendant qu'on répond. La version réduite ne redessine
+// rien : elle recadre le viewBox sur la figure et laisse tomber tout ce qu'une
+// vignette de 230 pixels ne saurait porter — intitulés d'axes, graduation,
+// légende, barres, et le tracé du plancher. Ne reste que la forme de la moyenne
+// sur les neuf axes, qui est la seule chose qu'on lise d'un coup d'œil. Elle
+// n'est pas une lecture au rabais de la grande : c'est le même calcul, et ce
+// qu'elle montre en moins, la page de résultats le montre en entier.
+import { computed, useId } from 'vue'
 
 const props = defineProps({
   dimensions: { type: Array, required: true },
-  scale: { type: Number, required: true }
+  scale: { type: Number, required: true },
+  compact: { type: Boolean, default: false }
+})
+
+// Les deux figures coexistent sur la page de l'outil — la vignette dans la
+// bande, la figure pleine dans la section des résultats. Un identifiant fixe sur
+// le titre accessible se serait donc retrouvé deux fois dans le document.
+const titleId = useId()
+
+// Le recadrage, seule différence de géométrie entre les deux : la figure occupe
+// un carré centré sur `CENTER`, de rayon `R_MAX` ; tout le reste du cadre est
+// la place des intitulés, qui ne sont pas dessinés en réduction.
+const viewBox = computed(() => {
+  if (!props.compact) return `0 0 ${WIDTH} ${HEIGHT}`
+  const margin = 12
+  const side = (R_MAX + margin) * 2
+  return `${CENTER.x - R_MAX - margin} ${CENTER.y - R_MAX - margin} ${side} ${side}`
 })
 
 // La figure est dimensionnée par ses intitulés, pas l'inverse : neuf noms de
@@ -407,6 +434,12 @@ function width(value) {
 <style scoped>
 .radar__figure {
   padding: 12px 16px 14px;
+}
+
+/* En réduction, la figure est seule dans son cadre : elle n'a plus d'intitulés
+   à border, et la bande qui l'accueille porte déjà ses propres marges. */
+.radar--compact .radar__figure {
+  padding: 0;
 }
 
 .radar__svg {

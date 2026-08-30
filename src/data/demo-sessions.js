@@ -132,7 +132,7 @@ export const DEMO_SESSIONS = [
     reach: 3,
     form: {
       scope: 'org', horizon: 'h3a',
-      digital: 'high', data: 'ready', devApproach: 'hybrid',
+      digital: 'high', data: 'ready', devApproach: 'build',
       literacy: 'mid', risk: 'moderate', staffing: 'shared',
       governance: 'crossfunctional', deployment: 'waves', roi: 'qualitative',
       ambition: 'sector',

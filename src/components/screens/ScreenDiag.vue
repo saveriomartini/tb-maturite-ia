@@ -42,11 +42,23 @@
       <header class="head">
         <div class="head__band" :style="area.color ? { background: area.color } : null" />
         <p class="head__path">
-          <span>{{ area.block }} · {{ area.dim }}</span>
-          <span class="head__rank">attendu au rang {{ area.required }}</span>
+          <span>{{ area.dim }}</span>
+          <span class="head__rank">{{ area.requiredLabel }}</span>
         </p>
-        <h3 class="head__area heading">{{ area.name }}</h3>
-        <p class="head__desc">{{ area.desc }}</p>
+        <div class="head__title">
+          <h3 class="head__area heading">{{ area.name }}</h3>
+          <button
+            type="button"
+            class="button-reset head__toggle"
+            :aria-expanded="Boolean(described[area.id])"
+            :aria-controls="`desc-${area.id}`"
+            :aria-label="`${described[area.id] ? 'Masquer' : 'Afficher'} la définition — ${area.name}`"
+            @click="described[area.id] = !described[area.id]"
+          >
+            {{ described[area.id] ? '−' : '+' }}
+          </button>
+        </div>
+        <p v-show="described[area.id]" :id="`desc-${area.id}`" class="head__desc">{{ area.desc }}</p>
       </header>
 
       <StatementPicker :vm="area.picker" @select="emit('answer', area.id, $event)" />
@@ -135,7 +147,18 @@ const props = defineProps({
 
 const emit = defineEmits(['answer'])
 
+// Deux replis par domaine, indépendants l'un de l'autre : les exemples
+// d'artefacts, et la définition du domaine.
+//
+// La définition vient du modèle et fait deux lignes de vocabulaire de cadre —
+// « la capacité de l'entreprise à définir comment l'IA soutiendra les résultats
+// métier visés… ». Elle est utile une fois, quand le nom du domaine ne suffit
+// pas ; répétée vingt-huit fois entre le titre et les énoncés, elle repousse la
+// réponse d'autant et se saute au bout du troisième domaine. Les énoncés, eux,
+// sont écrits pour être répondables sans elle. Elle reste donc à un clic, et
+// n'occupe plus la page par défaut.
 const open = reactive({})
+const described = reactive({})
 
 // — le domaine courant suit le défilement —
 //
@@ -335,6 +358,12 @@ onBeforeUnmount(() => {
   scroll-margin-top: calc(var(--header-height) + var(--strip-height));
 }
 
+/* L'espace avant le sélecteur appartient à l'en-tête et non à la définition :
+   celle-ci se replie, et sans cela la question viendrait toucher le titre. */
+.head {
+  margin-bottom: 18px;
+}
+
 .head__band {
   height: 8px;
   margin-bottom: 12px;
@@ -363,6 +392,14 @@ onBeforeUnmount(() => {
   text-transform: none;
 }
 
+/* Le « + » se pose au bout du titre, sur la même ligne de base : c'est la
+   définition du domaine qu'il ouvre, pas un bloc de la carte. */
+.head__title {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
 .head__area {
   margin: 5px 0 0;
   font-size: 22px;
@@ -370,9 +407,20 @@ onBeforeUnmount(() => {
   letter-spacing: normal;
 }
 
+.head__toggle {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 400;
+  color: var(--color-neutral-600);
+}
+
+.head__toggle:hover {
+  color: var(--color-text);
+}
+
 .head__desc {
   max-width: 90ch;
-  margin: 8px 0 18px;
+  margin: 8px 0 0;
   font-size: 12.5px;
   line-height: 1.5;
   color: var(--color-neutral-800);

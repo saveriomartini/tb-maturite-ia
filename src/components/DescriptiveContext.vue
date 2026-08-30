@@ -1,7 +1,7 @@
 <template>
   <section class="panel descriptive">
     <h2 class="panel-head descriptive__head">
-      <span>Établissement</span>
+      <span>Organisation</span>
       <span class="descriptive__hint">purement statistique</span>
     </h2>
 
