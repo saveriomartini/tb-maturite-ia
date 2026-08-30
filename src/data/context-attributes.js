@@ -35,7 +35,7 @@ export const CONTEXT_GROUPS = [
       // moyenne et seul « une équipe » agit, par le plafond qu'il déclenche.
       {
         id: 'scope', short: 'Périmètre', label: 'Périmètre de l’évaluation', aimm: 'Organizational scope', axis: null,
-        hint: 'Frontière de la discussion sur la maturité',
+        hint: '',
         opts: [
           ['team', 'Une équipe', 0],
           ['unit', 'Un département', 0.33],
@@ -94,7 +94,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'devApproach', short: 'Développement IA', label: 'Approche de développement IA', aimm: 'Primary AI development approach', axis: null,
-        hint: 'Oriente les domaines techniques à prioriser, sans modifier le profil visé',
+        hint: 'Collecté pour un ciblage par pratiques encore à venir : cette réponse n’entre aujourd’hui dans aucun calcul.',
         opts: [
           ['buy', 'Acheter sur étagère', 0],
           ['customize', 'Personnaliser', 0.33],
@@ -123,7 +123,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'risk', short: 'Risque', label: 'Appétit au risque', aimm: 'AI risk profile', axis: 'ambition',
-        hint: 'Degré de risque que l’organisation accepte d’assumer',
+        hint: '',
         opts: [
           ['averse', 'Prudent', 0],
           ['moderate', 'Modéré', 0.5],
@@ -132,7 +132,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'staffing', short: 'Ressources', label: 'Ressources affectées à l’IA', aimm: 'AI staffing', axis: 'capacity',
-        hint: 'Manière de doter les initiatives IA en compétences',
+        hint: '',
         opts: [
           ['none', 'Aucun rôle IA', 0],
           ['contracted', 'Externalisé', 0.33],
@@ -154,7 +154,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'deployment', short: 'Déploiement', label: 'Approche de déploiement', aimm: '', axis: 'ambition',
-        hint: 'Adoption conduite projet par projet ou à l’échelle de l’entreprise',
+        hint: '',
         opts: [
           ['project', 'Projet par projet', 0],
           ['waves', 'Par vagues successives', 0.5],
@@ -163,7 +163,7 @@ export const CONTEXT_GROUPS = [
       },
       {
         id: 'roi', short: 'ROI', label: 'Anticipation du retour sur investissement', aimm: '', axis: 'ambition',
-        hint: 'Le ROI a-t-il été discuté en amont ou repoussé après une phase pilote ?',
+        hint: '',
         opts: [
           ['deferred', 'Reporté après la phase pilote', 0],
           ['qualitative', 'Discuté qualitativement en amont', 0.5,

@@ -278,21 +278,6 @@ const emit = defineEmits(['focus-gate'])
   background: var(--color-neutral-100);
 }
 
-.ladder__desc {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  text-wrap: pretty;
-}
-
-/* le positionnement suit la description AIMM comme une seconde voix : même
-   corps, couleur légèrement retirée, pour qu'on voie qu'il ne vient pas de la
-   même source sans avoir à le dire */
-.ladder__position {
-  margin-top: 12px;
-  color: var(--color-neutral-700);
-}
-
 /* La ligne, en toutes lettres. Elle se lit à côté de l'échelle qui la trace :
    le trait dit où elle passe, ce bloc dit pourquoi elle y passe. Encadrée à
    gauche comme la nature du passage à l'ancrage — même registre, celui d'un
