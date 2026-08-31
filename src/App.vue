@@ -6,7 +6,9 @@
       @phase="tool.nav.phase"
       @reset="resetting = true"
     />
-    <MaturityTool :tool="tool" />
+    <div class="app__main">
+      <MaturityTool :tool="tool" />
+    </div>
     <AppFooter :attribution="ATTRIBUTION" />
 
     <AppDialog
@@ -53,9 +55,27 @@ function answerReset(action) {
 
 <style scoped>
 /* La respiration de fin de page appartient désormais au pied de page
-   d'attribution, qui ferme tous les écrans. */
+   d'attribution, qui ferme tous les écrans.
+
+   La colonne flexible tient le pied de page en bas de fenêtre sur les écrans
+   courts — l'accueil, qui tient en trois portes. Elle ne servait à rien tant
+   que la page était grise : le pied de page l'est aussi, à peine plus soutenu,
+   et la couture entre les deux ne se voyait pas. Sur fond blanc elle se voit,
+   et une bande grise qui s'arrête au milieu de la fenêtre se lit comme un
+   défaut d'affichage. */
 .app {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--color-bg);
+}
+
+/* L'enveloppe absorbe la hauteur restante, ce qui revient à poser le pied de
+   page en bas de fenêtre. Elle porte la croissance plutôt que le pied de page
+   lui-même : celui-ci garde ainsi sa marge haute de 56px, qui est ce qui le
+   détache du contenu quand la page est longue. */
+.app__main {
+  flex: 1 0 auto;
+  min-width: 0;
 }
 </style>

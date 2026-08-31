@@ -5,7 +5,6 @@
         <span class="frame__label eyebrow">{{ vm.scope.label }}</span>
         <span class="frame__value">{{ vm.scope.value }}</span>
       </p>
-      <p v-if="vm.scope.note" class="frame__note">{{ vm.scope.note }}</p>
     </div>
 
     <header class="verdict">
@@ -36,21 +35,6 @@
       </div>
     </section>
 
-    <section v-if="vm.outOfScopeLabel || vm.pendingLabel" class="section">
-      <h2 class="section-head">Ce que la mesure laisse de côté</h2>
-      <div class="asides">
-        <div v-if="vm.outOfScopeLabel" class="aside">
-          <p class="aside__eyebrow eyebrow">Domaines déclarés hors périmètre</p>
-          <p class="aside__list">{{ vm.outOfScopeLabel }}</p>
-        </div>
-
-        <div v-if="vm.pendingLabel" class="aside">
-          <p class="aside__eyebrow eyebrow">Domaines restant à évaluer</p>
-          <p class="aside__list">{{ vm.pendingLabel }}</p>
-        </div>
-      </div>
-    </section>
-
     <section class="section">
       <h2 class="section-head">Par dimension</h2>
       <div class="panel">
@@ -62,9 +46,9 @@
 
 <script setup>
 // Synthèse des résultats : le profil atteint, ce sur quoi il porte, l'échelle
-// des paliers, ce que la mesure laisse de côté, la lecture par dimension.
-// Section haute de la page de résultats — le détail par domaine la suit sans
-// changer d'écran, et la navigation appartient à la page.
+// des paliers, la lecture par dimension. Section haute de la page de
+// résultats — le détail par domaine la suit sans changer d'écran, et la
+// navigation appartient à la page.
 //
 // — la hiérarchie de la page —
 // Le périmètre d'abord, en une ligne serrée sous le titre de la section : ce sur
@@ -84,9 +68,14 @@
 // disent ce qu'il veut dire, et vivaient jusqu'ici dans la colonne de droite de
 // l'échelle, où elles se lisaient comme un commentaire de l'échelle.
 //
-// Le reste se range en sections coiffées à l'identique. Les domaines hors
-// périmètre et ceux restant à évaluer en forment une : ils bornaient la lecture
-// de toute la page depuis le bas d'un panneau qui parlait d'autre chose.
+// Le reste se range en sections coiffées à l'identique.
+//
+// Ce que cette page ne porte plus : la section « Ce que la mesure laisse de
+// côté » — domaines hors périmètre, domaines restant à évaluer — et la note qui
+// commentait un périmètre non déclaré. Les deux listes restent dites en phase
+// d'ancrage, où elles bornent l'écart qu'on s'apprête à combler ; la note reste
+// dans l'export, pièce relue sans personne pour préciser la portée. Ici, elles
+// ouvraient une réserve sur un résultat qu'on vient à peine de lire.
 //
 // Ce que cette page ne décide pas : le profil visé. Il se déclare en phase
 // d'ancrage, après cet écran, parce qu'on ne peut pas demander à une
@@ -281,20 +270,9 @@ defineProps({
   color: var(--color-neutral-800);
 }
 
-/* Le périmètre non déclaré est le seul cas commenté : la note dit la lecture
-   par défaut, et reste dans le registre du hors-texte — corps réduit, gris. */
-.frame__note {
-  margin: 5px 0 0;
-  padding-left: 190px;
-  font-size: 11.5px;
-  line-height: 1.45;
-  color: var(--color-neutral-700);
-  text-wrap: pretty;
-}
-
 /* Les sections de la page, toutes coiffées par .section-head : l'échelle des
-   paliers, ce que la mesure laisse de côté, la lecture par dimension — puis le
-   détail par domaine, sur la page qui compose celle-ci. */
+   paliers, la lecture par dimension — puis le détail par domaine, sur la page
+   qui compose celle-ci. */
 .section {
   margin-top: 34px;
 }
@@ -344,36 +322,6 @@ defineProps({
   text-wrap: pretty;
 }
 
-/* Ce que la mesure laisse de côté. Ces deux listes finissaient la colonne de
-   droite de l'échelle, où elles closaient un panneau qui parlait d'autre chose.
-   Elles ont leur propre section : elles bornent la lecture de toute la page, pas
-   de l'échelle seule. En retrait de corps et sans cadre plein — c'est la limite
-   d'un résultat, ce n'en est pas un. */
-.asides {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-}
-
-.aside {
-  min-width: 0;
-  padding-left: 12px;
-  border-left: 3px solid var(--color-neutral-300);
-}
-
-.aside__eyebrow {
-  margin: 0 0 5px;
-  color: var(--color-neutral-700);
-}
-
-.aside__list {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--color-neutral-800);
-  text-wrap: pretty;
-}
-
 @media (max-width: 900px) {
   /* Le nom du profil passe sous son intitulé plutôt que de se serrer contre
      lui, et reprend le bord gauche : à cette largeur, un nom aligné à droite
@@ -400,17 +348,9 @@ defineProps({
   }
 
   /* Empilé, l'intitulé du cadrage n'a plus de colonne à tenir : la valeur passe
-     sous lui, et la note reprend le bord de la page. */
+     sous lui. */
   .frame__label {
     min-width: 0;
-  }
-
-  .frame__note {
-    padding-left: 0;
-  }
-
-  .asides {
-    grid-template-columns: 1fr;
   }
 }
 </style>

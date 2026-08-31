@@ -36,7 +36,7 @@
               <th v-for="indicator in info.levelBuild.indicators" :key="indicator.id" class="head">
                 {{ indicator.name }}
               </th>
-              <th class="head">En un mot</th>
+              <th class="head">Niveau énoncé</th>
             </tr>
           </thead>
           <tbody>
@@ -97,7 +97,7 @@
       <template #actions>
         <button
           type="button"
-          class="btn btn-primary info__start"
+          class="btn btn-primary btn-arrow info__start"
           @click="emit('start')"
         >
           Démarrer le diagnostic
@@ -139,10 +139,16 @@ const emit = defineEmits(["toggle-level", "start", "back"]);
 </script>
 
 <style scoped>
-.info {
-  max-width: 1180px;
-}
+/* — la page tient la largeur de l'outil —
+   Elle était bornée à 1180px là où `AppScreen` en donne 1440. Centrée, elle
+   rentrait donc de 130px de chaque côté par rapport à la barre d'en-tête, qui
+   est au gabarit plein : le bloc « M.A.IA » et le premier mot de la page ne
+   tombaient pas sur la même verticale, et passer de l'information à l'outil
+   décalait tout le contenu. Sans borne propre, la page hérite du gabarit commun
+   et s'aligne sur l'en-tête comme le font les pages de l'outil.
 
+   Le chapô du titre garde sa largeur de lecture : c'est un texte
+   d'introduction, pas un bloc à aligner sur les tableaux. */
 .page-head {
   max-width: 780px;
 }
@@ -166,10 +172,14 @@ const emit = defineEmits(["toggle-level", "start", "back"]);
   letter-spacing: 0.08em;
 }
 
-/* Le chapô d'une section et les notes qui la ferment gardent la largeur de
-   lecture de la page ; les tableaux, eux, prennent toute la largeur. */
+/* — les textes tiennent la largeur de ce qu'ils commentent —
+   Le chapô d'une section et les notes qui la ferment étaient bornés à 780px sur
+   une page qui en fait 1180 : ils s'arrêtaient à deux tiers de la largeur des
+   tableaux et des panneaux qu'ils annoncent, ce qui ouvrait à droite une bande
+   vide sur toute la hauteur de la page et faisait flotter chaque texte à côté
+   de son objet au lieu de le coiffer. Ils prennent désormais la largeur de leur
+   section, comme tout le reste. */
 .zone__lead {
-  max-width: 780px;
   margin: -6px 0 18px;
   font-size: 13.5px;
   line-height: 1.5;
@@ -178,7 +188,6 @@ const emit = defineEmits(["toggle-level", "start", "back"]);
 }
 
 .zone__note {
-  max-width: 780px;
   margin: 14px 0 0;
   font-size: 12.5px;
   line-height: 1.55;

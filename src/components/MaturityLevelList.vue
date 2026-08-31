@@ -84,8 +84,10 @@ const emit = defineEmits(['toggle'])
   padding: 0 16px 14px 246px;
 }
 
+/* Le texte déplié tient la largeur de la ligne qui le porte, comme les autres
+   textes de la page d'information. Il reste en retrait à gauche : c'est le
+   décalage sous le nom du profil qui le rattache à lui, pas sa longueur. */
 .level__paragraph {
-  max-width: 780px;
   margin: 0 0 10px;
   font-size: 12px;
   line-height: 1.55;

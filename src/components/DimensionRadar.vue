@@ -88,16 +88,6 @@
         />
 
         <text
-          v-for="tick in compact ? [] : ticks"
-          :key="`tick-${tick.rank}`"
-          :x="tick.x"
-          :y="tick.y"
-          font-size="11"
-          font-weight="700"
-          fill="var(--color-neutral-700)"
-        >{{ tick.rank }}</text>
-
-        <text
           v-for="axis in compact ? [] : axes"
           :key="`label-${axis.id}`"
           :text-anchor="axis.anchor"
@@ -106,15 +96,6 @@
           fill="var(--color-text)"
         >
           <tspan v-for="line in axis.lines" :key="line.y" :x="axis.label.x" :y="line.y">{{ line.text }}</tspan>
-          <tspan
-            v-if="axis.missing"
-            :x="axis.label.x"
-            :y="axis.missingY"
-            font-size="10"
-            font-weight="500"
-            font-style="italic"
-            fill="var(--color-neutral-700)"
-          >non mesurée — {{ axis.missing }}</tspan>
         </text>
       </svg>
 
@@ -190,15 +171,29 @@
 // — une dimension sans mesure n'est jamais tracée à zéro —
 // Aucun domaine renseigné, ou tous déclarés hors périmètre : la valeur est
 // absente, pas nulle. Le tracé s'interrompt sur cet axe plutôt que de passer par
-// le centre ou de couper d'un bord à l'autre, l'intitulé de l'axe dit laquelle
-// des deux absences c'est, et la barre correspondante n'est pas dessinée. Un
-// zéro s'y lirait comme le pire résultat possible, alors que rien n'a été
-// mesuré — même famille de défaut que le « 3,1 / 3 » relevé par l'experte
-// métier.
+// le centre ou de couper d'un bord à l'autre, et la barre correspondante n'est
+// pas dessinée. Un zéro s'y lirait comme le pire résultat possible, alors que
+// rien n'a été mesuré — même famille de défaut que le « 3,1 / 3 » relevé par
+// l'experte métier.
+//
+// L'intitulé de l'axe portait en outre, en italique sous le nom de la dimension,
+// laquelle des deux absences c'était. La mention a été retirée de la figure : le
+// trou dans le tracé dit déjà qu'il n'y a pas de mesure, et une glose par axe en
+// mettait jusqu'à neuf autour d'un dessin qui vit de sa forme. La distinction
+// entre les deux absences n'est pas perdue — la liste des barres, sous la
+// figure, la porte toujours pour la dimension concernée.
 //
 // Le rang 1 n'est pas au centre : au centre, il serait un point, donc
-// indiscernable d'une absence. Le premier anneau porte donc un rayon non nul, et
-// le centre ne porte aucune valeur.
+// indiscernable d'une absence. L'anneau central porte le rang 0 — un rang que
+// rien ne peut valoir, l'échelle du modèle allant de 1 à 5 — et sert de ligne de
+// départ : le rang 1 se pose un cran plus loin, si bien qu'une dimension au
+// premier rang montre un avancement au lieu de se confondre avec le fond de la
+// figure. Le centre lui-même ne porte toujours aucune valeur.
+//
+// La graduation chiffrée a été retirée. Les rangs ne se lisent pas sur cette
+// figure — elle situe les dimensions les unes par rapport aux autres et ouvre la
+// discussion ; c'est l'échelle des paliers qui conclut, et elle porte les
+// nombres. Les inscrire ici rouvrait la lecture en note sur cinq.
 //
 // Le dessin est entièrement calculé en `computed` et rendu par le gabarit : rien
 // n'y touche au DOM, si bien que la figure se rend aussi hors navigateur — c'est
@@ -243,7 +238,13 @@ const HEIGHT = 600
 const CENTER = { x: 450, y: 292 }
 const R_MAX = 160
 const R_MIN = 44
-const MIN_RANK = 1
+// L'anneau le plus intérieur porte le rang 0, qui n'est pas une valeur mesurable
+// — aucune dimension ne vaut 0, l'échelle du modèle va de 1 à 5. Il sert de
+// ligne de départ : tant qu'il portait le rang 1, une dimension au premier rang
+// se traçait exactement sur lui et se lisait comme un fond de cuve, sans
+// avancement visible. Le rang 1 se pose désormais un cran plus loin, et le tracé
+// se décolle du centre dès qu'il y a une mesure.
+const MIN_RANK = 0
 const LINE_HEIGHT = 14
 const LABEL_WRAP = 24
 
@@ -321,7 +322,6 @@ const axes = computed(() =>
     return {
       id: dimension.id,
       color: dimension.color,
-      missing: dimension.missing,
       anchor: cos > 0.25 ? 'start' : cos < -0.25 ? 'end' : 'middle',
       inner: pointOf(index, MIN_RANK),
       outer: pointOf(index, props.scale),
@@ -329,22 +329,10 @@ const axes = computed(() =>
       lines: texts.map((text, line) => ({
         text,
         y: Number((label.y + offset + line * LINE_HEIGHT).toFixed(1))
-      })),
-      missingY: Number((label.y + offset + texts.length * LINE_HEIGHT).toFixed(1))
+      }))
     }
   })
 )
-
-// La graduation, une seule fois, sur l'axe qui monte : répétée sur les neuf,
-// elle encombrerait la figure sans rien ajouter.
-const ticks = computed(() => {
-  const list = []
-  for (let rank = MIN_RANK; rank <= props.scale; rank++) {
-    const point = pointOf(0, rank)
-    list.push({ rank, x: Number((point.x + 6).toFixed(1)), y: Number((point.y + 4).toFixed(1)) })
-  }
-  return list
-})
 
 // Un tracé peut avoir des trous, et c'est tout l'enjeu : une dimension sans
 // mesure n'a pas de point. On dessine donc des segments ouverts sur les suites

@@ -35,8 +35,10 @@ const emit = defineEmits(['toggle-level'])
 </script>
 
 <style scoped>
+/* Le chapô tient la largeur du tableau qu'il annonce, comme les autres textes
+   de la page d'information : borné plus court, il laissait à sa droite un vide
+   que rien ne venait occuper. */
 .intro {
-  max-width: 860px;
   margin: 0;
   font-size: 14px;
   line-height: 1.5;

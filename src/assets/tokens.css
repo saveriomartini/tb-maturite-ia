@@ -1,5 +1,6 @@
-/* Modernist design-system tokens, transcribed from the Claude Design source
-   (_ds/modernist.../styles.css) plus the AI Maturity Tool page-level overrides.
+/* Jetons du système visuel. Le fond, les surfaces et les boutons sont relevés
+   sur dieci.ch (voir les notes de chaque bloc) ; le reste, typographie comprise,
+   vient du gabarit d'origine.
 
    La police Archivo est chargée depuis index.html (preconnect + <link>) et non
    par un @import : un @import n'est découvert qu'après le téléchargement et
@@ -7,14 +8,47 @@
    Hors ligne, la pile de repli `system-ui, sans-serif` s'applique seule. */
 
 :root {
-  --color-bg: #f3f2f2;
-  --color-surface: #eae9e9;
+  /* — le fond de page est blanc —
+     Il valait #f3f2f2, un gris chaud très clair, hérité du gabarit d'origine.
+     Le passage au blanc suit la référence relevée sur dieci.ch, dont aucune
+     règle ne pose de fond sur `body` ni sur `html` : la page est blanche par
+     défaut, et le gris (#e8e5e5 chez eux) ne sert qu'aux surfaces posées
+     dessus — encarts, pied de page, champs au survol. Le même partage vaut
+     ici : `--color-bg` porte la page, `--color-surface` et `--color-desk`
+     portent ce qui s'y pose. */
+  --color-bg: #ffffff;
+
+  /* Le pied de page était une bande grise. Il passe au blanc comme le reste :
+     son filet noir de 2px suffit à le détacher, et c'est la règle de la
+     référence — une surface se démarque par un trait, pas par une teinte. */
+  --color-surface: #ffffff;
+
+  /* — le gris sur lequel se pose une feuille —
+     L'aperçu d'export simule une page A4 blanche, tenue jusqu'ici par le seul
+     contraste avec le fond gris de l'application. Ce contraste disparaît avec
+     le fond blanc : sans ce jeton, la feuille se confondrait avec la page et
+     il ne resterait que son filet d'1px pour la délimiter. C'est le gris de la
+     référence (#e8e5e5), employé au même usage — une surface posée sous autre
+     chose, jamais un fond de page. */
+  --color-desk: #e8e5e5;
+
   --color-text: #201e1d;
   --color-accent: #ec3013;
   --color-accent-2: #e15b47;
   --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
 
-  --color-neutral-100: #f8f4f4;
+  /* — le blanc des encarts —
+     `--color-neutral-100` est le fond de tout ce qui est posé sur la page :
+     panneaux, cartes, énoncés du questionnaire, cellules de l'échelle, champs.
+     Il valait #f8f4f4, un blanc cassé chaud, qui se lisait comme un relief tant
+     que la page était grise. Sur une page blanche, la teinte n'ajoute rien et
+     contredit la règle de la référence, qui ne compose qu'en blanc et noir :
+     une surface s'y délimite par son filet, jamais par un fond légèrement
+     différent. Le jeton passe donc au blanc pur, et les encarts tiennent par
+     leurs bords — 2px noirs pour un panneau, 1px pour une carte. Le reste de la
+     rampe est inchangé : elle sert aux marques de données et aux textes
+     secondaires, pas aux surfaces. */
+  --color-neutral-100: #ffffff;
   --color-neutral-200: #eae7e7;
   --color-neutral-300: #d7d3d3;
   --color-neutral-400: #bab6b6;
@@ -24,6 +58,12 @@
   --color-neutral-800: #444141;
   --color-neutral-900: #2d2b2b;
 
+  /* — typographie —
+     Archivo, inchangée. La référence compose en Helvetica (`Helvetica LT W01`,
+     sous licence, qu'on ne reprend pas) et le passage à une pile Helvetica /
+     Arial a été essayé puis abandonné : la typographie du dépôt reste celle du
+     gabarit d'origine. Seuls le fond, les surfaces et les boutons suivent la
+     référence. */
   --font-heading: 'Archivo', system-ui, sans-serif;
   --font-heading-weight: 800;
   --font-body: 'Archivo', system-ui, sans-serif;
@@ -64,6 +104,67 @@
   --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
   --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
   --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+
+  /* ── boutons ───────────────────────────────────────────────────────────
+     Relevé sur la feuille de style de dieci.ch (`dieci2.css`), dont l'accès
+     automatisé passe — le `robots.txt` n'y ferme que `/contao/`. Ce qui a été
+     repris, et ce qui ne l'a pas été :
+
+     REPRIS. Angles vifs — aucune règle de bouton n'y porte de `border-radius`,
+     seul le bouton de fermeture est un cercle ; le dépôt était déjà à 0, la
+     référence le confirme. Casse normale — aucun `text-transform` sur un
+     bouton. Rembourrage généreux à l'horizontale : leur bouton plein est en
+     `padding: 10px 28px`, presque le double de ce que portait le nôtre
+     (8px / 14,4px), et c'est ce qui donne au bouton sa présence sans qu'il
+     ait besoin d'une couleur. Bord de 2px, qui est aussi l'épaisseur de filet
+     du reste du dépôt (`.panel`, `.section-head`, `.brand-home`) : primaire et
+     secondaire le portent tous deux, faute de quoi deux boutons voisins de la
+     même ligne ne feraient pas la même hauteur. Aplat noir sur texte blanc pour
+     l'action principale (`background:#000; color:#fff`).
+
+     NON REPRIS, et pourquoi. Leur bouton plein grandit au survol — le
+     rembourrage droit passe de 28 à 42px pour laisser sortir une flèche. C'est
+     leur signature, et elle ne se transpose pas : nos boutons vivent dans un
+     pied de page à deux boutons et dans des lignes d'actions, où un élément qui
+     s'élargit au survol pousse ses voisins. Le survol se marque donc par la
+     couleur seule, comme il le faisait déjà. Non repris non plus : leur variante
+     claire, dont le survol pose un fond blanc — invisible sur une page devenue
+     blanche ; notre bouton fantôme prend un gris clair, qui est le même geste
+     (une surface qui se lève) sur un fond qui a changé.
+
+     ÉCART DÉLIBÉRÉ SUR L'ACCESSIBILITÉ. La référence désactive ses boutons par
+     `opacity:.3`, ce qui ramène un texte blanc sur aplat noir à environ 2,1:1 —
+     sous le minimum AA de 4,5:1. Le dépôt faisait la même faute autrement, par
+     `opacity:.45`, soit environ 2,8:1. L'opacité est donc abandonnée au profit
+     de couleurs déclarées, qui tiennent 6,5:1 (voir `--btn-disabled-*`). La
+     référence ne pose par ailleurs aucun style de focus, et va jusqu'à retirer
+     le contour du navigateur (`:focus{outline:none}`) : rien n'en est repris,
+     le focus clavier du dépôt est conservé tel quel. */
+  --btn-padding-y: 10px;
+  --btn-padding-x: 28px;
+  --btn-font-size: 14px;
+  --btn-border-width: 2px;
+
+  --btn-primary-bg: var(--color-text);
+  --btn-primary-fg: #fff;
+  --btn-primary-bg-hover: var(--color-neutral-800);
+  --btn-primary-bg-active: var(--color-neutral-900);
+
+  --btn-secondary-fg: var(--color-text);
+  --btn-secondary-border: var(--color-text);
+  --btn-secondary-bg-hover: var(--color-neutral-200);
+  --btn-secondary-bg-active: var(--color-neutral-300);
+
+  --btn-ghost-bg-hover: var(--color-neutral-200);
+  --btn-ghost-bg-active: var(--color-neutral-300);
+
+  /* Désactivé : couleurs déclarées plutôt qu'une opacité, pour tenir le AA.
+     Aplat #605d5d sous texte blanc = 6,5:1 ; le même gris en texte sur la page
+     blanche = 6,5:1 également. */
+  --btn-disabled-bg: var(--color-neutral-700);
+  --btn-disabled-fg: #fff;
+  --btn-disabled-outline-fg: var(--color-neutral-700);
+  --btn-disabled-outline-border: var(--color-neutral-400);
 }
 
 /* — points de rupture —
@@ -110,25 +211,99 @@ a:hover { color: var(--color-neutral-700); }
 :focus-visible { outline: 2px solid var(--color-text); outline-offset: 2px; }
 ::selection { background: rgba(32, 30, 29, 0.18); }
 
-/* — buttons — */
+/* — buttons —
+   Géométrie et états pilotés par les jetons `--btn-*` déclarés en tête de
+   fichier, où figure aussi ce qui vient de la référence et ce qui s'en écarte.
+   Les trois variantes partagent la même boîte : même rembourrage, même
+   épaisseur de bord — le primaire porte un bord de la couleur de son aplat —
+   pour que deux boutons voisins d'une même ligne fassent la même hauteur. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   cursor: pointer; text-decoration: none;
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
-  font-size: 14px; line-height: 1.2; color: var(--color-text);
-  background: transparent; border: 1px solid transparent;
-  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  font-size: var(--btn-font-size); line-height: 1.2; color: var(--color-text);
+  background: transparent;
+  border: var(--btn-border-width) solid transparent;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
   border-radius: var(--radius-md);
 }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-primary { background: var(--color-text); border-color: var(--color-text); color: #fff; }
-.btn-primary:hover { background: #444141; border-color: #444141; }
-.btn-primary:active { background: #2d2b2b; }
-.btn-secondary { border-color: var(--color-divider); }
-.btn-secondary:hover { background: rgba(32, 30, 29, 0.08); }
-.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+
+.btn-primary {
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+}
+.btn-primary:hover { background: var(--btn-primary-bg-hover); border-color: var(--btn-primary-bg-hover); }
+.btn-primary:active { background: var(--btn-primary-bg-active); border-color: var(--btn-primary-bg-active); }
+
+.btn-secondary { color: var(--btn-secondary-fg); border-color: var(--btn-secondary-border); }
+.btn-secondary:hover { background: var(--btn-secondary-bg-hover); }
+.btn-secondary:active { background: var(--btn-secondary-bg-active); }
+
+/* Le bouton fantôme ne porte ni aplat ni bord : il resserre son rembourrage
+   horizontal pour se lire comme un lien, et ne se signale qu'au survol. */
 .btn-ghost { color: var(--color-text); padding-inline: var(--space-1); }
-.btn-ghost:hover { background: rgba(32, 30, 29, 0.08); }
+.btn-ghost:hover { background: var(--btn-ghost-bg-hover); }
+.btn-ghost:active { background: var(--btn-ghost-bg-active); }
+
+/* — le bouton en forme de flèche —
+   Repris du bouton « order » de la référence : un aplat noir dont le bord droit
+   se termine en pointe. Il marque les portes d'entrée du parcours — l'action
+   qui fait passer d'une page de lecture à l'outil lui-même : « Démarrer le
+   diagnostic » à l'accueil et sur la page d'information, « Voir les résultats »
+   sur chaque cas de la démonstration. Les boutons qui font avancer *à
+   l'intérieur* de l'outil gardent leur forme rectangulaire : si tout ce qui est
+   noir portait la pointe, elle ne désignerait plus rien.
+
+   La pointe est découpée dans le bouton lui-même plutôt qu'ajoutée à côté :
+   posée en `::after` débordant à droite, elle sortirait de la carte qui la
+   contient. La découpe garde donc la largeur du bouton, et le rembourrage droit
+   est augmenté d'autant pour que le libellé reste centré dans la partie pleine
+   et non sous la pointe. */
+.btn-arrow {
+  --arrow-width: 26px;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--arrow-width)) 0,
+    100% 50%,
+    calc(100% - var(--arrow-width)) 100%,
+    0 100%
+  );
+  padding-right: calc(var(--btn-padding-x) + var(--arrow-width));
+}
+
+/* `clip-path` rogne tout ce que l'élément peint en dehors de la découpe, le
+   contour de focus compris : le repère clavier déclaré plus haut disparaîtrait
+   sur ces seuls boutons. Il est donc remplacé par un liseré tracé à
+   l'intérieur, qui survit à la découpe — deux traits, blanc puis noir, pour
+   rester visible quel que soit l'aplat sous lui. */
+.btn-arrow:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 3px #fff,
+    inset 0 0 0 6px var(--color-text);
+}
+
+/* Désactivé — par couleurs déclarées et non par opacité : voir la note des
+   jetons. Chaque variante garde sa forme, seul le contraste tombe. */
+.btn:disabled { cursor: not-allowed; }
+.btn-primary:disabled,
+.btn-primary:disabled:hover {
+  background: var(--btn-disabled-bg);
+  border-color: var(--btn-disabled-bg);
+  color: var(--btn-disabled-fg);
+}
+.btn-secondary:disabled,
+.btn-secondary:disabled:hover {
+  background: transparent;
+  border-color: var(--btn-disabled-outline-border);
+  color: var(--btn-disabled-outline-fg);
+}
+.btn-ghost:disabled,
+.btn-ghost:disabled:hover {
+  background: transparent;
+  color: var(--btn-disabled-outline-fg);
+}
 
 /* — titre encadré, ramène à l'écran d'accueil — */
 .brand-home {

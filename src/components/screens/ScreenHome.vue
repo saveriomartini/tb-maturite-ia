@@ -20,7 +20,7 @@
         <button
           type="button"
           class="btn door__button"
-          :class="block.primary ? 'btn-primary' : 'btn-secondary'"
+          :class="block.primary ? 'btn-primary btn-arrow' : 'btn-secondary'"
           @click="emit('open', block.target)"
         >
           {{ block.action }}

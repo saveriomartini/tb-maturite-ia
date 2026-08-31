@@ -1,10 +1,10 @@
 <template>
-  <section class="panel picker" role="radiogroup" :aria-label="vm.question">
+  <section class="panel picker" :style="vm.color ? { '--picker-color': vm.color } : null">
     <div class="panel-head picker__head">
       <h3 class="picker__title">{{ vm.question }}</h3>
       <button
         type="button"
-        role="radio"
+        role="switch"
         class="button-reset out"
         :class="{ 'is-active': vm.outOfScope.active }"
         :aria-checked="vm.outOfScope.active"
@@ -12,11 +12,11 @@
         @click="emit('select', vm.outOfScope.value)"
       >
         <span class="out__text">{{ vm.outOfScope.short }}</span>
-        <span class="out__mark" aria-hidden="true" />
+        <span class="out__track" aria-hidden="true"><span class="out__knob" /></span>
       </button>
     </div>
 
-    <div class="picker__body">
+    <div class="picker__body" role="radiogroup" :aria-label="vm.question">
       <button
         v-for="statement in vm.statements"
         :key="statement.value"
@@ -55,18 +55,22 @@
 // restitution s'efforce de fermer. L'ordre de la liste suffit à dire qu'il y a
 // progression.
 //
-// Le hors périmètre est une réponse et non une abstention : il est donc dans le
-// même groupe de boutons radio que les cinq énoncés — ce n'est pas un sixième
-// niveau. Il a quitté la colonne de droite pour l'en-tête de l'encadré, où il
-// répond à la question posée juste à côté de lui : la question demande laquelle
-// des situations décrit l'organisation, et « aucune » est une des réponses
-// possibles à cette question-là. La colonne qu'il occupait valait un tiers de la
-// largeur pour un bouton de deux lignes, et rétrécissait d'autant les cinq
-// énoncés, qui sont ce qu'on est venu lire. Ils tiennent désormais toute la
-// largeur, l'un sous l'autre.
+// Le hors périmètre est un interrupteur, et non plus un sixième bouton radio du
+// même groupe que les cinq énoncés. Le changement est de nature et pas
+// seulement de forme : sous le libellé « aucune », il répondait à la question
+// posée à côté de lui — laquelle des situations décrit l'organisation — et se
+// tenait donc dans son groupe. Il ne répond plus, il retire le domaine de la
+// mesure, ce qui est un état du domaine et non une réponse parmi six. Un
+// interrupteur dit exactement cela : une chose qu'on met en marche ou qu'on
+// laisse éteinte, indépendamment de ce qu'on répond en dessous.
 //
-// Son carré est à droite de son libellé, à l'inverse des énoncés : dans
-// l'en-tête, il ferme la ligne au lieu de couper entre le titre et lui.
+// D'où le déplacement de `role="radiogroup"` : il coiffait tout l'encadré, ce
+// qui plaçait l'interrupteur dans un groupe de boutons radio — un assemblage
+// qu'aucune technologie d'assistance ne sait lire. Il coiffe désormais le seul
+// corps de l'encadré, où ne vivent que les cinq énoncés.
+//
+// L'interrupteur ferme la ligne d'en-tête, à droite de son libellé : à gauche,
+// il se serait glissé entre la question et sa réponse.
 //
 // Un clic vaut une réponse : le composant n'a pas d'état, il émet la valeur et
 // reçoit en retour le view-model qui dit laquelle est retenue. Recliquer la
@@ -126,11 +130,21 @@ const emit = defineEmits(['select'])
   border-color: var(--color-text);
 }
 
-/* Les situations que la réponse suppose dépassées. Le liseré est posé en ombre
-   intérieure et non en bordure : une bordure de trois pixels décalerait le texte
-   de ces seules lignes, et les cinq énoncés ne s'aligneraient plus. */
+/* Les situations que la réponse suppose dépassées, et la réponse elle-même,
+   portent le liseré de la dimension — la même couleur que le bandeau de la
+   carte, la barre des domaines et les pastilles du cadre de référence, où elle
+   ouvre déjà chaque domaine par la gauche. Le liseré était gris : il disait
+   qu'un palier était franchi sans dire de quoi, et la seule couleur de la carte
+   vivait dans un bandeau de trois pixels tout en haut. Ce que l'on colore ici,
+   c'est la colonne des rangs atteints, qui monte du premier énoncé jusqu'à la
+   réponse retenue.
+
+   Le liseré est posé en ombre intérieure et non en bordure : une bordure de
+   quatre pixels décalerait le texte de ces seules lignes, et les cinq énoncés
+   ne s'aligneraient plus. Le gris reste en repli, pour un domaine dont la
+   dimension n'aurait pas de couleur. */
 .statement.is-reached {
-  box-shadow: inset 3px 0 0 var(--color-neutral-500);
+  box-shadow: inset 4px 0 0 var(--picker-color, var(--color-neutral-500));
 }
 
 .statement.is-reached .statement__text {
@@ -139,11 +153,15 @@ const emit = defineEmits(['select'])
 
 /* L'énoncé retenu se marque par son trait et sa graisse plutôt que par un aplat
    noir : les quatre autres doivent rester lisibles — c'est en les relisant qu'on
-   vérifie qu'on a bien répondu. */
+   vérifie qu'on a bien répondu. Son bord gauche reprend la couleur de la
+   dimension, comme les rangs qu'il suppose franchis : la colonne colorée
+   s'arrête sur lui, ce qui en fait le haut de la pile plutôt qu'une ligne à
+   part. */
 .statement.is-active {
   border: 2px solid var(--color-text);
   background: color-mix(in srgb, var(--color-text) 6%, transparent);
   padding: 8px 10px;
+  box-shadow: inset 4px 0 0 var(--picker-color, var(--color-text));
 }
 
 .statement__text {
@@ -156,48 +174,79 @@ const emit = defineEmits(['select'])
   font-weight: 700;
 }
 
-/* Trait discontinu, comme avant : la réponse est de même rang que les cinq
-   énoncés, mais elle sort le domaine de la mesure au lieu d'y répondre. Le carré
-   ferme la ligne, à droite du libellé — dans l'en-tête, à gauche il se serait
-   glissé entre la question et sa réponse. */
+/* L'interrupteur n'a plus de cadre : un contrôle encadré dans une barre de
+   titre elle-même encadrée faisait deux traits pour une seule chose, et le
+   trait discontinu qu'il portait servait à le distinguer des cinq énoncés — ce
+   dont sa forme se charge désormais. Restent le libellé et la bascule. */
 .out {
   flex: none;
   display: flex;
   gap: 8px;
   align-items: center;
-  padding: 3px 7px;
-  border: 1px dashed var(--color-neutral-500);
   text-align: left;
 }
 
-.out:hover {
+/* La glissière et son bouton. Deux pixels de bord, comme le reste du dépôt, et
+   des angles vifs : une bascule arrondie serait le seul rayon de toute
+   l'interface. */
+.out__track {
+  flex: none;
+  position: relative;
+  width: 30px;
+  height: 16px;
+  border: 2px solid var(--color-neutral-600);
+  background: var(--color-neutral-100);
+  transition: background 0.12s linear, border-color 0.12s linear;
+}
+
+.out__knob {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-neutral-600);
+  transition: transform 0.12s ease-out, background 0.12s linear;
+}
+
+.out:hover .out__track {
   border-color: var(--color-text);
 }
 
-.out__mark {
-  flex: none;
-  width: 11px;
-  height: 11px;
-  border: 1px dashed var(--color-neutral-600);
+.out:hover .out__knob {
+  background: var(--color-text);
 }
 
-.out.is-active {
-  border: 2px dashed var(--color-text);
-  padding: 2px 6px;
-  background: var(--color-neutral-200);
-}
-
-.out.is-active .out__mark {
-  border-style: solid;
+/* En marche : le bouton passe à droite et la glissière se remplit. Le domaine
+   est alors hors mesure, et c'est le seul état de la carte qui se lit sans
+   avoir à comparer cinq énoncés. */
+.out.is-active .out__track {
   border-color: var(--color-text);
   background: var(--color-text);
 }
 
-/* Le libellé prend la casse et la graisse de la barre de titre : il y répond, il
-   ne s'y ajoute pas. */
+.out.is-active .out__knob {
+  transform: translateX(14px);
+  background: var(--color-neutral-100);
+}
+
+/* Le libellé garde la casse et l'interlettrage de la barre de titre — il
+   appartient à cette ligne — mais en abandonne la graisse : la barre annonce la
+   question, l'interrupteur n'est qu'une sortie offerte à côté d'elle, et deux
+   gras dans la même ligne les mettaient sur le même plan. */
 .out__text {
   font: inherit;
+  font-weight: 500;
   letter-spacing: inherit;
   white-space: nowrap;
+}
+
+/* Rien ne bouge pour qui refuse les animations : l'état reste lisible à la
+   position du bouton et au remplissage de la glissière. */
+@media (prefers-reduced-motion: reduce) {
+  .out__track,
+  .out__knob {
+    transition: none;
+  }
 }
 </style>

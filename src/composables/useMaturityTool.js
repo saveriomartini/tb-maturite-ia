@@ -145,12 +145,18 @@ const PICKER_QUESTION = 'Laquelle de ces situations décrit le mieux votre organ
 // compté comme acquis, jamais compté comme manquant — et se retrouve nommé à
 // part en restitution.
 //
-// Deux libellés pour un seul bouton, et ce n'est pas un doublon. Le bouton vit
-// désormais dans la barre de titre de l'encadré, à côté de la question : « aucune »
-// y répond en un mot, ce qu'une phrase de sept mots ne saurait faire dans une
-// barre de dix pixels. La phrase entière reste le nom accessible du bouton — un
-// lecteur d'écran qui l'atteint hors du contexte de la question n'entendrait
-// autrement qu'un adjectif seul.
+// Deux libellés pour un seul contrôle, et ce n'est pas un doublon. Il vit dans
+// la barre de titre de l'encadré, à côté de la question : « ne pas appliquer »
+// y tient en trois mots, ce qu'une phrase de sept mots ne saurait faire dans une
+// barre de dix pixels. La phrase entière reste le nom accessible — un lecteur
+// d'écran qui l'atteint hors du contexte de la question n'entendrait autrement
+// qu'une consigne sans objet.
+//
+// Le libellé disait « aucune » : il répondait à la question posée à côté de lui
+// — laquelle de ces situations décrit votre organisation — et n'avait donc de
+// sens que collé à elle. Devenu un interrupteur, le contrôle ne répond plus à
+// la question, il retire le domaine de la mesure : il lui faut un libellé qui
+// dise ce qu'il fait, pas ce qu'il répond.
 //
 // Les deux notes qui accompagnaient ce bouton ont été retirées le 30.08.2026.
 // L'une disait qu'une réponse se reprend en la recliquant, l'autre ce que le
@@ -159,7 +165,7 @@ const PICKER_QUESTION = 'Laquelle de ces situations décrit le mieux votre organ
 // la restitution énonce là où elle décide, sous « Ce que la mesure laisse de
 // côté ».
 const OUT_OF_SCOPE_LABEL = 'Ce domaine ne concerne pas mon organisation'
-const OUT_OF_SCOPE_SHORT = 'aucune'
+const OUT_OF_SCOPE_SHORT = 'ne pas appliquer'
 
 // État initial. `answers` porte une réponse par domaine — le rang de l'énoncé
 // retenu, ou `'na'` — et remplace la table des pratiques cochées : l'unité de
@@ -857,6 +863,12 @@ export function useMaturityTool() {
           // situations, on ne parcourt pas une jauge.
           picker: {
             question: PICKER_QUESTION,
+            // La couleur de la dimension, que les énoncés retenus reprennent sur
+            // leur bord gauche. Elle vient du modèle et non du composant : c'est
+            // la même que celle du bandeau de la carte, de la barre des domaines
+            // et des pastilles du cadre de référence — un domaine garde sa
+            // couleur d'un bout à l'autre du parcours.
+            color: area.dimColor,
             // `active` est l'énoncé retenu, `reached` ceux que ce choix suppose
             // dépassés. Les cinq situations sont cumulatives — se reconnaître
             // dans la troisième, c'est avoir passé la première et la deuxième —

@@ -99,12 +99,20 @@ const emit = defineEmits(['back'])
   color: var(--color-neutral-700);
 }
 
+/* — le plan de travail sous les feuilles —
+   La page A4 est blanche, et le fond de l'application l'est devenu aussi : sans
+   surface intermédiaire, la feuille se confondrait avec la page et il ne
+   resterait que son filet d'1px pour dire où elle commence. Le gris est donc
+   posé ici, sous les feuilles, plutôt que sur toute l'application — c'est le
+   seul endroit du parcours où quelque chose de blanc doit se détacher. */
 .pages {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 28px;
   margin-top: 18px;
+  padding: 28px 0;
+  background: var(--color-desk);
 }
 
 /* format A4 à l'échelle 1 : ce que produira l'impression */
@@ -117,6 +125,21 @@ const emit = defineEmits(['back'])
   border: 1px solid var(--color-neutral-400);
   background: #fff;
   box-shadow: var(--shadow-md);
+}
+
+/* Le plan de travail, le filet et l'ombre n'existent qu'à l'écran : ils disent
+   où commence la feuille sur un fond qui n'est pas le papier. Imprimés, ils
+   redoubleraient le bord de la page réelle. */
+@media print {
+  .pages {
+    padding: 0;
+    background: none;
+  }
+
+  .page {
+    border: 0;
+    box-shadow: none;
+  }
 }
 
 .page__head {

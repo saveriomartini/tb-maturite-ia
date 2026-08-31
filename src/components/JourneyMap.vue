@@ -1,5 +1,5 @@
 <template>
-  <div class="map">
+  <div class="map" :style="{ '--phase-count': phases.length }">
     <div class="panel">
       <div class="phases">
         <section v-for="phase in phases" :key="phase.n" class="phase">
@@ -62,9 +62,17 @@ defineProps({
   line-height: 1.3;
 }
 
+/* Une colonne par phase, sur une seule ligne. Le nombre vient des données et
+   non d'une constante : la grille était figée à trois colonnes depuis le
+   rétablissement de l'Ancrage, si bien que la quatrième phase passait à la
+   ligne — et, les notes étant sur la même grille, celles de l'Ancrage se
+   rangeaient sous le Cadrage. Une carte du parcours qui attribue ses frictions
+   à la mauvaise phase vaut moins que pas de carte du tout. La même constante
+   avait déjà lâché dans la barre de l'en-tête, pour la même raison ; ici elle
+   suit le tableau des phases. */
 .phases {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(var(--phase-count, 4), 1fr);
 }
 
 .phase {
@@ -107,7 +115,10 @@ defineProps({
   margin: 0;
   padding: 10px 12px;
   border: 1px solid var(--color-divider);
-  background: #fff;
+  /* la carte se lève sur le fond du panneau, qui est légèrement teinté ; c'est
+     le blanc de la page qu'elle emprunte, d'où le jeton plutôt qu'un #fff en
+     dur */
+  background: var(--color-bg);
   font-size: 11.5px;
   line-height: 1.4;
 }

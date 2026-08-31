@@ -8,8 +8,8 @@
           <tr>
             <th class="col-dimension">Dimension</th>
             <th>Domaine</th>
-            <th class="col-score">Attendu au rang</th>
-            <th class="col-score">Situé au</th>
+            <th class="col-score">Requis pour le profil</th>
+            <th class="col-score">Diagnostic</th>
             <th class="col-mark" />
           </tr>
         </thead>
@@ -54,10 +54,21 @@
 // seconde page. Son intitulé portait 11px en gras, indistinguable des étiquettes
 // de colonne qu'il surplombait.
 //
-// Deux colonnes chiffrées, et elles ne se lisent qu'ensemble : le rang auquel le
-// modèle attend le domaine, et celui où il se situe. Un niveau 2 n'est ni bon ni
-// mauvais dans l'absolu — il tient un domaine attendu au rang 2 et retient un
-// domaine attendu au rang 3.
+// Deux colonnes chiffrées, et elles ne se lisent qu'ensemble : le profil à
+// partir duquel le modèle requiert le domaine, et le rang où le diagnostic l'a
+// situé. Un niveau 2 n'est ni bon ni mauvais dans l'absolu — il tient un domaine
+// requis pour le profil 2 et retient un domaine requis pour le profil 3.
+//
+// Leurs intitulés disaient « Attendu au rang » et « Situé au ». Le premier
+// laissait lire que le domaine doit atteindre ce rang-là, alors que c'est le
+// profil à partir duquel il entre dans le compte — un domaine requis pour le
+// profil 2 doit être au niveau 3 pour que le profil 3 soit acquis. « Requis pour
+// le profil » reprend mot pour mot la formule déjà portée par chaque carte du
+// questionnaire (`requiredLabel`), de sorte que la colonne et la carte disent la
+// même chose dans les mêmes termes. Le second, tronqué, ne disait pas de quoi il
+// était le rang ; « Diagnostic » nomme ce que la colonne contient — ce que
+// l'évaluation a constaté —, et c'est le mot que la page emploie déjà pour le
+// profil qu'elle rend.
 //
 // Les colonnes de critères validés et de rangs d'indicateurs sont tombées avec
 // ce qu'elles comptaient. À leur place, une seule valeur par domaine : l'énoncé

@@ -22,7 +22,7 @@
 
         <button
           type="button"
-          class="btn btn-primary case__button"
+          class="btn btn-primary btn-arrow case__button"
           @click="request(scenario.id)"
         >
           {{ vm.action }}
@@ -99,10 +99,10 @@ function answer(action) {
 </script>
 
 <style scoped>
-.demo {
-  max-width: 1180px;
-}
-
+/* La page tient la largeur de l'outil et s'aligne donc sur le bloc « M.A.IA »
+   de l'en-tête : elle était bornée à 1180px quand `AppScreen` en donne 1440,
+   et rentrait de 130px de chaque côté. Même motif que sur la page
+   d'information. */
 .page-head__title {
   margin: 6px 0 0;
   font-size: 30px;

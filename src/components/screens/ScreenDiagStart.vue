@@ -3,13 +3,18 @@
     <p class="intro">{{ vm.intro }}</p>
 
     <div class="profiles">
-      <div class="profiles__options" role="radiogroup" aria-label="Profil d’adoption consulté">
+      <div
+        class="profiles__options"
+        role="radiogroup"
+        aria-label="Profil d’adoption consulté"
+        :style="{ '--profile-count': vm.profiles.length }"
+      >
         <button
           v-for="option in vm.profiles"
           :key="option.n"
           type="button"
           role="radio"
-          class="chip chip--nowrap profiles__option"
+          class="chip profiles__option"
           :class="{ 'is-active': option.n === profile }"
           :aria-checked="option.n === profile"
           :title="option.tag"
@@ -75,8 +80,9 @@ const blocks = computed(() => props.vm.blocks.map(block => ({
 </script>
 
 <style scoped>
+/* Chapô et glose tiennent la largeur de la carte des domaines qu'ils
+   commentent, comme les autres textes de la page d'information. */
 .intro {
-  max-width: 720px;
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
@@ -86,19 +92,34 @@ const blocks = computed(() => props.vm.blocks.map(block => ({
   margin-top: 18px;
 }
 
+/* Une colonne par profil, sur toute la largeur. Les cinq étaient posés en
+   `flex-wrap` : ils se serraient à gauche, chacun à la largeur de son libellé,
+   si bien que « Exploration localisée » et « Redéfinition stratégique du
+   périmètre » n'avaient ni la même taille ni le même poids à l'œil — alors que
+   ce sont cinq rangs d'une même échelle, et qu'aucun ne prime sur les autres.
+   À colonnes égales, l'échelle se lit comme une échelle, et la barre tient la
+   largeur de la carte qu'elle commande.
+
+   Le nombre vient des données, comme pour les phases du parcours : ce sont les
+   profils du modèle, et rien ici ne doit rester à corriger si le modèle en
+   gagne ou en perd un. */
 .profiles__options {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(var(--profile-count, 5), 1fr);
   gap: 6px;
 }
 
+/* Le libellé se replie dans sa colonne — `chip--nowrap` a été retiré du gabarit
+   avec le passage en grille : à largeur imposée, les libellés longs
+   déborderaient au lieu de tenir. Le texte se cale en haut pour que cinq
+   pastilles d'une et deux lignes commencent toutes à la même hauteur. */
 .profiles__option {
   --chip-padding: 8px 12px;
   --chip-font-size: 11px;
+  align-items: flex-start;
 }
 
 .profiles__hint {
-  max-width: 720px;
   margin: 10px 0 0;
   font-size: 10.5px;
   line-height: 1.45;
@@ -107,5 +128,14 @@ const blocks = computed(() => props.vm.blocks.map(block => ({
 
 .scope {
   margin-top: 22px;
+}
+
+/* Cinq colonnes de libellés longs ne tiennent plus sous 900px : la barre passe
+   à deux colonnes plutôt qu'à cinq colonnes illisibles. Elle reste une grille,
+   donc les pastilles gardent des largeurs égales. */
+@media (max-width: 900px) {
+  .profiles__options {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
