@@ -6,4 +6,4 @@ __pycache__/
 scripts/.venv/
 redaction/*.xlsx
 !redaction/.gitkeep
-docs/admin/Rapport_TB_Valeriya_Barreau.pdf
+docs/admin/Rapport_TOC_inspiration.pdf
