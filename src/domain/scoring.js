@@ -36,6 +36,24 @@ export const OUT_OF_SCOPE = 'na'
 export const MIN_RANK = 1
 export const MAX_RANK = 5
 
+// Plancher de créditation. Les trois cellules du rang 1 de la grille de
+// dérivation décrivent ce qui n'existe pas : un domaine laissé au niveau 1
+// déclare que personne n'y a été désigné. Le créditer ferait du premier palier
+// la contrepartie d'un questionnaire rempli, sans qu'aucune capacité soit
+// attestée. Le premier palier exige donc le niveau 2, l'existence désignée
+// (docs/logs/DECISIONS.md, 08.09.2026).
+export const CREDITED_FLOOR = 2
+
+// Le niveau qu'un palier exige des domaines qu'il attend. C'est le numéro du
+// palier partout au-dessus du plancher, si bien que la règle ne connaît qu'une
+// exception, et à un seul endroit : `max(L, 2)`. Toute lecture d'un palier passe
+// par ici — l'acquisition, les domaines qui le retiennent, l'avancement —, sinon
+// les trois divergeraient et un palier serait acquis avec des domaines encore
+// nommés comme bloquants.
+export function gateFloor(level) {
+  return Math.max(level, CREDITED_FLOOR)
+}
+
 // Niveau d'un domaine : 0 s'il n'est pas renseigné, son rang sinon. Un domaine
 // hors périmètre ne rend pas de niveau — il rend 0, comme un domaine muet, et
 // c'est `isOutOfScope` qui dit la différence entre les deux. Aucun appelant ne
@@ -72,7 +90,8 @@ export function statementText(areaId, rank) {
 
 // Palier acquis : on monte palier par palier sur les domaines en périmètre et on
 // s'arrête au premier palier dont un domaine attendu n'y est pas. Aucune
-// compensation — le maillon faible fixe le palier.
+// compensation — le maillon faible fixe le palier. Le niveau exigé est celui de
+// `gateFloor` : le numéro du palier, sauf au premier, qui demande le niveau 2.
 //
 // Un palier sans aucun domaine attendu n'est pas créditable : sans cette garde,
 // `[].every()` vaut true et le palier serait acquis sans qu'une seule réponse
@@ -91,14 +110,14 @@ export function acquiredLevel(areas, answers, target = MAX_RANK) {
   for (let level = MIN_RANK; level <= target; level++) {
     const expected = scoped.filter(area => area.level <= level)
     if (!expected.length) continue
-    if (!expected.every(area => areaLevel(area.id, answers) >= level)) break
+    if (!expected.every(area => areaLevel(area.id, answers) >= gateFloor(level))) break
     reached = level
   }
   return reached
 }
 
 // Les domaines qui retiennent un palier : ceux dont le rang déclencheur est
-// inférieur ou égal à ce palier et qui n'y sont pas encore. Chaque entrée porte
+// inférieur ou égal à ce palier et qui n'atteignent pas le niveau qu'il exige. Chaque entrée porte
 // de quoi afficher l'écart sans rien aller rechercher — l'énoncé visé compris.
 //
 // Le tri est par rang déclencheur croissant, puis par l'ordre du questionnaire.
@@ -109,7 +128,7 @@ export function acquiredLevel(areas, answers, target = MAX_RANK) {
 // pas lequel est le plus rentable.
 export function blockers(areas, answers, level) {
   return inScopeAreas(areas, answers)
-    .filter(area => area.level <= level && areaLevel(area.id, answers) < level)
+    .filter(area => area.level <= level && areaLevel(area.id, answers) < gateFloor(level))
     .map((area, order) => ({ area, order }))
     .sort((a, b) => (a.area.level - b.area.level) || (a.order - b.order))
     .map(({ area }) => ({
@@ -122,7 +141,7 @@ export function blockers(areas, answers, level) {
       level: areaLevel(area.id, answers),
       // L'énoncé du palier visé, et non celui du rang du domaine : c'est ce
       // qu'il faudrait pouvoir dire pour que le palier soit franchi.
-      statement: statementText(area.id, level)
+      statement: statementText(area.id, gateFloor(level))
     }))
 }
 
@@ -162,7 +181,7 @@ export function toAssess(areas, answers) {
 export function gateProgress(areas, answers, level) {
   const expected = inScopeAreas(areas, answers).filter(area => area.level <= level)
   return {
-    done: expected.filter(area => areaLevel(area.id, answers) >= level).length,
+    done: expected.filter(area => areaLevel(area.id, answers) >= gateFloor(level)).length,
     expected: expected.length
   }
 }
@@ -193,4 +212,17 @@ export function dimFloor(areas, answers, dimId) {
   const rated = ratedAreas(areas, answers, dimId)
   if (!rated.length) return null
   return rated.reduce((min, area) => Math.min(min, areaLevel(area.id, answers)), MAX_RANK)
+}
+
+// Le premier palier a-t-il été *mesuré* ? Vrai lorsque tous les domaines qu'il
+// attend portent une réponse, quelle qu'elle soit. La question n'est pas de
+// savoir s'il est acquis — `acquiredLevel` le dit — mais si son échec est un
+// résultat ou un trou : trois domaines laissés au niveau 1 et trois domaines
+// jamais ouverts rendent le même palier 0, et la restitution ne doit pas leur
+// donner la même phrase. Le premier rang est le seul interrogé ici : c'est lui
+// qui retient le palier 0, et les domaines de rang supérieur non renseignés ne
+// changent rien à ce que le premier a déjà établi.
+export function firstGateMeasured(areas, answers) {
+  const expected = inScopeAreas(areas, answers).filter(area => area.level <= MIN_RANK)
+  return expected.length > 0 && expected.every(area => areaLevel(area.id, answers) > 0)
 }

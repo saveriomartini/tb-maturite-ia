@@ -105,9 +105,10 @@ describe('les trois démonstrations', () => {
 
 describe('l’échelle des paliers', () => {
   // L'échelle portait une marche de rang 0, le profil « Préparation », ajouté
-  // hors modèle sous « Exploration localisée ». Il a été retiré : l'échelle par
-  // énoncés a supprimé le cas qu'il traitait, tout domaine renseigné portant
-  // désormais un niveau. L'échelle commence donc au premier profil du modèle.
+  // hors modèle sous « Exploration localisée ». Il a été retiré : l'échelle ne
+  // montre que les cinq profils de la source. Le cas qu'il traitait est tenu
+  // hors de l'échelle, par un texte de restitution sans rang, « Diagnostic en
+  // cours », qu'une organisation restée au niveau 1 lit depuis le 08.09.2026.
   it('n’a plus de marche de rang 0 : elle commence au premier profil du modèle', () => {
     const tool = demo('belair')
     expect(tool.resti1.ladder).toHaveLength(LEVELS.length)
@@ -274,25 +275,54 @@ describe('la lecture par dimension du radar', () => {
 })
 
 describe('la session entièrement au rang le plus bas', () => {
-  // TEST DE CONSTAT — il fixe une conséquence assumée, pas une règle défendue.
-  //
   // L'énoncé de rang 1 décrit l'absence : « rien n'est en place ». Une
-  // organisation qui retient cet énoncé sur les 28 domaines a donc répondu
-  // partout, et tous les domaines du premier rang atteignent le rang 1. Le
-  // premier palier du modèle est acquis à la lettre, et l'outil le nomme :
-  // « Exploration localisée ».
-  //
-  // Rien ne rattrape cela, et c'est délibéré. Le profil « Préparation » qui
-  // s'intercalait a été retiré, et aucun seuil de remplacement ne l'a suivi :
-  // un plancher inventé ici serait une règle de l'outil et non du modèle, et il
-  // devrait être défendu comme telle.
+  // organisation qui retient cet énoncé sur les 28 domaines a répondu partout
+  // sans rien attester. Le premier palier a longtemps été acquis dans ce cas, et
+  // l'outil le nommait « Exploration localisée » : la décision du 08.09.2026 y
+  // met un plancher, le palier 1 exigeant le niveau 2 sur les domaines qu'il
+  // attend (docs/logs/DECISIONS.md).
   //
   // Ce test est écrit pour que le jour où quelqu'un voudra changer cela, il
   // sache exactement ce qu'il change : il ne « corrige » pas un bogue, il
   // renverse une décision.
-  it('acquiert le premier palier du modèle, et le nomme', () => {
+  it('n’acquiert aucun palier et ne nomme aucun profil', () => {
     const tool = useMaturityTool()
     EVALUABLE_AREAS.forEach(area => tool.actions.answerArea(area.id, MIN_RANK))
+
+    expect(tool.resti1.ladder.some(step => step.acquired)).toBe(false)
+    expect(tool.exportPreview.acquiredLabel).not.toContain(profileName(1))
+  })
+
+  // Elle a pourtant répondu partout : la restitution ne peut pas lui demander de
+  // poursuivre un questionnaire terminé. Le premier rang mesuré et non tenu est
+  // un résultat, et il a son propre texte.
+  it('nomme « Encore en préparation » plutôt que « Diagnostic en cours »', () => {
+    const tool = useMaturityTool()
+    EVALUABLE_AREAS.forEach(area => tool.actions.answerArea(area.id, MIN_RANK))
+
+    expect(tool.resti1.acquiredLabel).toBe('Encore en préparation')
+    expect(tool.exportPreview.acquiredLabel).toBe('Encore en préparation')
+  })
+
+  // Le premier rang suffit à trancher : il est le seul à retenir le palier 0.
+  // Une session où il est situé sans être tenu est un résultat même si le reste
+  // du questionnaire n'a pas été ouvert.
+  it('nomme « Encore en préparation » dès que le premier rang est situé, même seul', () => {
+    const tool = useMaturityTool()
+    EVALUABLE_AREAS
+      .filter(area => area.level === 1)
+      .forEach(area => tool.actions.answerArea(area.id, MIN_RANK))
+
+    expect(tool.resti1.ladder.some(step => step.acquired)).toBe(false)
+    expect(tool.resti1.acquiredLabel).toBe('Encore en préparation')
+  })
+
+  it('nomme le premier profil dès que les domaines du premier rang sont au niveau 2', () => {
+    const tool = useMaturityTool()
+    EVALUABLE_AREAS.forEach(area => tool.actions.answerArea(area.id, MIN_RANK))
+    EVALUABLE_AREAS
+      .filter(area => area.level === 1)
+      .forEach(area => tool.actions.answerArea(area.id, 2))
 
     expect(tool.resti1.acquiredLabel).toBe(profileName(1))
     expect(tool.resti1.acquiredLabel).toBe('Exploration localisée')
@@ -302,7 +332,8 @@ describe('la session entièrement au rang le plus bas', () => {
 
   // Le pendant : tant que le premier rang n'est pas complet, aucun palier n'est
   // acquis et la restitution ne nomme pas de profil. C'est le seul cas que le
-  // texte « diagnostic en cours » couvre encore.
+  // texte « diagnostic en cours » couvre encore — le rang 1 mesuré mais non
+  // tenu a le sien depuis le 08.09.2026.
   it('ne nomme aucun profil tant que le premier rang est incomplet', () => {
     const tool = useMaturityTool()
     const premiers = EVALUABLE_AREAS.filter(area => area.level === 1)

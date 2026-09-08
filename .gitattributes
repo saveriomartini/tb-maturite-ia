@@ -1,0 +1,11 @@
+# L'index stocke déjà tout le texte en LF. On impose le même LF dans la copie
+# de travail, y compris sous Windows, pour que le dépôt se lise à l'identique
+# depuis Windows et depuis Linux. Sans cette ligne, core.autocrlf=true (réglage
+# système de Git for Windows) écrit du CRLF sur disque, ce que les postes sans
+# autocrlf voient ensuite comme des fichiers entièrement modifiés.
+* text=auto eol=lf
+
+# Binaires : aucune conversion, jamais.
+*.pdf  binary
+*.docx binary
+*.xlsx binary

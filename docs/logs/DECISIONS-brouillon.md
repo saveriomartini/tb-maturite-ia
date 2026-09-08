@@ -1,4 +1,8 @@
-# Brouillon — douze entrées à ajouter à `docs/DECISIONS.md`
+# Brouillon — treize entrées ajoutées à `docs/logs/DECISIONS.md`
+
+**Versé le 08.09.2026** : les treize lignes ci-dessous figurent désormais dans le journal, dans
+l'ordre où elles sont écrites ici et aux dates qu'elles portent. Ce fichier est conservé comme trace
+de la rédaction ; le journal fait foi.
 
 À coller à la suite du tableau existant. Toutes datées du 28.08.2026 : si tu préfères que le journal
 reflète le moment où chaque décision a été prise, la 5 et la 11 remontent au 26.08 (réponse de la

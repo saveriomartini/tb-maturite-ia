@@ -9,7 +9,7 @@ import { computed, reactive, ref } from 'vue'
 import { ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
 import { INFO } from '../data/info.js'
-import { IN_PROGRESS } from '../data/in-progress.js'
+import { IN_PROGRESS, NOT_ENGAGED } from '../data/in-progress.js'
 import { STATEMENTS } from '../data/statements.js'
 import {
   PASSAGES, REACH_QUESTION, REVOLUTIONARY_FROM, REVOLUTIONARY_LINE, transformationDegree
@@ -25,7 +25,7 @@ import { buildRecommendation } from '../domain/recommendation.js'
 import { evaluationUnit } from '../domain/scope.js'
 import {
   MAX_RANK, OUT_OF_SCOPE, acquiredLevel, areaLevel, blockersByGate, dimAverage,
-  dimFloor, gateProgress, inScopeAreas, isOutOfScope, toAssess
+  dimFloor, firstGateMeasured, gateProgress, inScopeAreas, isOutOfScope, toAssess
 } from '../domain/scoring.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
@@ -335,17 +335,23 @@ export function useMaturityTool() {
     note: unit.value.note
   }))
 
-  // Deux états à la restitution, et deux seulement : un palier du modèle, ou
-  // rien encore. Le second ne dit pas « aucun » — il dit que le diagnostic n'est
-  // pas assez avancé pour qualifier quoi que ce soit.
+  // Trois états à la restitution : un palier du modèle, ou l'une des deux façons
+  // de n'en avoir aucun. Aucune des deux ne dit « aucun » — l'une dit que le
+  // diagnostic n'est pas assez avancé pour qualifier quoi que ce soit, l'autre
+  // que le premier rang a été mesuré et qu'il n'est pas tenu.
   //
-  // Il n'y a plus de profil sous le premier palier du modèle. L'échelle par
-  // énoncés a supprimé le cas qu'il traitait : tout domaine renseigné porte un
-  // niveau, et le premier palier se lit sur ces niveaux. La conséquence est
-  // assumée — une organisation dont les trois domaines du premier rang tiennent
-  // l'énoncé de rang 1, celui qui décrit l'absence, acquiert « Exploration
-  // localisée ». C'est ce que le modèle appelle le premier palier, et l'outil ne
-  // met aucun seuil de son cru entre les deux.
+  // La distinction se fait sur `firstGateMeasured` et non sur l'avancement du
+  // questionnaire dans son ensemble : c'est le premier rang qui retient le
+  // palier 0, et lui seul. Une organisation qui a situé ses trois domaines de
+  // rang 1 sans les porter au niveau 2 a un résultat, même si elle n'a pas fini
+  // le parcours ; l'inviter à poursuivre pour obtenir un profil serait lui
+  // promettre ce que la suite du questionnaire ne peut pas lui donner.
+  //
+  // Aucun des deux textes n'est un sixième profil sous le premier palier : ils
+  // n'ont pas de rang, ne figurent pas dans l'échelle de la source et n'entrent
+  // dans aucun calcul — ni le degré de transformation, ni la nature du passage,
+  // ni l'écart affiché ne les lisent. C'est la ligne tenue le 08.09.2026 :
+  // corriger le seuil du premier palier plutôt que lui ajouter un étage.
   const acquiredProfile = computed(() => {
     if (acquired.value) {
       return {
@@ -354,7 +360,8 @@ export function useMaturityTool() {
         exportLabel: profileExportLabel(acquired.value)
       }
     }
-    return { label: IN_PROGRESS.name, desc: IN_PROGRESS.desc, exportLabel: IN_PROGRESS.name }
+    const unranked = firstGateMeasured(EVALUABLE_AREAS, state.answers) ? NOT_ENGAGED : IN_PROGRESS
+    return { label: unranked.name, desc: unranked.desc, exportLabel: unranked.name }
   })
   const acquiredLabel = computed(() => acquiredProfile.value.label)
 
