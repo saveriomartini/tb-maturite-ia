@@ -13,18 +13,34 @@
 // des échelles est ailleurs (src/data/info.js), et c'est le seul autre endroit,
 // avec le rapport, où Venkatraman est nommé à l'écran.
 
-export const LICENSE = 'CC BY-NC-ND'
+// La notice du référentiel de base ne porte ni licence ouverte, ni clause de
+// permission : elle porte un copyright et une mention de marque. On restitue
+// donc ce qu'elle dit, et rien de plus — annoncer une licence que la source
+// n'accorde pas serait une erreur de traçabilité, pas une simplification.
+export const COPYRIGHT = 'Copyright 2026 Carnegie Mellon University'
+
+export const TRADEMARK =
+  'Carnegie Mellon® est une marque déposée auprès de l’U.S. Patent and Trademark Office ' +
+  'par Carnegie Mellon University.'
 
 // Une entrée par source, dans l'ordre de ce qu'elle apporte au modèle : le
 // référentiel de base d'abord, puis les trois emprunts qui s'y ajoutent.
 // `role` dit ce que la source fonde ici, et rien d'autre : une référence sans
 // son rôle n'apprend pas au lecteur ce qu'il tient entre les mains.
+//
+// Le numéro DM26-0590 est l'enregistrement du document au SEI : il identifie la
+// version exacte sans ambiguïté, ce dont une bibliographie et une demande de
+// permission ont besoin. Il reste dans la référence, jamais dans le pied de page.
 export const SOURCES = [
   {
-    ref: 'Ozkaya, I. et al. (2026). The AI Adoption Maturity Model v1.0. Carnegie Mellon University, Software Engineering Institute.',
+    ref:
+      'Ozkaya, I. et al. (2026). The AI Adoption Maturity Model v1.0 (DM26-0590). ' +
+      'Software Engineering Institute, Carnegie Mellon University.',
     role:
       'Référentiel de base : les dimensions, les domaines de capacité, les critères, les ' +
-      'pratiques et l’échelle à cinq niveaux. Employé sous licence ' + LICENSE + '.'
+      'pratiques et l’échelle à cinq niveaux, traduits et adaptés en français pour ce ' +
+      'travail. ' + COPYRIGHT + '. Fourni par ses auteurs « en l’état », sans garantie ' +
+      'd’aucune sorte. ' + TRADEMARK
   },
   {
     ref: 'Venkatraman, N. (1994). IT-Enabled Business Transformation.',
@@ -68,18 +84,21 @@ export const WORK = {
 
 // Forme courte, pour un pied de page où ni la liste des sources ni la page de
 // titre du rapport ne tiennent. L'arbitrage y est inversé par rapport à SOURCES :
-// du côté des sources on ne garde que le référentiel de base et sa licence — les
-// trois emprunts se lisent à l'écran d'information, personne ne les cherche dans
-// un pied de page ; du côté du travail on donne l'identité complète, parce que
-// c'est elle qui manque à un lecteur qui tombe sur une page exportée.
+// du côté des sources on ne garde que le référentiel de base et son copyright —
+// les trois emprunts se lisent à l'écran d'information, personne ne les cherche
+// dans un pied de page ; du côté du travail on donne l'identité complète, parce
+// que c'est elle qui manque à un lecteur qui tombe sur une page exportée.
+// « Adapté de » et non « d'après » : l'outil traduit et remanie le référentiel,
+// et c'est ce que la notice de la source demande de dire.
 export const SHORT =
   WORK.kind + ' de ' + WORK.author + ', ' + WORK.school + ' (' + WORK.module + ', ' +
   WORK.session + '). ' +
-  'D’après Ozkaya et al. (2026), The AI Adoption Maturity Model v1.0 (CMU SEI, ' +
-  LICENSE + ').'
+  'Adapté de Ozkaya et al. (2026), The AI Adoption Maturity Model v1.0, ' +
+  'Software Engineering Institute, Carnegie Mellon University. ' + COPYRIGHT + '.'
 
 export const ATTRIBUTION = {
-  license: LICENSE,
+  copyright: COPYRIGHT,
+  trademark: TRADEMARK,
   sources: SOURCES,
   disclaimer: DISCLAIMER,
   work: WORK,

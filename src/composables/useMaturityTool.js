@@ -6,6 +6,7 @@
 // l'écran affiché est évalué.
 
 import { computed, reactive, ref } from 'vue'
+import { ATTRIBUTION } from '../data/attribution.js'
 import { ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
 import { INFO } from '../data/info.js'
@@ -68,6 +69,38 @@ const SKIP_DIALOG = {
   actions: [
     { id: 'describe', label: 'Décrire mon organisation', arrow: '↑' },
     { id: 'skip', label: 'Ignorer et continuer', arrow: '→' }
+  ]
+}
+
+// Déclarer un domaine hors périmètre est la seule réponse du questionnaire qui
+// retire quelque chose de la mesure, et la seule dont l'effet ne se voit pas là
+// où on la donne : le dénominateur des profils bouge en restitution, plusieurs
+// écrans plus loin. L'interrupteur dit ce qu'il fait, il ne peut pas dire ce
+// qu'il coûte ; la modale le dit une fois.
+//
+// Une fois, et non vingt-huit : l'avertissement est consommé à la première
+// exclusion confirmée, et les suivantes se déclarent d'un clic. Il porte sur la
+// règle, pas sur le domaine — la relire à chaque interrupteur serait une taxe
+// sur celui qui a compris du premier coup.
+//
+// Annuler ne le consomme pas : la boîte explique ce qu'on s'apprête à faire, et
+// qui recule n'a rien fait. C'est la différence avec l'avertissement de cadrage,
+// qui dit ce que coûte un formulaire vide et vaut d'être sorti par n'importe
+// quelle porte.
+//
+// Aucune flèche sur la sortie qui exclut : elle mène au domaine vide suivant,
+// qui est le plus souvent en dessous mais peut être au-dessus lorsqu'il ne reste
+// qu'un domaine sauté. Une flèche qui pointe le mauvais sens vaut moins que pas
+// de flèche.
+const OUT_OF_SCOPE_DIALOG = {
+  eyebrow: 'Domaine hors périmètre',
+  text: 'Vous retenez que ce domaine de capacité ne s’applique pas à votre organisation, et vous ' +
+    'l’excluez de l’évaluation : il ne comptera ni comme acquis, ni comme manquant, et chaque ' +
+    'profil en attendra d’autant moins. La déclaration se reprend à tout moment, en rouvrant ' +
+    'l’interrupteur.',
+  actions: [
+    { id: 'cancel', label: 'Annuler' },
+    { id: 'exclude', label: 'Exclure ce domaine' }
   ]
 }
 
@@ -146,8 +179,8 @@ const PICKER_QUESTION = 'Laquelle de ces situations décrit le mieux votre organ
 // part en restitution.
 //
 // Deux libellés pour un seul contrôle, et ce n'est pas un doublon. Il vit dans
-// la barre de titre de l'encadré, à côté de la question : « ne pas appliquer »
-// y tient en trois mots, ce qu'une phrase de sept mots ne saurait faire dans une
+// la barre de titre de l'encadré, à côté de la question : « non applicable »
+// y tient en deux mots, ce qu'une phrase de sept mots ne saurait faire dans une
 // barre de dix pixels. La phrase entière reste le nom accessible — un lecteur
 // d'écran qui l'atteint hors du contexte de la question n'entendrait autrement
 // qu'une consigne sans objet.
@@ -156,7 +189,13 @@ const PICKER_QUESTION = 'Laquelle de ces situations décrit le mieux votre organ
 // — laquelle de ces situations décrit votre organisation — et n'avait donc de
 // sens que collé à elle. Devenu un interrupteur, le contrôle ne répond plus à
 // la question, il retire le domaine de la mesure : il lui faut un libellé qui
-// dise ce qu'il fait, pas ce qu'il répond.
+// dise l'état du domaine, et non ce qu'on répond sur lui.
+//
+// « Ne pas appliquer » l'a porté jusqu'au 10.09.2026. Il nommait le geste — ce
+// que l'utilisateur fait au domaine — quand un interrupteur enclenché montre un
+// état, et il laissait en suspens qui applique quoi à quoi. La seconde série
+// d'évaluations terrain l'a relevé : « non applicable » est le terme reçu des
+// questionnaires, il se lit sans conjugaison et se range du côté de l'état.
 //
 // Les deux notes qui accompagnaient ce bouton ont été retirées le 30.08.2026.
 // L'une disait qu'une réponse se reprend en la recliquant, l'autre ce que le
@@ -165,7 +204,7 @@ const PICKER_QUESTION = 'Laquelle de ces situations décrit le mieux votre organ
 // la restitution énonce là où elle décide, sous « Ce que la mesure laisse de
 // côté ».
 const OUT_OF_SCOPE_LABEL = 'Ce domaine ne concerne pas mon organisation'
-const OUT_OF_SCOPE_SHORT = 'ne pas appliquer'
+const OUT_OF_SCOPE_SHORT = 'non applicable'
 
 // État initial. `answers` porte une réponse par domaine — le rang de l'énoncé
 // retenu, ou `'na'` — et remplace la table des pratiques cochées : l'unité de
@@ -175,6 +214,10 @@ const OUT_OF_SCOPE_SHORT = 'ne pas appliquer'
 // perd à partir sans avoir décrit son organisation se dit une fois, à la
 // première tentative, et ne se répète pas ensuite. Il suit la session, sans quoi
 // un simple rechargement le reposerait.
+//
+// `outOfScopeWarned` fait de même pour la première exclusion d'un domaine : ce
+// que le hors périmètre retire au calcul se dit une fois, et pas à chacun des
+// vingt-huit interrupteurs.
 //
 // `transformation` porte le degré déduit de la portée déclarée en phase
 // d'ancrage. À null — c'est-à-dire tant que la question n'a pas été posée —, le
@@ -191,6 +234,7 @@ function defaultState() {
     form: {},
     transformation: null,
     contextWarned: false,
+    outOfScopeWarned: false,
     demo: null,
     session: newSessionId()
   }
@@ -536,6 +580,12 @@ export function useMaturityTool() {
     dismissContextWarning() {
       state.contextWarned = true
     },
+    // L'avertissement de hors périmètre se consomme à la première exclusion
+    // *confirmée* : la boîte dit ce qu'on s'apprête à faire, et qui annule n'a
+    // rien fait — il la reverra donc à la prochaine tentative.
+    dismissOutOfScopeWarning() {
+      state.outOfScopeWarned = true
+    },
     // La confirmation est une affaire d'écran : elle se demande dans la modale
     // que porte App, et l'action ne s'exécute qu'une fois la réponse obtenue.
     resetSession() {
@@ -834,6 +884,12 @@ export function useMaturityTool() {
 
     return {
       blockGroups: [...groupsByBlock.values()],
+      // La confirmation d'exclusion, et le texte qu'elle porte. Le drapeau est
+      // celui de la page entière et non du domaine : c'est la règle du hors
+      // périmètre qu'on explique, et elle ne dépend d'aucun domaine en
+      // particulier.
+      confirmOutOfScope: !state.outOfScopeWarned,
+      outOfScopeDialog: OUT_OF_SCOPE_DIALOG,
       // Les 28 domaines, chacun avec son ancre. C'est la seule liste de la page
       // qui soit dans l'ordre du modèle et complète : la barre ci-dessus la
       // regroupe par bloc pour se lire, celle-ci se parcourt.
@@ -843,6 +899,12 @@ export function useMaturityTool() {
           id: area.id,
           anchor: areaAnchor(area.id),
           number: index + 1,
+          // Le domaine porte-t-il une réponse, quelle qu'elle soit. Le hors
+          // périmètre en est une : il ne laisse pas la question ouverte, il la
+          // retire. Ce drapeau ne sert pas à l'affichage du domaine — la barre a
+          // le sien, plus détaillé — mais à la question « où reste-t-il à
+          // répondre », que la page se pose après chaque clic.
+          answered: isOutOfScope(area.id, state.answers) || level > 0,
           // Ce que le domaine est : de quoi lire les énoncés sans avoir à les
           // deviner. Le rappel n'accuse rien — la réponse est juste au-dessus.
           name: area.name,
@@ -1224,6 +1286,16 @@ export function useMaturityTool() {
     if (!pages.length) pages.push([])
     return {
       meta: `Export ${today()} · model: ${MODEL_VERSION} · session: ${state.session}`,
+      // L'export est la seule pièce qui quitte l'outil. Le pied de page de
+      // l'application ne la suit pas — il est masqué à l'impression, et une page
+      // enregistrée en PDF sortirait donc sans dire d'où vient le modèle ni ce
+      // qu'elle n'est pas. L'attribution voyage avec le document, sur chacune de
+      // ses pages, pour la même raison que le périmètre : une feuille détachée
+      // du dossier doit rester lisible seule.
+      attribution: {
+        short: ATTRIBUTION.short,
+        disclaimer: ATTRIBUTION.disclaimer
+      },
       // Ce que l'export nomme avant tout autre chose : le périmètre sur lequel
       // il porte, et ce que la mesure y a couvert. Relu hors de l'outil, il n'a
       // personne pour le préciser, et sans cette ligne un lecteur extérieur

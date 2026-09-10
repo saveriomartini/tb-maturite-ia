@@ -74,6 +74,22 @@ describe('contrat de schéma', () => {
   // `diagIdx` — la position dans le questionnaire — n'a plus d'objet : les 28
   // domaines sont sur la même page. Une session venue d'avant la fusion la porte
   // encore, et elle ne doit ni la faire rejeter ni ressusciter la clé.
+  // Les deux avertissements de la session — le cadrage laissé vide, la première
+  // exclusion d'un domaine — ne se reposent pas après un rechargement. Une
+  // session écrite avant que le second existe ne porte pas sa clé : elle doit
+  // retomber sur « pas encore lu », qui est le sens sûr — l'autre tairait une
+  // règle que personne n'a jamais vue.
+  it('relit les deux avertissements, et tient pour non lu celui qui manque', () => {
+    write({ v: 2, state: { screen: 'tool', contextWarned: true, outOfScopeWarned: true } })
+    expect(loadSession(SCREENS)).toMatchObject({ contextWarned: true, outOfScopeWarned: true })
+
+    write({ v: 2, state: { screen: 'tool', contextWarned: true } })
+    expect(loadSession(SCREENS).outOfScopeWarned).toBeUndefined()
+
+    write({ v: 2, state: { screen: 'tool', outOfScopeWarned: 'oui' } })
+    expect(loadSession(SCREENS).outOfScopeWarned).toBeUndefined()
+  })
+
   it('tolère `diagIdx` sans le relire', () => {
     write({ v: 2, state: { screen: 'tool2', diagIdx: 17, answers: { A1: 3 } } })
     const restored = loadSession(SCREENS)

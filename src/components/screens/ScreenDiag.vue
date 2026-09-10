@@ -61,7 +61,10 @@
         <p v-show="described[area.id]" :id="`desc-${area.id}`" class="head__desc">{{ area.desc }}</p>
       </header>
 
-      <StatementPicker :vm="area.picker" @select="emit('answer', area.id, $event)" />
+      <StatementPicker
+        :vm="area.picker"
+        @select="(value, event) => answer(area, value, event)"
+      />
 
       <aside v-if="area.exampleArtifacts.length" class="artifacts">
         <p class="artifacts__label">
@@ -82,6 +85,15 @@
         </ul>
       </aside>
     </article>
+
+    <AppDialog
+      :open="pending !== null"
+      :eyebrow="vm.outOfScopeDialog.eyebrow"
+      :text="vm.outOfScopeDialog.text"
+      :actions="vm.outOfScopeDialog.actions"
+      @action="resolve"
+      @close="pending = null"
+    />
   </div>
 </template>
 
@@ -137,15 +149,108 @@
 // déplient — ils ne se répondent pas, ils appuient —, et l'état est désormais
 // tenu par domaine : il suivait d'un domaine à l'autre quand un seul était à
 // l'écran, ce qui n'a plus de sens quand les vingt-huit y sont ensemble.
-import { onBeforeUnmount, onMounted, reactive, ref, useTemplateRef } from 'vue'
+//
+// — répondre fait avancer —
+// Une réponse dépose l'utilisateur au domaine vide suivant. C'est ce que coûtait
+// la forme empilée : vingt-huit domaines sur une page qui défile laissent à
+// l'utilisateur le soin de retrouver où il en est après chaque réponse, et
+// l'évaluation terrain du 10.09.2026 a décrit exactement ce coût — ne pas savoir
+// où l'on se trouve dans le déroulement des questions. La barre y répondait par
+// la vue d'ensemble ; le défilement y répond par le geste, qui est ce qu'on fait
+// vingt-huit fois de suite.
+//
+// Trois bornes, et chacune évite un défilement qui trahirait l'intention :
+//
+//   — seule une réponse *nouvelle* fait avancer. Corriger un domaine déjà
+//     répondu, ou annuler sa réponse, laisse la page où elle est : l'utilisateur
+//     qui se relit ne demande pas à être emmené ailleurs ;
+//   — la réponse au clavier ne fait pas avancer. La tabulation suivante
+//     ramènerait le regard sur le domaine quitté, et un défilement aussitôt
+//     défait vaut moins que pas de défilement ;
+//   — quand plus rien n'est vide, on ne bouge pas. La suite du parcours se prend
+//     en bas de page, et c'est une décision, pas la conséquence d'un dernier
+//     clic.
+//
+// Le choix de la cible ne vit pas ici : c'est une règle sur une liste de
+// domaines, elle est dans `domain/navigation.js` et se teste sans navigateur.
+// N'en reste ici que ce qui touche à l'écran — le moment, et le fait de
+// défiler.
+import { nextTick, onBeforeUnmount, onMounted, reactive, ref, useTemplateRef } from 'vue'
+import AppDialog from '../AppDialog.vue'
 import StatementPicker from '../StatementPicker.vue'
 import { scrollToAnchor } from '../../composables/useAnchorScroll.js'
+import { areaAnchor, nextEmptyAreaId } from '../../domain/navigation.js'
 
 const props = defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['answer'])
+const emit = defineEmits(['answer', 'dismiss-out-of-scope-warning'])
+
+// — la première exclusion se confirme —
+// Le domaine qui attend la réponse de la modale, et la nature du geste qui l'a
+// demandée. Une seule modale pour la page : elle porte sur la règle du hors
+// périmètre, qui ne dépend d'aucun domaine, et vingt-huit boîtes natives pour
+// une question commune seraient vingt-sept de trop.
+//
+// `null` quand rien n'attend, ce qui est aussi ce qui ferme la boîte : l'état
+// est la vérité, comme le veut `AppDialog`.
+const pending = ref(null)
+
+// Ce qu'on fait d'un clic sur un énoncé ou sur l'interrupteur. Une seule
+// bifurcation : la première mise hors périmètre passe par la modale, tout le
+// reste — les énoncés, les exclusions suivantes, et le retrait d'une exclusion —
+// s'applique directement.
+function answer(area, value, event) {
+  const out = area.picker.outOfScope
+  const excluding = value === out.value && !out.active
+
+  if (excluding && props.vm.confirmOutOfScope) {
+    // Le geste est retenu tel quel : c'est lui, et non le clic sur la sortie de
+    // la modale, qui dit si la réponse vient du clavier.
+    pending.value = { area, byKeyboard: event?.detail === 0 }
+    return
+  }
+
+  commit(area, value, event?.detail === 0)
+}
+
+// La sortie de la modale. « Annuler » ne laisse rien derrière lui : ni réponse,
+// ni avertissement consommé — la boîte disait ce qu'on s'apprêtait à faire, et
+// qui recule ne l'a pas fait.
+//
+// Échap passe par `close` et vaut annulation : sortir par Échap doit compter
+// comme sortir, et ce qui se joue ici est un acte, pas une lecture.
+function resolve(action) {
+  const asked = pending.value
+  pending.value = null
+  if (!asked || action !== 'exclude') return
+
+  emit('dismiss-out-of-scope-warning')
+  commit(asked.area, asked.area.picker.outOfScope.value, asked.byKeyboard)
+}
+
+// Une réponse, puis le déplacement qu'elle entraîne. L'état du domaine est lu
+// *avant* d'émettre : le parent met à jour la session dans la foulée, et après
+// l'émission tout domaine paraîtrait répondu, y compris celui qu'on vient de
+// corriger.
+//
+// `byKeyboard` vient de `detail`, que le navigateur met à 0 quand le clic naît
+// d'Entrée ou de la barre d'espace : c'est la seule chose que le gabarit sait du
+// geste, et elle décide du défilement, pas de la réponse.
+//
+// Le défilement attend le rendu : la réponse retenue s'épaissit d'un pixel de
+// bordure, ce qui suffit à déplacer de quelques pixels tout ce qui la suit.
+// Viser avant que la page ait bougé reviendrait à viser l'ancienne position.
+function commit(area, value, byKeyboard) {
+  const wasEmpty = !area.answered
+  emit('answer', area.id, value)
+
+  if (!wasEmpty || byKeyboard) return
+
+  const target = nextEmptyAreaId(props.vm.areas, area.id)
+  if (target) nextTick(() => scrollToAnchor(areaAnchor(target)))
+}
 
 // Deux replis par domaine, indépendants l'un de l'autre : les exemples
 // d'artefacts, et la définition du domaine.

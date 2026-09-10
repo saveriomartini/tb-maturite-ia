@@ -58,8 +58,9 @@ const emit = defineEmits(['back', 'next'])
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  /* un parent peut resserrer ou aérer le pied de page en posant la variable ;
-     aucun ne le fait aujourd'hui, et 24px est donc la seule valeur en service */
+  /* un parent peut resserrer ou aérer le pied de page en posant la variable :
+     la page d'information la porte à 44px, sa dernière partie pouvant être
+     repliée et laisser le pied de page contre un chapô. Ailleurs, 24px */
   margin-top: var(--nav-margin-top, 24px);
 }
 

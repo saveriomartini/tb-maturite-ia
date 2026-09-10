@@ -37,6 +37,40 @@ export function areaAnchor(areaId) {
   return `domaine-${areaId}`
 }
 
+// — le domaine vide suivant —
+//
+// Répondre à un domaine dépose l'utilisateur au domaine suivant encore vide, et
+// non au suivant tout court : sur une page qui porte les vingt-huit, le geste
+// utile après une réponse est d'aller à la question qui n'en a pas, pas de
+// revisiter celles qui en ont une.
+//
+// La recherche part du domaine qu'on vient de répondre et descend ; si elle
+// n'en trouve aucun en dessous, elle reprend au haut de la page. Ce retour en
+// arrière est le seul moyen d'atteindre un domaine sauté en cours de route, et
+// il ne se produit que lorsqu'il n'y a plus rien en dessous — c'est-à-dire quand
+// le domaine visé est le dernier qui manque, ce qui est exactement le moment où
+// remonter se justifie.
+//
+// Le domaine d'où l'on part est tenu pour répondu quoi qu'en dise son drapeau :
+// l'appel a lieu au moment du clic, avant que l'état n'ait été recalculé, et
+// c'est ce clic qui vient de le remplir.
+//
+// `null` quand il ne reste rien à remplir : le questionnaire est complet, et il
+// n'y a alors nulle part où aller — la suite du parcours est en bas de page, et
+// s'y rendre est une décision de l'utilisateur, pas une conséquence de sa
+// dernière réponse.
+export function nextEmptyAreaId(areas, fromId) {
+  const list = areas || []
+  const from = list.findIndex(area => area.id === fromId)
+  const empty = area => area.id !== fromId && !area.answered
+
+  const below = list.slice(from + 1).find(empty)
+  if (below) return below.id
+
+  const above = list.slice(0, Math.max(from, 0)).find(empty)
+  return above ? above.id : null
+}
+
 // Phase (1-4) à laquelle appartient chaque écran ; 0 = hors branche outil.
 // `tool` porte les trois premières à la fois : la valeur inscrite ici n'est que
 // celle de son entrée, et la phase réellement courante s'y lit à la position du

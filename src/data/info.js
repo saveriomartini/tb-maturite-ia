@@ -1,13 +1,17 @@
 // Contenu de l'écran d'information — le seul écran, avec l'attribution, où le
 // lecteur vient chercher d'où vient ce qu'on lui montre.
 //
-// Trois contenus, dans l'ordre où ils se lisent :
+// Quatre contenus, plus le découpage de la page en parties :
 //   — les trois mots qu'on confond (adoption, maturité d'adoption, readiness),
 //     et ce que l'outil mesure parmi eux ;
 //   — comment un niveau est construit : la grille des trois indicateurs
 //     transversaux du § 5 de la source, reprise telle quelle ;
 //   — le tableau d'équivalences entre échelles, avec ce qu'il ne prétend pas
-//     être.
+//     être ;
+//   — les quatre sources et ce que chacune fonde ici. La donnée attendait dans
+//     attribution.js, dont le pied de page ne porte que la forme courte : les
+//     trois emprunts qui s'ajoutent au référentiel de base se lisent ici, comme
+//     ce fichier l'annonçait déjà.
 //
 // Ce fichier ne porte que du texte et des jointures entre données déjà écrites
 // ailleurs. Rien n'y est recopié à la main de ce qui existe : la grille vient de
@@ -19,6 +23,7 @@
 import { MATURITY_INDICATORS } from './maturity-indicators.js'
 import { TRANSFORMATION_DEGREES } from './transformation.js'
 import { AIMM } from './model-data.js'
+import { SOURCES } from './attribution.js'
 
 // — a. Adoption, maturité d'adoption, readiness —
 //
@@ -195,8 +200,75 @@ export const SCALE_MAP = {
     'la publication elle-même.'
 }
 
+// — d. Le découpage de la page en trois parties —
+//
+// Les sections étaient empilées à plat, sans hiérarchie, et la page ne disait pas
+// ce qu'il fallait avoir lu avant de commencer : la seconde série d'évaluations
+// terrain l'a relevée comme « très complète », ce qui, sur une page
+// d'introduction, est le reproche et non l'éloge — tout y pèse le même poids,
+// donc rien n'est prioritaire.
+//
+// Trois parties, et une seule à lire. La première prépare la réponse : ce qu'on
+// va demander, dans quel ordre, et sur quoi porte la question. Les deux autres
+// répondent à des questions qui ne se posent pas encore — ce que vaut un niveau,
+// d'où vient l'échelle — et se replient donc par défaut. Le repli est ce qui
+// distingue le facultatif : un intertitre qui l'annonce sans rien fermer laisse
+// la page aussi longue, et la longueur est justement ce qui décourage.
+//
+// `optional` ne dit pas l'importance mais le moment : la partie 2 est ce qu'on
+// relit en regard de la restitution, la 3 ce qu'on lit avant de citer l'outil
+// ailleurs. Ni l'une ni l'autre n'aide à répondre.
+export const PARTS = [
+  {
+    id: 'answer',
+    n: 1,
+    title: 'Pour répondre au questionnaire',
+    tag: 'À lire avant de commencer',
+    lead:
+      'Ce que le diagnostic va demander, dans quel ordre, et sur quoi porte exactement la ' +
+      'question. Quelques minutes, qui évitent l’essentiel des hésitations devant les énoncés.',
+    optional: false
+  },
+  {
+    id: 'result',
+    n: 2,
+    title: 'Pour comprendre votre résultat',
+    tag: 'Facultatif',
+    lead:
+      'Ce qu’un niveau veut dire, et comment le modèle est agencé. Se lit aussi bien après le ' +
+      'diagnostic, en regard de la restitution.',
+    optional: true
+  },
+  {
+    id: 'method',
+    n: 3,
+    title: 'Pour comprendre la méthode',
+    tag: 'Facultatif',
+    lead:
+      'D’où vient le modèle, à quoi ses paliers se comparent, et ce que ce travail y a ajouté. ' +
+      'À lire avant de citer l’outil ailleurs.',
+    optional: true
+  }
+]
+
+// — e. D'où vient le modèle —
+//
+// La liste des sources et le rôle de chacune, reprise telle quelle
+// d'attribution.js : le pied de page ne porte que le référentiel de base et son
+// copyright, faute de place, et les trois emprunts n'étaient donc lisibles nulle
+// part à l'écran. Rien n'est réécrit ici — une source recopiée à la main dérive
+// au premier remaniement, et c'est la page qui n'a pas le droit de mentir sur
+// la provenance.
+export const PROVENANCE = {
+  title: 'D’où vient le modèle',
+  lead: 'Quatre sources, et ce que chacune fonde dans cet outil.',
+  sources: SOURCES
+}
+
 export const INFO = {
+  parts: PARTS,
   concepts: CONCEPTS,
   levelBuild: LEVEL_BUILD,
-  scaleMap: SCALE_MAP
+  scaleMap: SCALE_MAP,
+  provenance: PROVENANCE
 }

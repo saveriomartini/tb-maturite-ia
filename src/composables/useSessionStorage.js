@@ -118,6 +118,11 @@ function sanitize(raw, screens) {
   // ne doit pas la faire rejeter.
   // Avertissement de saut déjà lu : il ne se repose pas après un rechargement.
   if (typeof raw.contextWarned === 'boolean') out.contextWarned = raw.contextWarned
+  // Même chose pour l'avertissement de hors périmètre. Une session écrite avant
+  // qu'il existe ne porte pas la clé : elle retombe sur `false`, et la boîte
+  // paraît une fois de plus — le sens sûr, l'autre taisant une règle qui n'a
+  // jamais été lue.
+  if (typeof raw.outOfScopeWarned === 'boolean') out.outOfScopeWarned = raw.outOfScopeWarned
   // Degré de transformation visé : il se déduit de la portée déclarée en phase
   // d'ancrage, et vaut un rang du modèle ou rien. Absent ou invalide, il retombe
   // sur la valeur par défaut (null), c'est-à-dire sur la seule recommandation.
@@ -144,6 +149,7 @@ function snapshot(state) {
     screen: state.screen,
     transformation: state.transformation,
     contextWarned: state.contextWarned,
+    outOfScopeWarned: state.outOfScopeWarned,
     session: state.session,
     demo: state.demo,
     answers: validAnswers(state.answers),

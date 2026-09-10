@@ -191,6 +191,34 @@ Le produit final tient en un script et une feuille de style — 271 ko de JavaSc
 soit environ 97 ko une fois compressés — servis en fichiers statiques. Une seule dépendance de
 production : Vue.
 
+### 3.5 Figer l'état remis : une *release*, pas une étiquette locale
+
+GitHub Pages sert toujours le dernier état poussé : l'adresse publique de l'outil ne dit donc pas ce
+qui a été rendu, elle dit ce qui existe aujourd'hui. Le dépôt continue par ailleurs de bouger après
+la remise du code — le rapport en français révisé est attendu le 28.09.2026. Ce qui est remis doit
+donc être figé ailleurs que dans la branche.
+
+C'est ce que fait une *release* GitHub
+([documentation](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)) :
+elle épingle un commit, lui attache une archive du dépôt à cet instant, et lui donne une date et une
+adresse permanentes. Une étiquette posée en local ne fait rien de tout cela tant qu'elle n'est pas
+poussée, et ne se voit d'aucune façon depuis le dépôt.
+
+Deux états sont à figer, aux deux échéances qui ne sont pas les mêmes :
+
+| Release | Quand | Ce qu'elle fige |
+|---|---|---|
+| `v1.0-tb` | remise du 13.09.2026 | le code de l'outil et le dossier tels que rendus |
+| `v1.1-tb-rapport` | 28.09.2026 | le rapport en français révisé, si le dépôt a bougé depuis |
+
+Marche à suivre, sans outil à installer : **Releases → Draft a new release → Choose a tag → Create
+new tag**, cible le commit voulu (onglet *Recent Commits* du sélecteur *Target*), titre, corps,
+**Publish release**. Les archives `zip` et `tar.gz` de ce commit sont jointes automatiquement.
+
+Le corps de la release est l'endroit où dire ce que le lecteur ne peut pas déduire du code : ce que
+l'outil fait, ce qu'il n'est pas, d'où vient le modèle et à quelles conditions il est employé —
+c'est-à-dire la même chose que le pied de page et l'export, à la même adresse que l'archive.
+
 ---
 
 ## 4. Arborescence
@@ -450,7 +478,8 @@ docs/
 ├── logs/          les instruments de traçabilité de la démarche
 │   ├── DECISIONS.md            journal des décisions structurelles : date, décision, motif,
 │   │                           alternative écartée. Chaque entrée doit pouvoir être défendue
-│   ├── DECISIONS-brouillon.md  13 entrées des 28.08 et 31.08.2026, pas encore intégrées (§ 8)
+│   ├── DECISIONS-brouillon.md  trace de rédaction des 13 entrées des 28.08 et 31.08.2026,
+│   │                           versées au journal le 08.09.2026 ; le journal fait foi
 │   ├── BACKLOG.md              lots, dépendances, ordre de coupe, partage des rôles, version 2
 │   ├── ENONCES.md              guide de rédaction des 140 énoncés et grille de dérivation
 │   ├── MERGE.md                les 12 points de conflit tranchés lors du merge des cadrages
@@ -472,27 +501,30 @@ de coupe, `docs/audits/` pour les contrôles menés sur les énoncés.
 ## 8. Écarts connus entre le dossier et le code
 
 Un dossier dont la documentation contredit le code affaiblit tout ce que le rapport affirme par
-ailleurs. Ce qui reste à résorber au 02.09.2026, avec ce qui fait foi :
+ailleurs. Ce qui reste à résorber au 10.09.2026, avec ce qui fait foi :
 
 | Écart | Ce que dit le code | À faire |
 |---|---|---|
-| `DECISIONS.md` s'arrête au 18.08.2026 | Les 13 décisions des 28.08 et 31.08 sont appliquées | Intégrer `DECISIONS-brouillon.md` au journal |
-| L'entrée du 28.08 et l'item 0.3 du backlog décrivent des pratiques affichées en lecture seule | Le code ne les affiche pas du tout, et trois tests l'interdisent | Mettre le journal en accord avec le code |
-| Le backlog montre les lots 2 et 3 largement non cochés | Le calcul, le questionnaire, les résultats et l'ancrage sont livrés | Re-cocher contre le dépôt, sans recopier l'un dans l'autre |
-| `attribution.js` déclare le référentiel sous licence CC BY-NC-ND | Mention issue du rapport préliminaire de décembre 2025 ; le document v1.0 employé porte un copyright Carnegie Mellon University et une clause du SEI, sans licence Creative Commons | Corriger la donnée d'attribution |
-| Le pied d'attribution est masqué à l'impression, et l'export n'en porte aucun | La pièce emportée sort donc sans attribution ni démenti | Poser l'attribution dans l'en-tête ou le pied de chaque page d'export |
-| `PERIMETRE.md` présente le seuil de N minimal comme « une règle du modèle » | Aucune ligne de code ne le porte | Le requalifier en spécification à honorer le jour où la collecte existe |
+| La notice du référentiel v1.0 (DM26-0590) n'accorde aucune clause de permission | `attribution.js` porte désormais le copyright Carnegie Mellon University, la mention de marque et la fourniture « en l'état », et plus aucune licence Creative Commons | Demander la permission au SEI en citant le DM26-0590, ou porter la restriction dans les limites du rapport avant toute publication de l'adaptation |
 | `devApproach` est collecté au cadrage | Il ne score sur aucun axe et ne plafonne rien : il est volontairement inerte | Chantier de scoping par pratiques reporté en version 2 — le besoin est clos par le hors périmètre |
 | Le code dit `area` et `goal` | L'interface dit « domaine de capacité » et « critère d'adoption » | Décalage **délibéré** : `model-data.json` reste le report littéral de la source anglaise. Propagation aux identifiants reportée en version 2 |
 
 L'export ne porte, à ce jour, que les domaines qui séparent du profil visé, avec pour chacun
 l'énoncé de son rang visé, sous un en-tête qui nomme le périmètre, le profil visé et le profil
-diagnostiqué. Le récapitulatif du contexte, le radar imprimable et le détail des 28 réponses annoncés
-à la ligne 3.10 du backlog n'y sont pas.
+diagnostiqué, et au pied de chaque page l'attribution et le démenti. Le récapitulatif du contexte, le
+radar imprimable et le détail des 28 réponses annoncés à la ligne 3.10 du backlog n'y sont pas.
 
-Restent également ouverts : la sauvegarde JSON (3.11), le contrôle d'accessibilité et de parcours
-clavier à 1200 / 900 px (3.13), la séance de terminologie avec l'experte (4.4b) et la séance test
-chronométrée (4.5).
+Le backlog a été relevé contre le dépôt le 10.09.2026, ligne à ligne : ses statuts disent maintenant
+ce que le code porte, et les lignes dont le livré s'écarte de l'intention le signalent sur place.
+
+Restent également ouverts : l'application des corrections d'énoncés proposées dans `docs/audits/`
+(1.7, 1.7b), le test d'attribution à l'aveugle (1.7c), l'analyse de sensibilité de la règle au
+minimum et l'entrée de journal qu'elle alimente (2.11, 2.12), trois entrées de journal manquantes
+— graphiques, sauvegarde, livraison (0.7, 0.9) —, l'encadré de clôture de l'ancrage (3.8b), la
+sauvegarde JSON (3.11), le contrôle d'accessibilité et de parcours clavier à 1200 / 900 px (3.13),
+la séance de terminologie avec l'experte (4.4b), la séance test chronométrée (4.5), et la livraison
+elle-même : déploiement vérifié puis release `v1.0-tb` à la remise du 13.09, release
+`v1.1-tb-rapport` à l'échéance du rapport révisé le 28.09 (4.6, 4.7 — voir § 3.5).
 
 ---
 

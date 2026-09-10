@@ -40,8 +40,14 @@
         </div>
 
         <footer class="page__foot">
-          <span>{{ vm.meta }}</span>
-          <span>{{ page.label }}</span>
+          <p class="page__attribution">
+            {{ vm.attribution.short }}
+            <span class="page__disclaimer">{{ vm.attribution.disclaimer }}</span>
+          </p>
+          <p class="page__ident">
+            <span>{{ vm.meta }}</span>
+            <span>{{ page.label }}</span>
+          </p>
         </footer>
       </article>
     </div>
@@ -69,6 +75,17 @@
 // périmètre se prend sinon pour un bilan de l'entreprise entière. Il est répété
 // sur chaque page : une page détachée du dossier reste rattachée à son
 // périmètre.
+//
+// — l'attribution au pied de chaque page —
+// Le pied de page de l'application ne suit pas le document : il est masqué à
+// l'impression. Sans la ligne posée ici, une page enregistrée en PDF sortirait
+// sans dire d'où vient le modèle ni qu'elle n'est ni une certification ni une
+// évaluation reconnue — c'est-à-dire le seul malentendu qui puisse nuire à
+// quelqu'un, et il se produit précisément là où l'outil n'est plus là pour se
+// corriger. Elle est répétée sur chaque page, comme le périmètre, et pour la
+// même raison. Elle est posée sous la ligne d'identité plutôt qu'à côté : ce
+// n'est pas de l'identification de feuille, et la mêler au numéro de page en
+// ferait une mention de service qu'on cesse de lire.
 //
 // La couverture est appendue à cette ligne plutôt que posée sous elle, comme à
 // l'écran des résultats : les deux répondent à la même question — ce qu'on a
@@ -260,11 +277,32 @@ const emit = defineEmits(['back'])
 
 .page__foot {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 5px;
   padding-top: 8px;
   border-top: 1px solid var(--color-divider);
   font-size: 9.5px;
   color: var(--color-neutral-700);
+}
+
+.page__ident {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+}
+
+/* L'attribution est plus petite que la ligne d'identité et se lit d'une traite,
+   démenti compris : elle doit être trouvable sur la page sans jamais disputer
+   la place au contenu, qui est ce que le lecteur est venu chercher. Le démenti
+   ne s'en détache que par la teinte, comme au pied de l'application. */
+.page__attribution {
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.page__disclaimer {
+  color: var(--color-neutral-800);
 }
 
 /* La page ne se réagence pas : c'est un aperçu d'impression, sa largeur EST le

@@ -9,7 +9,7 @@
         :class="{ 'is-active': vm.outOfScope.active }"
         :aria-checked="vm.outOfScope.active"
         :aria-label="vm.outOfScope.label"
-        @click="emit('select', vm.outOfScope.value)"
+        @click="emit('select', vm.outOfScope.value, $event)"
       >
         <span class="out__text">{{ vm.outOfScope.short }}</span>
         <span class="out__track" aria-hidden="true"><span class="out__knob" /></span>
@@ -25,7 +25,7 @@
         class="button-reset statement"
         :class="{ 'is-active': statement.active, 'is-reached': statement.reached }"
         :aria-checked="statement.active"
-        @click="emit('select', statement.value)"
+        @click="emit('select', statement.value, $event)"
       >
         <span class="statement__text">{{ statement.text }}</span>
       </button>
@@ -75,6 +75,13 @@
 // Un clic vaut une réponse : le composant n'a pas d'état, il émet la valeur et
 // reçoit en retour le view-model qui dit laquelle est retenue. Recliquer la
 // réponse retenue l'annule, mais c'est le parent qui en décide.
+//
+// L'événement du navigateur accompagne la valeur, et ce n'est pas une fuite du
+// gabarit vers le parent : la page fait défiler jusqu'au domaine vide suivant
+// après une réponse, et s'en abstient lorsque la réponse vient du clavier — un
+// défilement que la touche de tabulation suivante défera aussitôt vaut moins que
+// pas de défilement du tout. Le geste — pointeur ou clavier — n'est connu que
+// d'ici, et il n'y a pas d'autre chemin pour le porter à qui décide.
 //
 // Les deux notes de la colonne de droite ont disparu avec elle. Elles
 // paraissaient une fois par domaine, soit vingt-huit fois sur la page : l'une

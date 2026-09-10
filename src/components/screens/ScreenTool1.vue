@@ -14,7 +14,11 @@
 
       <section :id="vm.sections[1].anchor" ref="evaluationSection" class="section">
         <h2 class="section-head">{{ vm.sections[1].name }}</h2>
-        <ScreenDiag :vm="diag" @answer="(areaId, value) => emit('answer', areaId, value)" />
+        <ScreenDiag
+          :vm="diag"
+          @answer="(areaId, value) => emit('answer', areaId, value)"
+          @dismiss-out-of-scope-warning="emit('dismiss-out-of-scope-warning')"
+        />
       </section>
 
       <section :id="vm.sections[2].anchor" ref="resultsSection" class="section">
@@ -84,7 +88,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-  'select-option', 'dismiss-warning', 'answer', 'phase', 'anchor-reached', 'back', 'next'
+  'select-option', 'dismiss-warning', 'dismiss-out-of-scope-warning', 'answer', 'phase',
+  'anchor-reached', 'back', 'next'
 ])
 
 const cadrage = useTemplateRef('cadrage')

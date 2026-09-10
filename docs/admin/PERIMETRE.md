@@ -30,8 +30,9 @@ pression subie. Ces trois domaines sont la condition d'applicabilité, pas un co
   opposable au choix de solution en A7 par les engagements de confidentialité et le secret de
   fabrication. C'est la structure du tissu sous-traitant horloger et microtechnique de la région,
   et c'est ce qui distingue une PME d'ici d'une PME de services comparable en taille ;
-- le **seuil de N minimal** inscrit dans le modèle est dimensionné sur ce tissu : trois PME
-  horlogères de 10 à 49 employés suffisent à réidentifier une entreprise dans l'Arc jurassien ;
+- le **seuil de N minimal** retenu est dimensionné sur ce tissu : trois PME horlogères de 10 à 49
+  employés suffisent à réidentifier une entreprise dans l'Arc jurassien. C'est une spécification
+  écrite d'avance, non une règle que le code applique — voir plus bas ;
 - l'**échantillon du test pilote** est régional.
 
 **Ce qui n'est pas revendiqué.** Aucune donnée régionale ne fonde le modèle. Il n'existe ni
@@ -54,9 +55,22 @@ Backend, persistance serveur, authentification. Statistiques comparatives inter-
 L'objectif 3 ratifié mentionne des statistiques descriptives et comparatives. L'exigence retenue est
 d'extensibilité, non de fonctionnalité : l'outil doit permettre la collecte et l'exposition
 ultérieures sans refonte. Elle se traduit par un contrat de données versionné, une couture de
-persistance dont seule l'implémentation locale est livrée, et un seuil de N minimal inscrit dans le
-modèle. Trois PME horlogères de 10 à 49 employés suffisent à réidentifier une entreprise dans
-l'Arc jurassien : le seuil est une règle du modèle, pas un paramètre d'affichage.
+persistance dont seule l'implémentation locale est livrée, et un seuil de N minimal spécifié.
+
+**Statut du seuil de N minimal.** C'est une **spécification à honorer**, non une règle en vigueur :
+aucune ligne de code ne la porte, et il faut le dire ici plutôt que de laisser croire à une garantie
+que l'outil n'offre pas. Elle ne peut d'ailleurs pas être en vigueur — le seuil borne la restitution
+d'une statistique inter-PME, et cette collecte est hors périmètre : il n'existe à ce jour aucun N à
+seuiller, l'outil ne connaissant qu'une session, locale, à la fois. La spécification s'écrit
+maintenant parce que c'est maintenant qu'elle est justifiable, et parce qu'un seuil décidé après
+coup, devant une distribution qu'on a sous les yeux, se négocie contre l'envie de publier.
+
+Elle énonce ceci : aucune valeur agrégée ne se restitue en deçà de trois entreprises répondantes
+dans la maille considérée. Trois PME horlogères de 10 à 49 employés suffisent à réidentifier une
+entreprise dans l'Arc jurassien, et une valeur agrégée sur deux répondants n'est pas une statistique,
+c'est la réponse de l'autre. Le jour où la collecte existera, le seuil sera une règle du domaine —
+testable au même titre que les règles d'agrégation, et non un paramètre d'affichage qu'un écran
+pourrait contourner.
 
 ## Dans le périmètre de mesure : la dimension MLOps
 

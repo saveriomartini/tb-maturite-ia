@@ -16,6 +16,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMaturityTool } from '../src/composables/useMaturityTool.js'
+import { ATTRIBUTION } from '../src/data/attribution.js'
 import { DEMO_SESSIONS } from '../src/data/demo-sessions.js'
 import { PASSAGES, REVOLUTIONARY_FROM } from '../src/data/transformation.js'
 import {
@@ -516,6 +517,21 @@ describe('les deux états que la restitution doit nommer', () => {
     expect(tool.ancrage.empty).toBe(true)
     expect(tool.ancrage.emptyLabel).toBe('Le profil visé est en deçà du profil diagnostiqué')
     expect(tool.exportPreview.emptyLabel).toContain('dépasse')
+  })
+
+  it("l'export porte l'attribution et le démenti", () => {
+    // Le pied de page de l'application est masqué à l'impression : si l'export
+    // ne porte pas l'attribution lui-même, la pièce emportée sort sans dire
+    // d'où vient le modèle ni ce qu'elle n'est pas. Le test lit la donnée du
+    // fichier d'attribution plutôt qu'une chaîne recopiée — une attente
+    // recopiée à la main dérive au premier remaniement du texte.
+    const tool = demo('terravia')
+    expect(tool.exportPreview.attribution.short).toBe(ATTRIBUTION.short)
+    expect(tool.exportPreview.attribution.disclaimer).toBe(ATTRIBUTION.disclaimer)
+    expect(tool.exportPreview.attribution.short).toContain('Carnegie Mellon University')
+    // Une session vierge s'exporte aussi, et sur une page vide l'attribution
+    // est la seule chose que le lecteur ait pour situer le document.
+    expect(useMaturityTool().exportPreview.attribution.disclaimer).toBe(ATTRIBUTION.disclaimer)
   })
 })
 

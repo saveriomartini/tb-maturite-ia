@@ -30,6 +30,7 @@
     :resti2="tool.resti2"
     @select-option="tool.actions.selectOption"
     @dismiss-warning="tool.actions.dismissContextWarning"
+    @dismiss-out-of-scope-warning="tool.actions.dismissOutOfScopeWarning"
     @answer="tool.actions.answerArea"
     @phase="tool.actions.setPhase"
     @anchor-reached="tool.actions.clearAnchor"

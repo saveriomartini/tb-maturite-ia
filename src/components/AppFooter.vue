@@ -14,8 +14,8 @@
 // routeur d'écrans plutôt que dans chacun d'eux, pour qu'aucun écran ajouté
 // plus tard ne puisse l'oublier.
 //
-// Il porte la forme courte — l'identité du travail, le référentiel de base et sa
-// licence — puis le démenti, à la ligne. Un seul paragraphe, coupé par un saut
+// Il porte la forme courte — l'identité du travail, le référentiel de base et
+// son copyright — puis le démenti, à la ligne. Un seul paragraphe, coupé par un saut
 // de ligne et non par un blanc entre blocs : les deux phrases se lisent d'une
 // traite, mais le démenti commence au bord gauche, là où l'œil le retrouve.
 // C'est aussi ce qui le sépare, avec la teinte, plus sombre des deux.
@@ -26,8 +26,8 @@
 //
 // Le pied de page ne s'imprime pas : l'export compose ses propres pages, et une
 // ligne surnuméraire en fin de document y viendrait après le dernier cadre, hors
-// de toute page. Son attribution à lui sera posée dans l'en-tête ou le pied de
-// chacune de ses pages.
+// de toute page. Son attribution à lui vit au pied de chacune de ses pages, dans
+// `ScreenExport.vue` — c'est ce qui rend ce masquage tenable.
 defineProps({
   attribution: { type: Object, required: true }
 })
