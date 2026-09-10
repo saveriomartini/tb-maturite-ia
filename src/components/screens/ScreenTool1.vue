@@ -1,6 +1,6 @@
 <template>
-  <AppScreen class="page">
-    <div class="page__main">
+  <AppScreen class="band-page">
+    <div class="band-page__main">
       <section :id="vm.sections[0].anchor" ref="cadrageSection" class="section section--cadrage">
         <h2 class="section-head">{{ vm.sections[0].name }}</h2>
         <ScreenCadrage3
@@ -33,7 +33,7 @@
       />
     </div>
 
-    <ProfileBand :vm="vm.band" class="page__band" />
+    <ProfileBand :vm="vm.band" class="band-page__band" />
   </AppScreen>
 </template>
 
@@ -172,22 +172,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Le contenu à gauche, la bande des profils à droite, et `align-items: start`
-   pour que la bande puisse coller : une cellule de grille étirée par défaut
-   prendrait toute la hauteur de la ligne, et un élément collant qui occupe déjà
-   toute sa piste ne colle à rien. */
-.page {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 0 36px;
-  align-items: start;
-}
+/* La grille — contenu à gauche, bande collée à droite — est la primitive
+   `.band-page` de tokens.css, partagée avec l'ancrage : la bande doit s'y
+   trouver au même endroit qu'ici. Ne reste ici que ce qui est propre à cette
+   page.
 
-.page__main {
-  min-width: 0;
-}
-
-/* Les trois sections de la page, séparées par la seule respiration : le titre
+   Les trois sections de la page, séparées par la seule respiration : le titre
    coiffé suffit à dire qu'on change de phase, et un filet de plus ferait lire
    une rupture de page là où il n'y a qu'un défilement. */
 .section + .section {
@@ -209,29 +199,9 @@ onBeforeUnmount(() => {
   max-width: 1040px;
 }
 
-/* La bande se resserre avant de partir : à cette largeur, 280px pris au contenu
-   coûtent plus à la barre des 28 domaines qu'ils ne rapportent à la bande. */
-@media (max-width: 1200px) {
-  .page {
-    grid-template-columns: minmax(0, 1fr) 230px;
-    gap: 0 24px;
-  }
-}
-
-/* Sous 900px la grille se replie sur une colonne, et la bande passe en tête —
-   voir ProfileBand, qui porte la décision et son motif. L'ordre de source la
-   place après le contenu, ce qui est le bon ordre pour un lecteur d'écran : la
-   bande commente ce qu'on répond, elle ne l'annonce pas. */
+/* Le repli de la grille et le passage de la bande en tête sont dans
+   `.band-page` (tokens.css). Ne reste ici que la respiration des sections. */
 @media (max-width: 900px) {
-  .page {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .page__band {
-    order: -1;
-    margin-bottom: 28px;
-  }
-
   .section + .section {
     margin-top: 32px;
   }

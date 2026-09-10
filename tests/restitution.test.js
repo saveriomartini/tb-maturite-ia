@@ -255,28 +255,28 @@ describe('l’échelle des paliers', () => {
     expect(vierge.resti1.line.text).toBeTruthy()
   })
 
-  // Le commentaire en quatre phrases (non déclarée, plus haut, atteinte, sous
-  // le palier atteint) est parti le 31.08.2026 : le diagramme porte la marque
-  // « cible » sur le rectangle visé, aussi visible que « diagnostic », et n'a
-  // plus besoin d'une phrase d'appoint pour le dire. Seule la marque elle-même
-  // reste à vérifier : présente quand la portée est déclarée, absente sinon —
-  // jamais un défaut silencieux qui se lirait comme une cible à zéro.
-  it('marque le palier cible sur l’échelle seulement quand la portée est déclarée', () => {
+  // L'échelle a porté une marque « cible » et un estompage des paliers qui la
+  // dépassaient, tous deux suspendus à la portée déclarée. Ce test vérifiait
+  // qu'ils apparaissaient et disparaissaient avec elle ; il vérifie désormais
+  // l'inverse, et c'est un renversement, pas un durcissement.
+  //
+  // Motif : la portée se déclare en ancrage, après les résultats. Deux drapeaux
+  // qui en dépendaient faisaient donc bouger un écran *précédent* — le test
+  // pilote l'a relevé. Les deux sont partis le 10.09.2026, et ce qu'ils
+  // montraient est passé sur la bande des profils en ancrage.
+  //
+  // L'absence est vérifiée sur la clé et non sur sa valeur : un `isTarget:
+  // false` qui subsisterait passerait un `some()` sans que rien ne le signale,
+  // et c'est précisément la porte par laquelle le couplage reviendrait.
+  it('l’échelle des résultats ne porte jamais de cible', () => {
     const tool = demo('terravia')
-    expect(tool.resti1.ladder.some(step => step.isTarget)).toBe(true)
-
-    tool.actions.selectReach(tool.state.transformation) // annule la portée
-    expect(tool.resti1.ladder.some(step => step.isTarget)).toBe(false)
-  })
-
-  // Un palier tenu mais plus haut que la portée déclarée n'est pas un excédent
-  // à estomper : c'est un fait acquis, et il reste pleinement lisible.
-  it('n’estompe jamais un palier atteint, même au-dessus de la cible', () => {
-    const tool = demo('terravia')
-    tool.actions.selectReach(1)
-    tool.resti1.ladder.forEach(step => {
-      if (step.reached) expect(step.beyondTarget, step.label).toBe(false)
-    })
+    for (let n = 1; n <= 5; n += 1) {
+      declareReach(tool, n)
+      tool.resti1.ladder.forEach(step => {
+        expect(step, `portée ${n} — ${step.label}`).not.toHaveProperty('isTarget')
+        expect(step, `portée ${n} — ${step.label}`).not.toHaveProperty('beyondTarget')
+      })
+    }
   })
 })
 
@@ -713,6 +713,121 @@ describe('aucune valeur affichée ne dépasse son total', () => {
         expect(row.level, `${name} — ${row.area}`).toBeLessThanOrEqual(dimensionScale(tool))
         expect(row.required, `${name} — ${row.area}`).toBeLessThanOrEqual(dimensionScale(tool))
       })
+    })
+  })
+})
+
+// — la portée ne remonte pas le parcours —
+//
+// La règle posée le 10.09.2026 après le test pilote : les phases 1 à 3 ne
+// changent plus quand la portée change. Elle se vérifie sur les deux vues que la
+// page `tool` rend — la restitution et la bande des profils —, et par une
+// égalité profonde plutôt que sur les seuls drapeaux qui portaient le couplage :
+// un test qui n'énumère que les champs connus ne verra pas le prochain.
+//
+// L'instantané passe par JSON : les deux vm ne portent que des nombres, des
+// chaînes, des booléens et des `null`, et une copie inerte se compare sans que
+// la réactivité s'en mêle.
+function frozen(tool) {
+  return JSON.parse(JSON.stringify({ resti1: tool.resti1, band: tool.toolPage.band }))
+}
+
+describe('la portée déclarée en ancrage ne change rien en amont', () => {
+  it('laisse les résultats et la bande de la page tool intacts, pour les cinq portées', () => {
+    DEMO_SESSIONS.forEach(scenario => {
+      const tool = demo(scenario.id)
+      const before = frozen(tool)
+
+      for (let n = 1; n <= 5; n += 1) {
+        declareReach(tool, n)
+        expect(tool.state.transformation, `${scenario.name} — portée ${n}`).toBe(n)
+        expect(frozen(tool), `${scenario.name} — portée ${n}`).toEqual(before)
+      }
+
+      // Et à l'annulation : recliquer la portée retenue la retire, ce qui est le
+      // seul chemin de retour vers l'état non déclaré.
+      tool.actions.selectReach(tool.state.transformation)
+      expect(tool.state.transformation, `${scenario.name} — annulation`).toBeNull()
+      expect(frozen(tool), `${scenario.name} — annulation`).toEqual(before)
+    })
+  })
+})
+
+// — la bande des profils en ancrage —
+//
+// C'est là, et là seulement, que la portée se voit : les mêmes barres qu'à
+// l'évaluation, plus deux marques. Ce que ces tests gardent, c'est la frontière
+// — les marques réagissent, le remplissage non.
+describe('la bande de l’ancrage : le remplissage tient, les marques réagissent', () => {
+  // Le remplissage vient du diagnostic. Il est relu depuis la bande de la page
+  // `tool`, et non recopié dans le test : c'est l'égalité des deux bandes qui
+  // est en jeu, pas une valeur particulière.
+  function filling(bars) {
+    return bars.map(({ n, label, done, expected, full, acquired, count }) =>
+      ({ n, label, done, expected, full, acquired, count }))
+  }
+
+  it('marque exactement le profil de la portée déclarée, et lui seul', () => {
+    DEMO_SESSIONS.forEach(scenario => {
+      const tool = demo(scenario.id)
+      const diagnostic = filling(tool.toolPage.band.bars)
+
+      for (let n = 1; n <= 5; n += 1) {
+        declareReach(tool, n)
+        const marked = tool.ancrage.band.bars.filter(bar => bar.isTarget)
+        expect(marked, `${scenario.name} — portée ${n}`).toHaveLength(1)
+        expect(marked[0].n, `${scenario.name} — portée ${n}`).toBe(n)
+        // Les comptes n'ont pas bougé d'un domaine.
+        expect(filling(tool.ancrage.band.bars), `${scenario.name} — portée ${n}`).toEqual(diagnostic)
+      }
+    })
+  })
+
+  // Sans portée déclarée, rien n'est marqué cible : le repère qui tient sa place
+  // est la suggestion, et elle porte son propre nom. Une marque « cible » posée
+  // par défaut ferait passer un avis pour une décision.
+  it('ne marque aucune cible tant que la portée n’est pas déclarée', () => {
+    const tool = useMaturityTool()
+    expect(tool.state.transformation).toBeNull()
+    expect(tool.ancrage.band.bars.some(bar => bar.isTarget)).toBe(false)
+  })
+
+  // La suggestion, elle, est là dans les deux cas : elle ne dépend que du
+  // cadrage, et déclarer une portée ne la fait pas disparaître — c'est même
+  // quand les deux diffèrent qu'elle a le plus à dire.
+  it('pose la suggestion sur le rang du profil suggéré, portée déclarée ou non', () => {
+    DEMO_SESSIONS.forEach(scenario => {
+      const tool = demo(scenario.id)
+      const check = when => {
+        const marked = tool.ancrage.band.bars.filter(bar => bar.isSuggested)
+        expect(marked, `${scenario.name} — ${when}`).toHaveLength(1)
+        expect(marked[0].n, `${scenario.name} — ${when}`).toBe(tool.ancrage.suggestedLevel)
+      }
+
+      tool.actions.selectReach(tool.state.transformation)
+      expect(tool.state.transformation).toBeNull()
+      check('portée non déclarée')
+
+      for (let n = 1; n <= 5; n += 1) {
+        declareReach(tool, n)
+        check(`portée ${n}`)
+      }
+    })
+  })
+
+  // Le chemin qui reste : strictement au-dessus du palier acquis, jusqu'au
+  // repère inclus. En deçà du palier acquis, rien — ce qui est tenu n'est pas un
+  // chemin.
+  it('teinte le chemin qui reste, du profil suivant l’acquis jusqu’au repère', () => {
+    DEMO_SESSIONS.forEach(scenario => {
+      const tool = demo(scenario.id)
+      for (let n = 1; n <= 5; n += 1) {
+        declareReach(tool, n)
+        const acquired = tool.resti1.ladder.find(step => step.acquired).n
+        const remaining = tool.ancrage.band.bars.filter(bar => bar.betweenAcquiredAndTarget)
+        expect(remaining.map(bar => bar.n), `${scenario.name} — portée ${n}`)
+          .toEqual(tool.ancrage.band.bars.map(bar => bar.n).filter(rank => rank > acquired && rank <= n))
+      }
     })
   })
 })

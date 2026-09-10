@@ -1,108 +1,112 @@
 <template>
-  <AppScreen>
-    <div class="lead">
-      <h1 class="lead__title heading">Préparer l’ancrage</h1>
-      <p class="lead__text">
-        C’est de la portée déclarée ci-dessous que se déduit le profil visé, et donc l’écart. La
-        phase s’arrête là : elle prépare la mise en œuvre, elle ne la conduit pas.
-      </p>
+  <AppScreen class="band-page">
+    <div class="band-page__main">
+      <div class="lead">
+        <h1 class="lead__title heading">Préparer l’ancrage</h1>
+        <p class="lead__text">
+          C’est de la portée déclarée ci-dessous que se déduit le profil visé, et donc l’écart. La
+          phase s’arrête là : elle prépare la mise en œuvre, elle ne la conduit pas.
+        </p>
+      </div>
+
+      <section class="section">
+        <TransformationQuestion
+          :field="vm.reachField"
+          title="Portée visée"
+          @select="emit('select-reach', $event)"
+        />
+      </section>
+
+      <section class="section">
+        <h2 class="section-head">Le profil visé, et ce qu’il engage</h2>
+
+        <div class="verdict">
+          <p class="verdict__eyebrow eyebrow">{{ vm.targetTermCap }}</p>
+          <p class="verdict__name heading">{{ vm.targetLabel }}</p>
+          <p class="verdict__from">Profil diagnostiqué : {{ vm.acquiredLabel }}</p>
+
+          <!-- TEXTE PROVISOIRE — à valider par Saverio -->
+          <div
+            class="suggested"
+            :class="{ 'suggested--apart': vm.relation === 'above' }"
+            role="status"
+          >
+            <p class="suggested__line">
+              Profil suggéré par votre contexte : {{ vm.suggestedLabel }}
+            </p>
+            <p v-if="vm.relation === 'above'" class="suggested__apart">
+              Votre profil visé est plus haut que ce profil suggéré.
+            </p>
+            <ul v-if="vm.suggestedReasons.length" class="suggested__reasons">
+              <li v-for="reason in vm.suggestedReasons" :key="reason.text">
+                <template v-if="reason.kind === 'cap'">{{ reason.text }}</template>
+                <template v-else>le profil le plus haut suppose {{ reason.text }}</template>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="intention">{{ vm.intentionGap }}</p>
+        <p class="passage">{{ vm.passage }}</p>
+      </section>
+
+      <section class="section">
+        <h2 class="section-head">Ce qui vous en sépare</h2>
+
+        <p v-if="vm.empty" class="closed">{{ vm.emptyLabel }}</p>
+        <p v-if="vm.unmeasured" class="unmeasured">{{ vm.unmeasured }}</p>
+
+        <div v-if="vm.gates.length" class="panel">
+          <article v-for="group in vm.gates" :key="group.level" class="gate">
+            <h3 class="panel-head gate__label">Pour atteindre « {{ group.label }} »</h3>
+            <div
+              v-for="area in group.areas"
+              :key="area.id"
+              class="domain"
+              :style="{ '--dimension-color': area.dimColor }"
+            >
+              <div class="domain__head">
+                <span class="domain__dimension">{{ area.dim }}</span>
+                <span class="domain__area heading">{{ area.name }}</span>
+                <span class="domain__ranks">attendu au rang {{ area.required }} · situé au {{ area.level || '—' }}</span>
+              </div>
+              <p class="domain__statement">{{ area.statement }}</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section v-if="vm.outOfScope || vm.pending" class="section">
+        <h2 class="section-head">Ce que la mesure laisse de côté</h2>
+        <div class="asides">
+          <div v-if="vm.outOfScope" class="aside">
+            <p class="aside__eyebrow eyebrow">{{ vm.outOfScope.summary }}</p>
+            <p class="aside__note">{{ vm.outOfScope.note }}</p>
+            <p class="aside__list">{{ vm.outOfScope.areasLabel }}</p>
+          </div>
+
+          <div v-if="vm.pending" class="aside">
+            <p class="aside__eyebrow eyebrow">{{ vm.pending.summary }}</p>
+            <p class="aside__note">{{ vm.pending.note }}</p>
+            <p class="aside__list">{{ vm.pending.areasLabel }}</p>
+            <button type="button" class="btn btn-secondary aside__resume" @click="emit('resume')">
+              {{ vm.pending.resumeLabel }}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <AppScreenNav @back="emit('back')">
+        <template #actions>
+          <div class="actions">
+            <button type="button" class="btn btn-secondary actions__export" @click="emit('export')">Export</button>
+            <button type="button" class="btn btn-primary actions__finish" @click="emit('finish')">Fin</button>
+          </div>
+        </template>
+      </AppScreenNav>
     </div>
 
-    <section class="section">
-      <TransformationQuestion
-        :field="vm.reachField"
-        title="Portée visée"
-        @select="emit('select-reach', $event)"
-      />
-    </section>
-
-    <section class="section">
-      <h2 class="section-head">Le profil visé, et ce qu’il engage</h2>
-
-      <div class="verdict">
-        <p class="verdict__eyebrow eyebrow">{{ vm.targetTermCap }}</p>
-        <p class="verdict__name heading">{{ vm.targetLabel }}</p>
-        <p class="verdict__from">Profil diagnostiqué : {{ vm.acquiredLabel }}</p>
-
-        <!-- TEXTE PROVISOIRE — à valider par Saverio -->
-        <div
-          class="suggested"
-          :class="{ 'suggested--apart': vm.relation === 'above' }"
-          role="status"
-        >
-          <p class="suggested__line">
-            Profil suggéré par votre contexte : {{ vm.suggestedLabel }}
-          </p>
-          <p v-if="vm.relation === 'above'" class="suggested__apart">
-            Votre profil visé est plus haut que ce profil suggéré.
-          </p>
-          <ul v-if="vm.suggestedReasons.length" class="suggested__reasons">
-            <li v-for="reason in vm.suggestedReasons" :key="reason.text">
-              <template v-if="reason.kind === 'cap'">{{ reason.text }}</template>
-              <template v-else>le profil le plus haut suppose {{ reason.text }}</template>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <p class="intention">{{ vm.intentionGap }}</p>
-      <p class="passage">{{ vm.passage }}</p>
-    </section>
-
-    <section class="section">
-      <h2 class="section-head">Ce qui vous en sépare</h2>
-
-      <p v-if="vm.empty" class="closed">{{ vm.emptyLabel }}</p>
-      <p v-if="vm.unmeasured" class="unmeasured">{{ vm.unmeasured }}</p>
-
-      <div v-if="vm.gates.length" class="panel">
-        <article v-for="group in vm.gates" :key="group.level" class="gate">
-          <h3 class="panel-head gate__label">Pour atteindre « {{ group.label }} »</h3>
-          <div
-            v-for="area in group.areas"
-            :key="area.id"
-            class="domain"
-            :style="{ '--dimension-color': area.dimColor }"
-          >
-            <div class="domain__head">
-              <span class="domain__dimension">{{ area.dim }}</span>
-              <span class="domain__area heading">{{ area.name }}</span>
-              <span class="domain__ranks">attendu au rang {{ area.required }} · situé au {{ area.level || '—' }}</span>
-            </div>
-            <p class="domain__statement">{{ area.statement }}</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section v-if="vm.outOfScope || vm.pending" class="section">
-      <h2 class="section-head">Ce que la mesure laisse de côté</h2>
-      <div class="asides">
-        <div v-if="vm.outOfScope" class="aside">
-          <p class="aside__eyebrow eyebrow">{{ vm.outOfScope.summary }}</p>
-          <p class="aside__note">{{ vm.outOfScope.note }}</p>
-          <p class="aside__list">{{ vm.outOfScope.areasLabel }}</p>
-        </div>
-
-        <div v-if="vm.pending" class="aside">
-          <p class="aside__eyebrow eyebrow">{{ vm.pending.summary }}</p>
-          <p class="aside__note">{{ vm.pending.note }}</p>
-          <p class="aside__list">{{ vm.pending.areasLabel }}</p>
-          <button type="button" class="btn btn-secondary aside__resume" @click="emit('resume')">
-            {{ vm.pending.resumeLabel }}
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <AppScreenNav @back="emit('back')">
-      <template #actions>
-        <div class="actions">
-          <button type="button" class="btn btn-secondary actions__export" @click="emit('export')">Export</button>
-          <button type="button" class="btn btn-primary actions__finish" @click="emit('finish')">Fin</button>
-        </div>
-      </template>
-    </AppScreenNav>
+    <ProfileBand :vm="vm.band" class="band-page__band" />
   </AppScreen>
 </template>
 
@@ -124,6 +128,24 @@
 // et l'écran serait illisible dans l'autre sens. Elle n'est pas exigée pour
 // autant — sans réponse, c'est la suggestion du cadrage qui sert de repère, et
 // la page la nomme alors « profil suggéré » partout, jamais « profil visé ».
+//
+// — la bande des profils, reprise ici —
+// La même bande qu'à l'évaluation, à la même place : contenu à gauche, bande de
+// 280px collée à droite sous l'en-tête, par la primitive `.band-page` que les
+// deux écrans partagent (tokens.css). Le déplacer aurait suffi à la faire lire
+// comme une seconde figure ; c'est la même, poursuivie.
+//
+// Ses barres sont figées sur le résultat du diagnostic et ne bougent pas quand
+// on répond à la question de portée — la portée est une intention, elle ne
+// réécrit pas un constat. Seules deux marques réagissent, en direct : le profil
+// que la portée déclare, et celui que le cadrage suggère. C'est la contrepartie
+// d'une règle posée le 10.09.2026 après le test pilote : les phases 1 à 3 ne
+// changent plus quand la portée change — l'échelle des paliers des résultats a
+// perdu sa marque « cible » pour ce motif —, et ce que la portée change se
+// montre ici, dans le même champ de vision que la question qui la pose.
+//
+// La bande est hors du flux du contenu : elle ne prend pas part à la lecture en
+// sections, elle l'accompagne.
 //
 // — la suggestion, mise en regard et non substituée —
 // Ce que les attributs de cadrage appellent est montré sous le profil, avec les
@@ -173,6 +195,7 @@
 // complet du modèle.
 import AppScreen from '../AppScreen.vue'
 import AppScreenNav from '../AppScreenNav.vue'
+import ProfileBand from '../ProfileBand.vue'
 import TransformationQuestion from '../TransformationQuestion.vue'
 
 defineProps({
@@ -371,9 +394,13 @@ const emit = defineEmits(['select-reach', 'export', 'finish', 'resume', 'back'])
    résultats — ce sont les deux mêmes listes. Elles étaient deux panneaux pleins,
    du même poids visuel que l'écart : en retrait de corps et sans cadre, elles
    bornent la lecture sans la disputer. */
+/* Deux colonnes tant que la place le permet : depuis que la bande borde la page,
+   le contenu perd 280px et deux colonnes de hors-texte y deviennent étroites
+   avant le point de rupture. Elles se replient donc à la mesure disponible
+   plutôt qu'à la largeur de la fenêtre. */
 .asides {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 22px;
   align-items: start;
 }
@@ -425,10 +452,6 @@ const emit = defineEmits(['select-reach', 'export', 'finish', 'resume', 'back'])
 @media (max-width: 900px) {
   .verdict__name {
     font-size: 24px;
-  }
-
-  .asides {
-    grid-template-columns: 1fr;
   }
 
   .domain__ranks {

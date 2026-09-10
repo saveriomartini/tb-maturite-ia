@@ -16,10 +16,12 @@
 // écran que l'accueil, et cela vérifie au passage que le contrat de session
 // relit bien ce que l'outil écrit.
 
-import { createSSRApp } from 'vue'
+import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/App.vue'
+import ProfileBand from '../src/components/ProfileBand.vue'
+import { useMaturityTool } from '../src/composables/useMaturityTool.js'
 import { EVALUABLE_AREAS } from '../src/domain/model.js'
 import { SCREENS } from '../src/domain/navigation.js'
 import { buildDemoSession } from '../src/domain/demo-session.js'
@@ -94,5 +96,55 @@ describe('rendu des écrans', () => {
     expect(html).toContain('aucun domaine renseigné')
     // Aucune coordonnée n'a été calculée sur une valeur absente.
     expect(html).not.toContain('NaN')
+  })
+})
+
+// — la bande des profils, avec et sans marques —
+//
+// Le même composant sert deux fois : nu pendant l'évaluation, marqué en ancrage.
+// Les marques sont facultatives, et c'est ce qui garantit que déclarer une portée
+// ne bouge rien en amont — la page `tool` reçoit un vm sans elles et doit se
+// rendre exactement comme avant.
+//
+// Le test porte sur les classes et sur l'attribut de style plutôt que sur un
+// instantané du document entier : c'est là, et nulle part ailleurs, que le
+// composant peut se mettre à distinguer les deux cas.
+describe('la bande des profils', () => {
+  const MARK_TRACES = ['band--marked', 'bar__mark', 'bar__tick', 'is-target', 'is-suggested', 'is-remaining']
+
+  async function band(vm) {
+    const warnings = []
+    const app = createSSRApp({ render: () => h(ProfileBand, { vm }) })
+    app.config.warnHandler = message => warnings.push(message)
+    const html = await renderToString(app)
+    return { html, warnings }
+  }
+
+  function tool() {
+    const instance = useMaturityTool()
+    instance.actions.loadDemo('rochat')
+    return instance
+  }
+
+  it('ne porte aucune trace de marque quand le vm n’en donne pas', async () => {
+    const { html, warnings } = await band(tool().toolPage.band)
+    expect(warnings).toEqual([])
+    MARK_TRACES.forEach(trace => expect(html, trace).not.toContain(trace))
+    // Pas de variable de couleur non plus : sans marques, aucun style en ligne
+    // n'est posé sur la bande.
+    expect(html).not.toContain('--mark-color')
+  })
+
+  // Le pendant : sur le vm de l'ancrage, les marques sont bien là. Sans lui, le
+  // test précédent passerait aussi sur un composant qui aurait perdu ses marques.
+  it('les porte toutes sur le vm de l’ancrage', async () => {
+    const instance = tool()
+    instance.actions.selectReach(4)
+    const { html, warnings } = await band(instance.ancrage.band)
+    expect(warnings).toEqual([])
+    MARK_TRACES.forEach(trace => expect(html, trace).toContain(trace))
+    expect(html).toContain(instance.ancrage.band.marks.target)
+    expect(html).toContain(instance.ancrage.band.marks.suggested)
+    expect(html).toContain(instance.ancrage.band.marks.color)
   })
 })

@@ -122,14 +122,17 @@ const DEMO_DIALOG = {
 // (quatre cas : non déclaré, plus haut, atteint, sous le palier atteint) sont
 // partis le 31.08.2026 avec `LADDER_NOTE` et `LADDER_TARGET` : la première
 // redisait en phrase ce que le remplissage de chaque palier montre déjà, la
-// seconde ce que la marque « cible » du diagramme montre déjà sur le
+// seconde ce que la marque « cible » du diagramme montrait alors sur le
 // rectangle visé. Les deux étaient nées d'un risque réel — un diagramme muet
 // sur sa cible se lit comme une cible à zéro (docs/logs/BACKLOG.md, ligne
 // 3.5) — mais ce risque tenait à l'ancienne échelle en liste, où la marque de
-// cible se perdait dans une colonne de texte. Le diagramme actuel porte la
-// marque « cible » sur le rectangle lui-même, à la même place que « diagnostic »
-// : elle se lit sans phrase d'appoint, muette uniquement quand il n'y a
-// réellement rien à marquer.
+// cible se perdait dans une colonne de texte.
+//
+// La marque « cible » a quitté le diagramme à son tour le 10.09.2026, et le
+// risque avec elle : l'échelle ne prétend plus rien dire d'une cible, si bien
+// qu'elle ne peut plus se lire comme une cible à zéro. Ce qu'elle disait se dit
+// désormais en ancrage, sur la bande des profils, à l'endroit même où la portée
+// se déclare — voir `ancrage.band`.
 
 // — la bande des profils —
 //
@@ -147,6 +150,24 @@ const DEMO_DIALOG = {
 // clair. Jamais d'un pourcentage : « 89 % » dit une progression continue là où
 // « 8 sur 9 » dit ce qui manque.
 const BAND_TITLE = 'Les cinq profils'
+
+// — les marques de la bande, en ancrage seulement —
+//
+// Deux mots, et une couleur. Les mots parce que le rail est `aria-hidden` : un
+// repère qui n'existerait qu'en couleur et en forme ne serait annoncé nulle
+// part. La couleur parce que la carte de portée montre la même déclaration sous
+// une autre forme, et que les deux doivent se répondre.
+//
+// Elle est lue dans le modèle — première dimension du premier bloc, celle de
+// l'alignement stratégique — et jamais écrite ici : une valeur recopiée se
+// désaccorderait de la carte au premier changement de palette, et c'est
+// exactement l'accord qu'elle sert à tenir.
+// TEXTE PROVISOIRE — à valider par Saverio
+const BAND_MARKS = {
+  target: 'cible',
+  suggested: 'suggéré par le cadrage',
+  color: BLOCKS[0].dimensions[0].color
+}
 // La bande n'a plus de note. Elle a d'abord cessé de redire « une barre pleine
 // est un palier acquis », que la barre pleine dit d'elle-même ;
 // elle a fini par cesser de redire que le trait du bout est un seuil et non un
@@ -1126,9 +1147,19 @@ export function useMaturityTool() {
   }))
 
   // — résultats (phase 3) —
-  // Ce que le diagnostic constate, et rien de ce qu'on vise : la cible n'est
-  // nommée qu'à l'ancrage, où elle se déclare. Tant qu'elle ne l'est pas,
-  // l'échelle des paliers ne porte aucune marque de cible.
+  // Ce que le diagnostic constate, et rien de ce qu'on vise. L'échelle des
+  // paliers ne porte aucune marque de cible — jamais, et non plus « tant que la
+  // portée n'est pas déclarée » comme elle le faisait jusqu'au 10.09.2026.
+  //
+  // Ce qu'elle faisait alors : `isTarget` posait la marque « cible » sur un
+  // rectangle et `beyondTarget` estompait ceux qui la dépassaient, tous deux
+  // suspendus à `targetDeclared`. Répondre à la question de portée, qui se pose
+  // en ancrage, modifiait donc un écran *précédent* — le test pilote l'a relevé :
+  // on revient sur les résultats et ils ont bougé, sans qu'on y ait touché.
+  //
+  // La règle qui en sort : les phases 1 à 3 ne dépendent d'aucune déclaration de
+  // portée. Ce que la portée change se montre là où elle se déclare, et nulle
+  // part ailleurs — c'est `ancrage.band` qui porte les marques désormais.
   const resti1 = computed(() => ({
     scope: scopeLine.value,
     acquiredLabel: acquiredLabel.value,
@@ -1173,7 +1204,6 @@ export function useMaturityTool() {
         n: level.n,
         label: level.name,
         acquired: level.n === acquired.value,
-        isTarget: targetDeclared.value && level.n === target.value,
         reached: level.n <= acquired.value,
         // Les paliers qui supposent tous que celui d'avant soit franchi, sans
         // qu'aucune réponse ne s'y décide aujourd'hui : ils reculent d'un cran,
@@ -1181,11 +1211,6 @@ export function useMaturityTool() {
         // teinte — c'est le seul dont il y ait quelque chose à dire tout de
         // suite — sans qu'un état nommé le distingue plus explicitement.
         upcoming: level.n > acquired.value + 1,
-        // Le retrait ne vaut que pour ce qui est à la fois au-dessus de la cible
-        // et au-dessus du palier atteint. Un palier tenu mais plus haut que la
-        // portée déclarée reste pleinement lisible : c'est un fait acquis, pas
-        // un excédent à estomper.
-        beyondTarget: targetDeclared.value && level.n > target.value && level.n > acquired.value,
         // La ligne se trace *au-dessus* du premier palier révolutionnaire,
         // c'est-à-dire entre le deuxième et le troisième.
         opensLine: level.n === REVOLUTIONARY_FROM,
@@ -1259,8 +1284,47 @@ export function useMaturityTool() {
     }))
   }))
 
+  // — la bande des profils, en ancrage —
+  //
+  // La même bande que celle de l'évaluation, aux mêmes barres : c'est la
+  // condition pour qu'elle se reconnaisse. Le vm de la page `tool` n'est pas
+  // touché — il est repris tel quel, et les marques sont ajoutées par-dessus.
+  //
+  // Ce qui réagit à la portée, et ce qui n'y réagit pas :
+  //
+  //   — `full`, `acquired`, `done`, `expected` et le compte en clair viennent du
+  //     diagnostic et de lui seul. Aucun ne lit `state.transformation` : les
+  //     barres ne bougent pas quand on déclare une portée, ce serait faire
+  //     réécrire le constat par l'intention ;
+  //   — `isTarget`, `isSuggested` et `betweenAcquiredAndTarget` sont les trois
+  //     seules choses qui réagissent, et elles se posent *à côté* du
+  //     remplissage, jamais dedans.
+  //
+  // `isTarget` ne se pose que sur une portée déclarée : tant qu'elle ne l'est
+  // pas, aucun profil n'est marqué cible — le repère qui tient sa place est la
+  // suggestion, et elle porte son propre nom.
+  //
+  // `betweenAcquiredAndTarget` marque le chemin qui reste : strictement au-dessus
+  // du palier acquis, jusqu'au repère inclus. Il suit `target`, c'est-à-dire la
+  // portée déclarée quand elle l'est et la suggestion sinon — le même repère que
+  // celui dont toute la page mesure l'écart, faute de quoi la bande montrerait un
+  // chemin vers un point que le reste de l'écran ne nomme pas.
+  const ancrageBand = computed(() => ({
+    ...band.value,
+    bars: band.value.bars.map(bar => ({
+      ...bar,
+      isTarget: targetDeclared.value && bar.n === state.transformation,
+      isSuggested: bar.n === suggestedLevel.value,
+      betweenAcquiredAndTarget: bar.n > acquired.value && bar.n <= target.value
+    })),
+    marks: BAND_MARKS
+  }))
+
   const ancrage = computed(() => ({
     reachField: reachField.value,
+    // La bande, à la même place qu'à l'évaluation : ses barres n'ont pas bougé,
+    // seules les marques de repère répondent à la question posée juste à côté.
+    band: ancrageBand.value,
     declared: targetDeclared.value,
     targetLabel: targetLabel.value,
     // Le repère n'a pas le même nom selon qu'il est déclaré ou suggéré : c'est

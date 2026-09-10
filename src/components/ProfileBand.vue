@@ -1,5 +1,10 @@
 <template>
-  <aside class="band" aria-label="Remplissage des cinq profils d’adoption">
+  <aside
+    class="band"
+    :class="{ 'band--marked': !!vm.marks }"
+    :style="vm.marks ? { '--mark-color': vm.marks.color } : null"
+    aria-label="Remplissage des cinq profils d’adoption"
+  >
     <h2 class="band__title">{{ vm.title }}</h2>
 
     <ol class="band__list">
@@ -7,14 +12,27 @@
         v-for="bar in vm.bars"
         :key="bar.n"
         class="bar"
-        :class="{ 'is-acquired': bar.acquired }"
+        :class="{
+          'is-acquired': bar.acquired,
+          'is-target': vm.marks && bar.isTarget,
+          'is-suggested': vm.marks && bar.isSuggested,
+          'is-remaining': vm.marks && bar.betweenAcquiredAndTarget
+        }"
       >
         <p class="bar__head">
           <span class="bar__rank heading">{{ bar.n }}</span>
           <span class="bar__label heading">{{ bar.label }}</span>
         </p>
+        <p v-if="vm.marks && (bar.isTarget || bar.isSuggested)" class="bar__marks">
+          <span v-if="bar.isTarget" class="bar__mark bar__mark--target">{{ vm.marks.target }}</span>
+          <span v-if="bar.isSuggested" class="bar__mark bar__mark--suggested">{{ vm.marks.suggested }}</span>
+        </p>
         <span class="bar__track" aria-hidden="true">
           <span class="bar__fill" :style="{ width: fillWidth(bar) }" />
+          <template v-if="vm.marks">
+            <span v-if="bar.isTarget" class="bar__tick bar__tick--target" />
+            <span v-if="bar.isSuggested" class="bar__tick bar__tick--suggested" />
+          </template>
         </span>
         <p class="bar__count">{{ bar.count }}</p>
       </li>
@@ -90,6 +108,46 @@
 //
 // Le rail est `aria-hidden` : il ne dit rien qu'une capacité d'assistance
 // puisse lire, et tout ce qu'il montre est écrit juste dessous.
+//
+// — les deux marques de repère, et pourquoi elles n'existent qu'en ancrage —
+//
+// La bande sert deux fois. Pendant l'évaluation, elle ne montre que le
+// remplissage : rien de ce qu'on vise n'y figure, parce que rien n'a encore été
+// déclaré et que nommer une cible à ce moment reviendrait à répondre à la place
+// de l'utilisateur. En ancrage, la question de portée est posée à côté d'elle,
+// et la bande devient l'endroit où la réponse se voit.
+//
+// Deux marques s'y ajoutent, et deux seulement :
+//
+//   — la **cible**, sur le profil que la portée déclarée désigne. Elle emprunte
+//     la couleur de la dimension de l'alignement stratégique, celle-là même dont
+//     la carte de portée se sert : les deux figures montrent la même déclaration
+//     sous deux formes, et une couleur commune est ce qui le dit sans phrase.
+//     Le vm livre la valeur, lue dans le modèle — le composant ne l'écrit pas ;
+//   — la **suggestion** du cadrage, sur le profil que le contexte appelle. Elle
+//     est neutre et tiretée : c'est un repère, pas une décision, et lui donner
+//     la couleur de la cible les mettrait sur le même plan.
+//
+// Les deux mots sont écrits en clair à côté du nom du profil, et non seulement
+// sur le rail : le rail est `aria-hidden`, une marque qui n'existerait qu'en
+// couleur et en forme ne serait annoncée nulle part. Quand cible et suggestion
+// tombent sur le même profil, les deux mots s'affichent l'un après l'autre —
+// ils sont dans le flux du texte, ils ne peuvent pas se recouvrir.
+//
+// Un troisième état, plus discret, teinte les profils qui séparent l'acquis de
+// la cible : c'est le chemin qui reste. Il n'a pas de mot à lui, et n'en a pas
+// besoin — il se déduit entièrement de ce qui est déjà écrit, le profil acquis
+// et le profil marqué cible.
+//
+// — ce que les marques ne touchent pas —
+// Ni le remplissage, ni le seuil, ni le compte. Elles se posent dans une
+// gouttière ouverte à gauche du rail et à côté du nom, jamais dedans : le
+// diagnostic ne se réécrit pas quand l'intention change.
+//
+// Toutes sont **facultatives**. Sans `vm.marks`, ni la classe, ni la variable de
+// couleur, ni le moindre nœud supplémentaire n'apparaissent : le rendu de la
+// page d'évaluation est celui d'avant, au caractère près. C'est ce qui garantit
+// que déclarer une portée en ancrage ne bouge rien en amont.
 import DimensionRadar from './DimensionRadar.vue'
 
 defineProps({
@@ -178,11 +236,95 @@ function fillWidth(bar) {
   color: var(--color-text);
 }
 
+/* — la gouttière des marques —
+   Ouverte à gauche de chaque ligne, et seulement quand il y a des marques à y
+   poser. Elle tient les deux repères et la teinte du chemin restant, ce qui les
+   maintient tous hors du rail : le remplissage garde sa lecture de seuil, quelle
+   que soit la portée déclarée. */
+.band--marked .bar {
+  position: relative;
+  padding-left: 20px;
+}
+
+/* Les deux mots tiennent leur propre ligne, sous le nom du profil et au-dessus
+   du rail. Ils ont d'abord été posés au bout de la ligne du nom, où ils
+   appartiennent logiquement — mais à 280px, le nom cédait la place et se
+   repliait sous son propre rang, ce qui défaisait l'alignement des cinq noms.
+   Une ligne à eux les garde attachés au profil sans rien déplacer, et laisse les
+   deux mots se suivre quand cible et suggestion tombent sur le même profil : ils
+   sont dans le flux, ils ne peuvent pas se recouvrir. */
+.bar__marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 5px;
+  margin: 0 0 4px 20px;
+}
+
+/* Le chemin qui reste : du profil qui suit l'acquis jusqu'à la cible incluse.
+   Une teinte très diluée et un filet dans la gouttière — les lignes qui se
+   suivent forment une colonne continue, qui est la lecture voulue. */
+.bar.is-remaining {
+  background: color-mix(in srgb, var(--mark-color) 7%, transparent);
+  box-shadow: inset 3px 0 0 0 color-mix(in srgb, var(--mark-color) 45%, transparent);
+}
+
+/* Les mots, à côté du nom du profil : c'est par eux que les marques existent
+   pour une capacité d'assistance, le rail étant `aria-hidden`. */
+.bar__mark {
+  flex: none;
+  padding: 1px 5px;
+  border: 1px solid;
+  font-size: 9px;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+/* La cible porte la couleur de la carte de portée, en aplat : c'est une
+   déclaration. */
+.bar__mark--target {
+  border-color: var(--mark-color);
+  background: var(--mark-color);
+  color: var(--color-text);
+}
+
+/* La suggestion reste neutre et creuse, et tiretée comme son repère : c'est un
+   avis, pas une décision. */
+.bar__mark--suggested {
+  border-style: dashed;
+  border-color: var(--color-neutral-500);
+  color: var(--color-neutral-700);
+}
+
+/* Les repères du rail, dans la gouttière. Ils sont posés depuis le rail
+   lui-même — donc alignés sur lui sans qu'aucune hauteur soit à deviner — et
+   débordent de trois pixels en haut et en bas, pour se lire comme des repères et
+   non comme un morceau de barre. */
+.bar__tick {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+}
+
+.bar__tick--target {
+  left: -14px;
+  width: 3px;
+  background: var(--mark-color);
+}
+
+.bar__tick--suggested {
+  left: -7px;
+  width: 0;
+  border-left: 3px dashed var(--color-neutral-600);
+}
+
 /* Le rail, et son seuil. Le bord droit est le trait fort du texte : c'est lui
    que le remplissage doit atteindre, et c'est ce qui distingue un seuil d'un
    maximum. Les trois autres bords restent au filet ordinaire — ils bornent la
    figure, ils ne signifient rien. */
 .bar__track {
+  position: relative;
   display: block;
   height: 10px;
   background: var(--color-neutral-200);

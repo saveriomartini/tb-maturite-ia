@@ -19,8 +19,7 @@
           :class="{
             'is-reached': step.reached,
             'is-acquired': step.acquired,
-            'is-upcoming': step.upcoming,
-            'is-beyond': step.beyondTarget
+            'is-upcoming': step.upcoming
           }"
           :style="boxStyle(step)"
         >
@@ -30,10 +29,7 @@
             <span class="box__mark" aria-hidden="true">{{ step.n }}</span>
             <span class="box__head">
               <span class="box__label heading">{{ step.label }}</span>
-              <span class="box__tags">
-                <span v-if="step.acquired" class="tag tag--solid">diagnostic</span>
-                <span v-if="step.isTarget" class="tag">cible</span>
-              </span>
+              <span v-if="step.acquired" class="tag tag--solid box__tag">diagnostic</span>
             </span>
           </span>
         </div>
@@ -62,8 +58,7 @@
         :class="{
           'is-reached': step.reached,
           'is-acquired': step.acquired,
-          'is-upcoming': step.upcoming,
-          'is-beyond': step.beyondTarget
+          'is-upcoming': step.upcoming
         }"
       >
         <p v-if="step.opensLine" class="rule">
@@ -77,10 +72,7 @@
             <span class="step__mark" aria-hidden="true">{{ step.n }}</span>
             <span class="step__head">
               <span class="step__label heading">{{ step.label }}</span>
-              <span class="step__tags">
-                <span v-if="step.acquired" class="tag tag--solid">diagnostic</span>
-                <span v-if="step.isTarget" class="tag">cible</span>
-              </span>
+              <span v-if="step.acquired" class="tag tag--solid step__tag">diagnostic</span>
             </span>
           </span>
         </div>
@@ -118,16 +110,25 @@
 // de rupture (voir tokens.css, la table des points de rupture).
 //
 // — ce que chaque palier montre, sous les deux formes —
-// Le rang, le nom du palier, et son état. Le nom du palier et son état
-// (diagnostic / cible) tiennent la même ligne, l'état à droite : la lecture va
-// du plus général — quel palier — au plus spécifique — ce qu'il est pour cette
-// session.
+// Le rang, le nom du palier, et son état. Le nom du palier et son état tiennent
+// la même ligne, l'état à droite : la lecture va du plus général — quel palier
+// — au plus spécifique — ce qu'il est pour cette session.
 //
-// La liste ne retient plus que deux états, depuis le 31.08.2026 : « diagnostic »
-// marque le palier atteint, « cible » le palier visé. « Suivant » — le premier
-// palier non tenu — s'est retiré du texte affiché : il redisait le contraste de
-// couleur que porte déjà `.is-upcoming`, un rectangle en retrait sans join
-// avoir besoin d'un mot pour le dire.
+// Il ne reste qu'un seul état affiché : « diagnostic », sur le palier atteint.
+// Les deux autres sont partis, chacun pour son motif.
+//
+// « Suivant » — le premier palier non tenu — s'est retiré le 31.08.2026 : il
+// redisait le contraste de couleur que porte déjà `.is-upcoming`, un rectangle
+// en retrait sans avoir besoin d'un mot pour le dire.
+//
+// « Cible » et l'estompage des paliers qui la dépassaient (`isTarget`,
+// `beyondTarget`) sont partis le 10.09.2026, et le motif n'est pas de mise en
+// forme : ils dépendaient de la portée, qui se déclare en phase d'ancrage, si
+// bien que répondre à une question modifiait un écran situé *avant* elle. Le
+// test pilote l'a relevé. L'échelle ne dit désormais que le diagnostic, sur les
+// trois premières phases, et rien n'y bouge quand la portée change ; ce que la
+// portée change se montre sur la bande des profils en ancrage, à l'endroit même
+// où la question se pose (voir ProfileBand.vue).
 //
 // — le remplissage —
 // Chaque cran se remplit à la proportion de `gateProgress` : combien des
@@ -375,13 +376,8 @@ function boxStyle(step) {
   line-height: 1.25;
 }
 
-.box__tags {
+.box__tag {
   flex: none;
-  display: flex;
-  gap: 4px;
-}
-
-.box__tags .tag {
   padding: 2px 5px;
   font-size: 9px;
   border-color: var(--color-text);
@@ -389,10 +385,6 @@ function boxStyle(step) {
 
 .box.is-upcoming .box__label {
   color: var(--color-neutral-700);
-}
-
-.box.is-beyond {
-  opacity: 0.5;
 }
 
 /* — la liste, en dessous de 900px — */
@@ -477,13 +469,7 @@ function boxStyle(step) {
   font-size: 15px;
 }
 
-.step__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.step__tags .tag {
+.step__tag {
   padding: 2px 6px;
   border-color: var(--color-text);
 }
@@ -492,12 +478,6 @@ function boxStyle(step) {
    suivant soit franchi, et rien ne s'y décide aujourd'hui. */
 .step.is-upcoming .step__label {
   color: var(--color-neutral-700);
-}
-
-/* Au-dessus de la cible *et* du palier atteint : hors sujet pour cette session,
-   sans disparaître. */
-.step.is-beyond {
-  opacity: 0.45;
 }
 
 /* — la ligne évolutif / révolutionnaire, dans la liste —

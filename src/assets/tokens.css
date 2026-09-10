@@ -401,3 +401,46 @@ button.chip:disabled { cursor: not-allowed; }
   background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
 }
 .button-reset:disabled { cursor: not-allowed; }
+
+/* — page à bande —
+   Contenu à gauche, bande des profils à droite, collée sous l'en-tête. Deux
+   écrans la portent : la page de l'outil, où la bande se remplit au fil des
+   réponses, et l'ancrage, où les mêmes barres reçoivent les marques de cible et
+   de suggestion. La bande doit s'y trouver au même endroit, faute de quoi elle
+   se lirait comme une seconde figure plutôt que comme la même, poursuivie.
+
+   Elle vit ici et non dans l'un des deux composants : deux copies auraient
+   dérivé au premier réglage de gouttière, et la position de la bande est
+   précisément ce qui doit rester identique d'un écran à l'autre. Ce qui reste
+   propre à chaque écran — l'écart entre ses sections, la largeur de son cadrage
+   — reste dans son <style scoped>.
+
+   `align-items: start` pour que la bande puisse coller : une cellule de grille
+   étirée par défaut prendrait toute la hauteur de la ligne, et un élément
+   collant qui occupe déjà toute sa piste ne colle à rien. */
+.band-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 0 36px;
+  align-items: start;
+}
+
+.band-page__main { min-width: 0; }
+
+/* La bande se resserre avant de partir : à cette largeur, 280px pris au contenu
+   coûtent plus au contenu qu'ils ne rapportent à la bande. */
+@media (max-width: 1200px) {
+  .band-page {
+    grid-template-columns: minmax(0, 1fr) 230px;
+    gap: 0 24px;
+  }
+}
+
+/* Sous 900px la grille se replie sur une colonne, et la bande passe en tête —
+   voir ProfileBand, qui porte la décision et son motif. L'ordre de source la
+   place après le contenu, ce qui est le bon ordre pour un lecteur d'écran : la
+   bande commente ce qu'on répond, elle ne l'annonce pas. */
+@media (max-width: 900px) {
+  .band-page { grid-template-columns: minmax(0, 1fr); }
+  .band-page__band { order: -1; margin-bottom: 28px; }
+}
