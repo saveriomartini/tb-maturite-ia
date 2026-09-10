@@ -66,9 +66,10 @@
 // l'option retenue s'affiche donc sous le champ, et le « + » donne les cinq d'un
 // coup. C'est ContextCriteria qui le tient, avec le pourquoi.
 //
-// La question de portée de l'ancrage ne passe pas par ici : elle garde ses
-// pastilles, parce que ses cinq situations se comparent avant d'être choisies.
-// Elle vit tout entière dans TransformationQuestion.
+// La question de portée de l'ancrage ne passe pas par ici, et ne passe plus par
+// aucun contrôle de formulaire : ses cinq situations se comparent avant d'être
+// choisies, et elle se pose désormais comme un domaine — cinq énoncés lus
+// ensemble, dans la carte du questionnaire (DomainCard).
 import { computed, ref, useId } from 'vue'
 import ContextCriteria from './ContextCriteria.vue'
 

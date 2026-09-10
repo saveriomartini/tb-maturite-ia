@@ -20,6 +20,7 @@ import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/App.vue'
+import DomainCard from '../src/components/DomainCard.vue'
 import ProfileBand from '../src/components/ProfileBand.vue'
 import { useMaturityTool } from '../src/composables/useMaturityTool.js'
 import { EVALUABLE_AREAS } from '../src/domain/model.js'
@@ -146,5 +147,73 @@ describe('la bande des profils', () => {
     expect(html).toContain(instance.ancrage.band.marks.target)
     expect(html).toContain(instance.ancrage.band.marks.suggested)
     expect(html).toContain(instance.ancrage.band.marks.color)
+  })
+})
+
+// — la carte, avec et sans interrupteur —
+//
+// Même partage que pour la bande : un composant, deux emplois. La carte sert les
+// vingt-huit domaines du questionnaire, où le hors périmètre est une sortie
+// nécessaire, et la portée de l’ancrage, où il n'aurait aucun sens. Ce que ces
+// tests gardent est la frontière entre les deux : ce qui disparaît sans
+// `outOfScope`, et ce qui ne doit pas disparaître avec lui.
+describe(`la carte d’un domaine`, () => {
+  // Les traces du hors périmètre dans le document : l'interrupteur, son rôle,
+  // et la classe qui le porte.
+  const SWITCH_TRACES = ['role="switch"', 'class="button-reset out"']
+
+  async function card(props) {
+    const warnings = []
+    const app = createSSRApp({ render: () => h(DomainCard, props) })
+    app.config.warnHandler = message => warnings.push(message)
+    const html = await renderToString(app)
+    return { html, warnings }
+  }
+
+  const picker = {
+    question: 'Laquelle de ces situations décrit le mieux votre organisation ?',
+    color: '#ff6464',
+    statements: [
+      { value: 1, text: 'Premier énoncé', active: false, reached: true },
+      { value: 2, text: 'Deuxième énoncé', active: true, reached: false }
+    ]
+  }
+
+  it(`porte l’interrupteur de hors périmètre quand le vm en donne un`, async () => {
+    const vm = {
+      ...picker,
+      outOfScope: { value: 'na', label: 'Hors périmètre', short: 'hors périmètre', active: false }
+    }
+    const { html, warnings } = await card({ vm, path: 'Dimension', title: 'Domaine' })
+    expect(warnings).toEqual([])
+    SWITCH_TRACES.forEach(trace => expect(html, trace).toContain(trace))
+  })
+
+  it(`n’en porte aucun sans lui, et rend les énoncés quand même`, async () => {
+    const { html, warnings } = await card({
+      vm: picker,
+      path: 'Portée visée',
+      hint: 'Chaque situation suppose les précédentes.'
+    })
+    expect(warnings).toEqual([])
+    SWITCH_TRACES.forEach(trace => expect(html, trace).not.toContain(trace))
+    // Ce qui reste : les cinq énoncés, la question, et la règle de lecture sous
+    // la carte. Une carte muette passerait le test précédent tout aussi bien.
+    expect(html).toContain('Premier énoncé')
+    expect(html).toContain('Deuxième énoncé')
+    expect(html).toContain(picker.question)
+    expect(html).toContain('Chaque situation suppose les précédentes.')
+  })
+
+  it(`laisse vides le rang, la définition et les artefacts quand rien ne les donne`, async () => {
+    const { html, warnings } = await card({ vm: picker, path: 'Portée visée' })
+    expect(warnings).toEqual([])
+    // Trois parties d'un domaine que la portée n'a pas : le titre et son repli
+    // de définition, et le rappel des artefacts.
+    expect(html).not.toContain('head__title')
+    expect(html).not.toContain('head__desc')
+    expect(html).not.toContain('artifacts')
+    // Le chemin, lui, est là : c'est ce qui nomme la carte.
+    expect(html).toContain('Portée visée')
   })
 })

@@ -3,6 +3,7 @@
     <div class="panel-head picker__head">
       <h3 class="picker__title">{{ vm.question }}</h3>
       <button
+        v-if="vm.outOfScope"
         type="button"
         role="switch"
         class="button-reset out"
@@ -82,6 +83,14 @@
 // défilement que la touche de tabulation suivante défera aussitôt vaut moins que
 // pas de défilement du tout. Le geste — pointeur ou clavier — n'est connu que
 // d'ici, et il n'y a pas d'autre chemin pour le porter à qui décide.
+//
+// — sans interrupteur —
+// `vm.outOfScope` est facultatif, et son absence retire la sortie de la barre
+// de titre. Un seul appelant est dans ce cas : la carte de portée de l’ancrage,
+// qui reprend ce composant pour ses cinq énoncés. Rien n’y correspondrait — on
+// ne déclare pas une portée « hors périmètre », et laisser l’interrupteur
+// laisserait croire qu’il y a là une réponse de plus à donner. Pour les
+// vingt-huit domaines, qui le fournissent tous, le rendu est inchangé.
 //
 // Les deux notes de la colonne de droite ont disparu avec elle. Elles
 // paraissaient une fois par domaine, soit vingt-huit fois sur la page : l'une

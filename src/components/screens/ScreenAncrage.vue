@@ -10,9 +10,11 @@
       </div>
 
       <section class="section">
-        <TransformationQuestion
-          :field="vm.reachField"
-          title="Portée visée"
+        <DomainCard
+          :vm="vm.reachCard.picker"
+          :color="vm.reachCard.color"
+          :path="vm.reachCard.path"
+          :hint="vm.reachCard.hint"
           @select="emit('select-reach', $event)"
         />
       </section>
@@ -193,10 +195,23 @@
 // personne. Aucun des deux n'entre dans l'écart, et chacun garde donc sa note :
 // sans elles, la liste des domaines qui séparent se lirait comme un bilan
 // complet du modèle.
+// — la portée se pose comme un domaine —
+// Elle avait son propre contrôle : cinq pastilles, et le détail de la retenue
+// replié dessous. Le test pilote a trouvé la question mal posée, et pour une
+// raison de forme : on y choisissait sur des intitulés courts, alors que deux
+// portées voisines ne se départagent que sur la situation qu'elles décrivent.
+// Elle emprunte donc la carte des vingt-huit domaines — cinq énoncés lisibles
+// ensemble, un seul retenu — et le geste appris au questionnaire vaut ici.
+//
+// Ce qui la distingue reste visible : elle n'a ni interrupteur de hors
+// périmètre, ni rang attendu, ni définition à déplier, et elle porte sous elle
+// une règle de lecture qu'aucun domaine ne porte. La ressemblance visée est
+// celle du composant, pas celle du statut : la portée n'est pas un
+// vingt-neuvième domaine et n'entre dans aucun calcul de la mesure.
 import AppScreen from '../AppScreen.vue'
 import AppScreenNav from '../AppScreenNav.vue'
 import ProfileBand from '../ProfileBand.vue'
-import TransformationQuestion from '../TransformationQuestion.vue'
+import DomainCard from '../DomainCard.vue'
 
 defineProps({
   vm: { type: Object, required: true }
@@ -222,8 +237,8 @@ const emit = defineEmits(['select-reach', 'export', 'finish', 'resume', 'back'])
 
 /* Les sections de la page, toutes coiffées à l'identique : la question de
    portée, le profil visé et ce qu'il engage, ce qui en sépare, ce que la mesure
-   laisse de côté. La question n'en porte pas le titre — elle a le sien, dans le
-   composant qui la pose. */
+   laisse de côté. La question n'en porte pas le titre — la carte porte le sien,
+   en tête et en chemin, comme celle d'un domaine. */
 .section {
   margin-top: 30px;
 }

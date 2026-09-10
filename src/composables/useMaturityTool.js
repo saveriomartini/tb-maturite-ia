@@ -16,7 +16,8 @@ import {
   PASSAGES, REACH_QUESTION, REVOLUTIONARY_FROM, REVOLUTIONARY_LINE, transformationDegree
 } from '../data/transformation.js'
 import {
-  BLOCKS, EVALUABLE_AREAS, LEVELS, levelDescription, profileExportLabel, profileName
+  BLOCKS, EVALUABLE_AREAS, LEVELS, dimensionColor, levelDescription, profileExportLabel,
+  profileName
 } from '../domain/model.js'
 import {
   NEXT_OF, PHASE_ANCHORS, PHASE_OF, PHASE_TARGETS, SCREENS, areaAnchor, isToolScreen, previousScreen
@@ -32,6 +33,12 @@ import { clearSession, loadSession, newSessionId, persistSession } from './useSe
 
 const MODEL_VERSION = 'v1'
 const GAP_GROUPS_PER_PAGE = 4
+
+// La dimension dont la carte de portée emprunte la couleur : l’alignement
+// stratégique, celle sous laquelle se pose la question de ce que l’adoption doit
+// avoir touché. L’identifiant vient du modèle, la couleur en est lue — aucune
+// teinte n’est écrite ici.
+const REACH_DIMENSION = 'D11'
 
 // Les deux modales de l'outil ont la même forme — un motif, ce qui se joue, deux
 // sorties — et leurs textes vivent donc ici, au même titre que les libellés de
@@ -1264,25 +1271,46 @@ export function useMaturityTool() {
   // La portée visée s'y déclare, le profil visé s'en déduit, l'écart s'y lit, et
   // la pièce à emporter s'y produit. La phase s'arrête là : préparer l'ancrage,
   // pas le conduire.
-  const reachField = computed(() => ({
-    id: REACH_QUESTION.id,
-    label: REACH_QUESTION.question,
-    hint: REACH_QUESTION.hint,
-    options: REACH_QUESTION.options.map(option => ({
-      value: option.n,
-      label: option.label,
-      active: state.transformation === option.n
-    })),
-    // Les cinq situations détaillées sont fournies ; laquelle s'affiche est une
-    // décision d'écran (voir `pinActive` dans ContextField) : la seule retenue
-    // au repos, les cinq derrière le « + ».
-    criteria: REACH_QUESTION.options.map(option => ({
-      value: option.n,
-      label: option.label,
-      text: option.detail,
-      active: state.transformation === option.n
-    }))
-  }))
+  // La portée se pose comme un domaine : une carte, cinq énoncés, un seul
+  // retenu. Elle en emprunte le composant et jusqu’à la couleur — celle de la
+  // dimension stratégique, d’où les cinq rangs sont dérivés —, parce que le test
+  // pilote a montré que le contrôle précédent faisait choisir sur des intitulés
+  // ce qui ne se départage que sur des situations.
+  //
+  // Trois choses la distinguent d’un domaine, et chacune se voit :
+  //   — pas de sortie « hors périmètre » : on ne retire pas la portée de la
+  //     mesure, elle est ce qui la fixe ;
+  //   — pas de rang attendu : aucun profil n’exige une portée ;
+  //   — un `hint` sous la carte, qu'aucun des vingt-huit ne porte, et qui dit la
+  //     seule règle de lecture que la carte ne montre pas d’elle-même.
+  //
+  // Ce qu’elle ne devient pas pour autant : un vingt-neuvième domaine. La réponse
+  // vit dans `state.transformation` et nulle part ailleurs — ni dans
+  // `state.answers`, ni dans le compte des domaines, ni dans la couverture, le
+  // radar ou le palier acquis.
+  //
+  // `reached` marque les rangs sous l’énoncé retenu, exactement comme pour un
+  // domaine : les portées sont cumulatives, et la carte doit le montrer autant
+  // que le `hint` le dit.
+  const reachCard = computed(() => {
+    const color = dimensionColor(REACH_DIMENSION)
+    return {
+      id: REACH_QUESTION.id,
+      path: REACH_QUESTION.path,
+      hint: REACH_QUESTION.hint,
+      color,
+      picker: {
+        question: REACH_QUESTION.question,
+        color,
+        statements: REACH_QUESTION.options.map(option => ({
+          value: option.n,
+          text: option.text,
+          active: state.transformation === option.n,
+          reached: state.transformation != null && option.n < state.transformation
+        }))
+      }
+    }
+  })
 
   // — la bande des profils, en ancrage —
   //
@@ -1321,7 +1349,7 @@ export function useMaturityTool() {
   }))
 
   const ancrage = computed(() => ({
-    reachField: reachField.value,
+    reachCard: reachCard.value,
     // La bande, à la même place qu'à l'évaluation : ses barres n'ont pas bougé,
     // seules les marques de repère répondent à la question posée juste à côté.
     band: ancrageBand.value,

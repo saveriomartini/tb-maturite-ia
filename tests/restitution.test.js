@@ -21,9 +21,9 @@ import { useMaturityTool } from '../src/composables/useMaturityTool.js'
 import { ATTRIBUTION } from '../src/data/attribution.js'
 import { LEVEL5_REQUIREMENTS, LEVEL_CAPS } from '../src/data/context-attributes.js'
 import { DEMO_SESSIONS } from '../src/data/demo-sessions.js'
-import { PASSAGES, REVOLUTIONARY_FROM } from '../src/data/transformation.js'
+import { PASSAGES, REACH_QUESTION, REVOLUTIONARY_FROM } from '../src/data/transformation.js'
 import {
-  AREAS, DIMENSION_COUNT, EVALUABLE_AREAS, LEVELS, profileName
+  AREAS, DIMENSION_COUNT, EVALUABLE_AREAS, LEVELS, dimensionColor, profileName
 } from '../src/domain/model.js'
 import { MAX_RANK, MIN_RANK, OUT_OF_SCOPE } from '../src/domain/scoring.js'
 
@@ -838,3 +838,90 @@ describe('la bande de l’ancrage : le remplissage tient, les marques réagissen
 function dimensionScale(tool) {
   return tool.resti1.radar.scale
 }
+
+// — la carte de portée —
+//
+// Depuis le 10.09.2026, la portée se pose comme un domaine : une carte, cinq
+// énoncés, un seul retenu. Ce qui se vérifie ici n’est pas son apparence mais ce
+// que le vm promet à la carte — la forme du `picker` d’un domaine, à trois
+// différences près, et chacune est une décision qu’un remaniement pourrait
+// défaire sans rien casser d’autre.
+describe(`la portée se présente comme un domaine, sans en être un`, () => {
+  it(`rend cinq énoncés, au plus un retenu, et les rangs sous lui marqués`, () => {
+    const tool = demo('rochat')
+
+    for (let n = 1; n <= 5; n += 1) {
+      declareReach(tool, n)
+      const { statements } = tool.ancrage.reachCard.picker
+
+      expect(statements, `portée ${n}`).toHaveLength(5)
+      expect(statements.filter(statement => statement.active).map(s => s.value)).toEqual([n])
+      // Cumulatif : tout ce qui est sous l'énoncé retenu est marqué franchi, et
+      // rien au-dessus. C'est la règle que le `hint` énonce sous la carte.
+      expect(statements.filter(statement => statement.reached).map(s => s.value))
+        .toEqual([1, 2, 3, 4, 5].filter(rank => rank < n))
+      // Les valeurs sont les rangs du modèle, dans l'ordre, et les textes ceux
+      // qui ont été validés : la carte ne réécrit rien.
+      expect(statements.map(statement => statement.value)).toEqual([1, 2, 3, 4, 5])
+      expect(statements.map(statement => statement.text))
+        .toEqual(REACH_QUESTION.options.map(option => option.text))
+    }
+  })
+
+  it(`n’offre aucune sortie « hors périmètre »`, () => {
+    const tool = demo('rochat')
+    declareReach(tool, 3)
+    // Une portée ne se retire pas de la mesure : elle est ce qui la fixe. Le
+    // sélecteur n'affiche l'interrupteur que si le vm lui en donne un.
+    expect(tool.ancrage.reachCard.picker.outOfScope).toBeUndefined()
+  })
+
+  it(`sans portée déclarée, aucun énoncé n’est retenu ni marqué`, () => {
+    const tool = demo('rochat')
+    tool.actions.selectReach(tool.state.transformation)
+    expect(tool.state.transformation).toBeNull()
+
+    const { statements } = tool.ancrage.reachCard.picker
+    expect(statements.some(statement => statement.active)).toBe(false)
+    // Et surtout aucun `reached` : une carte vierge ne doit pas donner à croire
+    // que les premiers rangs sont acquis d'office.
+    expect(statements.some(statement => statement.reached)).toBe(false)
+  })
+
+  it(`emprunte la couleur de la dimension au modèle, jamais en dur`, () => {
+    const tool = demo('rochat')
+    const color = dimensionColor('D11')
+    expect(color).toMatch(/^#[0-9a-f]{6}$/i)
+    expect(tool.ancrage.reachCard.color).toBe(color)
+    expect(tool.ancrage.reachCard.picker.color).toBe(color)
+  })
+
+  it(`— un clic déclare la portée, le même clic l’annule`, () => {
+    const tool = demo('rochat')
+    tool.actions.selectReach(2)
+    expect(tool.state.transformation).toBe(2)
+    tool.actions.selectReach(4)
+    expect(tool.state.transformation).toBe(4)
+    tool.actions.selectReach(4)
+    expect(tool.state.transformation).toBeNull()
+  })
+
+  it(`n’écrit jamais dans les réponses du questionnaire`, () => {
+    const tool = demo('rochat')
+    const areaIds = new Set(EVALUABLE_AREAS.map(area => area.id))
+
+    for (let n = 1; n <= 5; n += 1) {
+      declareReach(tool, n)
+      // La réponse vit dans `state.transformation` et nulle part ailleurs :
+      // aucune clé nouvelle, et aucune clé étrangère aux 28 domaines.
+      expect(Object.keys(tool.state.answers).every(key => areaIds.has(key)), `portée ${n}`)
+        .toBe(true)
+      expect(tool.state.answers[REACH_QUESTION.id], `portée ${n}`).toBeUndefined()
+    }
+
+    // Le compte des domaines évaluables ne bouge pas : la portée n'en est pas un
+    // vingt-neuvième.
+    expect(EVALUABLE_AREAS).toHaveLength(28)
+    expect(tool.diag.areas).toHaveLength(28)
+  })
+})

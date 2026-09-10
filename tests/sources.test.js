@@ -15,6 +15,8 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { REACH_QUESTION, TRANSFORMATION_DEGREES } from '../src/data/transformation.js'
+import { LEVELS } from '../src/domain/model.js'
 
 const SRC = new URL('../src/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')
 
@@ -104,5 +106,81 @@ describe('les critères d’adoption et les pratiques ne sont plus lus par le qu
     FILES.forEach(file => {
       expect(file.text, file.path).not.toContain('CriteriaReference')
     })
+  })
+})
+
+describe(`la portée ne nomme jamais la cible qu’elle fixe`, () => {
+  // C'est le point 1.11 du BACKLOG, et c'est la seule règle des cinq énoncés
+  // qu'une relecture ne suffit pas à tenir : un énoncé réécrit un jour de
+  // fatigue avec le mot du modèle rendrait la question circulaire — on
+  // désignerait « Alignement des processus » pour s'entendre répondre qu'on vise
+  // l'alignement des processus.
+  //
+  // Le test porte sur les noms **complets** des profils et des degrés, jamais
+  // sur les mots isolés qui les composent : interdire « processus » rendrait le
+  // vocabulaire du domaine inutilisable, et c'est précisément avec ces mots-là
+  // que les situations se décrivent.
+  const TEXTS = [
+    REACH_QUESTION.question,
+    REACH_QUESTION.hint,
+    REACH_QUESTION.path,
+    ...REACH_QUESTION.options.map(option => option.text)
+  ]
+
+  it(`n’emploie aucun nom de profil du modèle`, () => {
+    LEVELS.forEach(level => {
+      TEXTS.forEach(text => {
+        expect(text.toLowerCase(), level.name).not.toContain(level.name.toLowerCase())
+      })
+    })
+  })
+
+  it(`n’emploie aucun nom de degré de transformation`, () => {
+    TRANSFORMATION_DEGREES.forEach(degree => {
+      TEXTS.forEach(text => {
+        expect(text.toLowerCase(), degree.name).not.toContain(degree.name.toLowerCase())
+      })
+    })
+  })
+
+  it(`n’écrit aucun rang, ni en chiffre ni en toutes lettres`, () => {
+    const RANKS = /\b(niveau|profil|degré|rang|palier)\b/i
+    TEXTS.forEach(text => {
+      expect(text, text.slice(0, 40)).not.toMatch(RANKS)
+      expect(text, text.slice(0, 40)).not.toMatch(/\d/)
+    })
+  })
+
+  it(`ne cite aucune source`, () => {
+    TEXTS.forEach(text => {
+      expect(text, text.slice(0, 40)).not.toMatch(/venkatraman|ozkaya|aimm/i)
+    })
+  })
+})
+
+describe(`la carte des domaines est un composant, et la portée l’emprunte`, () => {
+  // L'extraction est ce qui garantit que les deux cartes ne divergeront pas :
+  // deux gabarits jumeaux mais distincts s'écartent dès la première correction.
+  it(`DomainCard.vue existe et les deux écrans le montent`, () => {
+    expect(FILES.some(file => file.path === 'components/DomainCard.vue')).toBe(true)
+    const diag = FILES.find(file => file.path === 'components/screens/ScreenDiag.vue')
+    const ancrage = FILES.find(file => file.path === 'components/screens/ScreenAncrage.vue')
+    expect(diag.text).toContain('<DomainCard')
+    expect(ancrage.text).toContain('<DomainCard')
+  })
+
+  it(`l’ancien contrôle de la portée a disparu, import compris`, () => {
+    expect(FILES.some(file => file.path === 'components/TransformationQuestion.vue')).toBe(false)
+    FILES.forEach(file => {
+      expect(file.text, file.path).not.toContain('TransformationQuestion')
+    })
+  })
+
+  it(`la couleur de la carte de portée n’est écrite nulle part en dur`, () => {
+    // Elle se lit dans le modèle. Un code hexadécimal recopié dans le composable
+    // survivrait à un changement de model-data.json sans que rien ne le dise.
+    const tool = FILES.find(file => file.path === 'composables/useMaturityTool.js')
+    expect(tool.text).toContain('dimensionColor(')
+    expect(tool.text).not.toMatch(/#[0-9a-f]{6}/i)
   })
 })

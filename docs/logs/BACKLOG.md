@@ -148,6 +148,17 @@ friction que l'experte décrit (savoir où l'on en est) par le parcours plutôt 
 | 1.13 | Refonte de l'attribut de posture d'adoption (catégories de Rogers) : « qui veut être retardataire ? », et la distinction majorité précoce / tardive n'est pas lisible. Reformuler sur ce qui est réellement demandé — attendre que d'autres aient éprouvé la technologie, ou avancer avant eux | S | ½j | `src/data/context-attributes.js` | — | [x] |
 | 1.9 | Texte d'attribution (pied de page + export) : Ozkaya et al. 2026 — copyright Carnegie Mellon University et mention de marque, la licence CC BY-NC-ND annoncée ici venait du rapport préliminaire et a été corrigée le 10.09.2026 —, Venkatraman 1994, Elia et al. 2024, Bettoni et al. 2021, « outil non officiel » | S | ¼j | `src/data/attribution.js` | — | [x] |
 
+**Amendement du 10.09.2026 (point 1.11).** La question de portée garde sa règle — elle porte sur ce
+que l’adoption doit avoir touché, jamais sur le degré ni sur le palier — mais change de forme : cinq
+énoncés présentés comme un domaine de capacité, dans la carte du questionnaire, au lieu de cinq
+intitulés courts dont le détail se dépliait. Le test pilote avait trouvé la question mal posée sous
+cette seconde forme : on y choisissait sur des intitulés, alors que deux portées voisines ne se
+départagent que sur la situation qu’elles décrivent. La dérivation des cinq énoncés, rang par rang,
+depuis les niveaux d’Ozkaya et al. (2026) et les degrés de `transformation.js`, est écrite dans
+`docs/proposals/portee-enonces.md` ; les textes validés le 10.09.2026 sont ceux qui sont intégrés.
+L’interdiction de nommer un profil, un degré ou un rang dans ce qui s’affiche est désormais tenue par
+un test (`tests/sources.test.js`) et non par la seule relecture.
+
 L'énoncé cible du point 6 ne demande aucun contenu : c'est `statements[L]` du rang visé.
 
 ---

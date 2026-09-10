@@ -198,60 +198,88 @@ export const PASSAGES = {
 //     sur la **portée visée** — ce que la transformation doit toucher —, jamais
 //     sur le degré ni sur le rang. Le degré s'en déduit, il ne se choisit pas.
 //
-// Les options reprennent les `reach` des cinq degrés ci-dessus, tournées en
-// situations souhaitées : chacune se comprend sans rien connaître du modèle, ni
-// de l'échelle dont elle est tirée. Elles sont cumulatives — une portée contient
-// les précédentes —, ce que le `hint` dit plutôt que chaque libellé.
+// — d'où viennent les cinq énoncés —
+//
+// Le test pilote a trouvé la question mal posée sous sa forme précédente : un
+// libellé court par option, et le détail qui la définissait replié derrière un
+// « + ». On choisissait donc sur des intitulés, alors que deux portées voisines
+// ne se départagent que sur la situation qu'elles décrivent.
+//
+// Les options sont désormais cinq **énoncés**, de la même forme que ceux des
+// vingt-huit domaines de capacité, et l'écran les présente avec le même
+// composant. Chacun est dérivé de deux sources tenues en parallèle : le niveau
+// correspondant d'Ozkaya et al. (2026) pour ce que le rang *est*, et le degré
+// de `TRANSFORMATION_DEGREES` pour ce que la transformation *touche*. La
+// dérivation, rang par rang et source par source, est écrite dans
+// `docs/proposals/portee-enonces.md` ; ces textes-là sont ceux qui ont été
+// validés, et ils ne se réécrivent pas sans y retourner.
+//
+// La règle qui n'a pas changé, et qui prime sur tout le reste (BACKLOG 1.11) :
+// aucun nom de profil, aucun nom de degré, aucun numéro de rang dans ce qui
+// s'affiche. L'utilisateur décrit une situation ; il ne nomme pas la cible que
+// l'outil va lui renvoyer. Un test l'interdit plutôt que la vigilance
+// (`tests/sources.test.js`).
+//
+// Deux écarts assumés avec les énoncés des domaines, tous deux documentés dans
+// la proposition : les cinq décrivent une situation *souhaitée* — c'est la
+// question qui fixe le moment depuis lequel on les regarde, et aucun énoncé ne
+// porte de verbe de volonté —, et aucun ne commence par « Nous », pour que le
+// sujet de la phrase porte à lui seul l'échelle des portées.
 //
 // `n` est le degré correspondant : c'est lui qui fixe la cible, telle quelle.
 // La suggestion issue du contexte se lit à côté et ne la borne pas (voir
-// docs/logs/NIVEAU-CIBLE.md, § 0). L'écran qui pose la question viendra plus
-// tard ; ce fichier n'en porte que le contenu.
+// docs/logs/NIVEAU-CIBLE.md, § 0).
+//
+// `path` est le chemin porté en tête de carte, à la place de la dimension pour
+// un domaine. Un seul segment : le nom du bloc a été retiré du chemin des
+// domaines parce qu'il redisait ce que la navigation affiche déjà, et
+// « Ancrage » est dans le même cas — le titre de l'écran le dit, la barre des
+// phases le marque.
 export const REACH_QUESTION = {
   id: 'reach',
-  question: 'Si l’adoption de l’IA réussit chez vous, jusqu’où doit-elle avoir porté ?',
+  path: 'Portée visée',
+  question:
+    'Le jour où l’adoption de l’IA aura réussi chez vous, laquelle de ces situations décrira ' +
+    'votre organisation ?',
+  // Ce que le titre ne dit pas : la cumulativité, qui décide de la réponse —
+  // retenir le quatrième énoncé engage à vouloir aussi le deuxième. Elle se
+  // voit sur la carte, où les rangs sous l'énoncé retenu se marquent, mais elle
+  // ne s'y explique pas. La phrase qui disait « non celle d'aujourd'hui » a
+  // disparu : la question la porte désormais dans sa grammaire, et la redire
+  // dessous laisserait croire qu'elle n'a pas suffi.
   hint:
-    'Décrivez la situation que vous souhaitez atteindre, non celle d’aujourd’hui. ' +
     'Chaque situation suppose les précédentes : la dernière retenue vaut pour toutes ' +
     'celles qui la précèdent.',
   options: [
     {
       n: 1,
-      label: 'Une fonction s’en trouve outillée',
-      detail:
-        'L’IA sert dans une activité précise — un service, un poste, une tâche — et le ' +
-        'reste de l’entreprise continue de travailler comme avant.'
+      text:
+        'Une activité précise — un service, un poste, une tâche — travaille avec l’IA, et le ' +
+        'reste de l’entreprise continue comme avant.'
     },
     {
       n: 2,
-      label: 'Nos processus internes s’en trouvent équipés',
-      detail:
-        'L’IA est présente dans les processus qui font tourner l’entreprise, d’un service ' +
-        'à l’autre. Ces processus restent ceux d’aujourd’hui : l’IA s’y ajoute, elle ne ' +
-        'les redessine pas.'
+      text:
+        'Les processus qui font tourner l’entreprise s’appuient sur l’IA, d’un service à ' +
+        'l’autre, mais restent ceux d’aujourd’hui.'
     },
     {
       n: 3,
-      label: 'Notre façon de travailler est revue',
-      detail:
-        'Les processus sont repensés autour de ce que l’IA permet, et non l’inverse. ' +
-        'Certaines étapes disparaissent, d’autres changent de main : c’est l’organisation ' +
-        'du travail elle-même qui bouge.'
+      text:
+        'La façon de travailler change pour tirer parti de l’IA : des étapes disparaissent, ' +
+        'd’autres changent de main, les rôles se déplacent.'
     },
     {
       n: 4,
-      label: 'Nos relations d’affaires sont revues',
-      detail:
-        'La transformation dépasse les murs de l’entreprise : ce qui change touche la ' +
-        'façon de travailler avec les fournisseurs, les donneurs d’ordre et les clients ' +
-        '— échanges, délais, engagements réciproques.'
+      text:
+        'Les relations avec les fournisseurs, les donneurs d’ordre et les clients changent : ' +
+        'délais, échanges et engagements réciproques ne se règlent plus comme avant.'
     },
     {
       n: 5,
-      label: 'Notre activité elle-même est redéfinie',
-      detail:
-        'Ce n’est plus la façon de faire qui change, c’est ce que l’entreprise fait : ' +
-        'l’IA ouvre des prestations, des marchés ou un métier qui n’étaient pas les siens.'
+      text:
+        'L’entreprise ne fait plus tout à fait le même métier : l’IA lui ouvre des prestations ' +
+        'ou des marchés qui n’étaient pas les siens.'
     }
   ]
 }

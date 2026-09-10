@@ -21,11 +21,12 @@
 <script setup>
 // L'aide et les critères d'acceptation d'un champ, sous le champ.
 //
-// Deux formes de champ les affichent — la liste déroulante des attributs de
-// contexte et la question de portée, qui garde ses pastilles — et elles les
-// affichent de la même façon. Le bloc vit donc ici plutôt qu'en double : le
-// texte est le même, sa règle d'apparition aussi, et c'est cette règle qui porte
-// la décision, pas le contrôle au-dessus.
+// Une seule forme de champ les affiche : la liste déroulante des attributs de
+// contexte. La question de portée les partageait — c'est ce qui avait sorti ce
+// bloc de ContextField — puis elle est passée à la carte des domaines, où les
+// cinq situations sont lisibles sans repli. Le bloc reste ici : sa règle
+// d'apparition est ce qui porte la décision, pas le contrôle au-dessus, et elle
+// se teste seule.
 //
 // — la règle, et pourquoi elle est celle-là —
 // Au repos, le critère de la seule option retenue. Déplié, les cinq d'un coup.

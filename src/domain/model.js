@@ -38,6 +38,17 @@ export const AREAS = BLOCKS.flatMap(block =>
 
 export const DIMENSION_COUNT = BLOCKS.reduce((n, block) => n + block.dimensions.length, 0)
 
+// La couleur d'une dimension, par son identifiant. Le questionnaire n'en a pas
+// besoin — chaque area porte déjà la sienne —, mais la carte de portée de
+// l'ancrage n'est pas une area : elle emprunte la couleur de la dimension
+// stratégique, et elle doit la lire dans le modèle plutôt que la recopier en
+// dur, sans quoi un changement de model-data.json laisserait une carte d'une
+// autre teinte que le reste de sa dimension.
+export function dimensionColor(dimId) {
+  const dimension = BLOCKS.flatMap(block => block.dimensions).find(d => d.id === dimId)
+  return dimension ? dimension.color : ''
+}
+
 // Les niveaux gardent leur numéro dans les données — il ordonne les areas et
 // porte le calcul — mais l'interface ne les nomme que par leur profil : un
 // dirigeant retient « Intégration opérationnelle », pas « Level 2 ».

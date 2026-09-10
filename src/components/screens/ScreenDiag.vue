@@ -32,59 +32,21 @@
       </div>
     </nav>
 
-    <article
+    <DomainCard
       v-for="area in vm.areas"
       :id="area.anchor"
       :key="area.id"
       ref="domainRefs"
       class="domain"
-    >
-      <header class="head">
-        <div class="head__band" :style="area.color ? { background: area.color } : null" />
-        <p class="head__path">
-          <span>{{ area.dim }}</span>
-          <span class="head__rank">{{ area.requiredLabel }}</span>
-        </p>
-        <div class="head__title">
-          <h3 class="head__area heading">{{ area.name }}</h3>
-          <button
-            type="button"
-            class="button-reset head__toggle"
-            :aria-expanded="Boolean(described[area.id])"
-            :aria-controls="`desc-${area.id}`"
-            :aria-label="`${described[area.id] ? 'Masquer' : 'Afficher'} la définition — ${area.name}`"
-            @click="described[area.id] = !described[area.id]"
-          >
-            {{ described[area.id] ? '−' : '+' }}
-          </button>
-        </div>
-        <p v-show="described[area.id]" :id="`desc-${area.id}`" class="head__desc">{{ area.desc }}</p>
-      </header>
-
-      <StatementPicker
-        :vm="area.picker"
-        @select="(value, event) => answer(area, value, event)"
-      />
-
-      <aside v-if="area.exampleArtifacts.length" class="artifacts">
-        <p class="artifacts__label">
-          Exemples d'artefacts
-          <button
-            type="button"
-            class="button-reset artifacts__toggle"
-            :aria-expanded="Boolean(open[area.id])"
-            :aria-controls="`artifacts-${area.id}`"
-            :aria-label="`${open[area.id] ? 'Masquer' : 'Afficher'} les exemples d'artefacts — ${area.name}`"
-            @click="open[area.id] = !open[area.id]"
-          >
-            {{ open[area.id] ? '−' : '+' }}
-          </button>
-        </p>
-        <ul v-show="open[area.id]" :id="`artifacts-${area.id}`" class="artifacts__list">
-          <li v-for="artifact in area.exampleArtifacts" :key="artifact">{{ artifact }}</li>
-        </ul>
-      </aside>
-    </article>
+      :vm="area.picker"
+      :color="area.color"
+      :path="area.dim"
+      :rank="area.requiredLabel"
+      :title="area.name"
+      :desc="area.desc"
+      :artifacts="area.exampleArtifacts"
+      @select="(value, event) => answer(area, value, event)"
+    />
 
     <AppDialog
       :open="pending !== null"
@@ -175,9 +137,9 @@
 // domaines, elle est dans `domain/navigation.js` et se teste sans navigateur.
 // N'en reste ici que ce qui touche à l'écran — le moment, et le fait de
 // défiler.
-import { nextTick, onBeforeUnmount, onMounted, reactive, ref, useTemplateRef } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
 import AppDialog from '../AppDialog.vue'
-import StatementPicker from '../StatementPicker.vue'
+import DomainCard from '../DomainCard.vue'
 import { scrollToAnchor } from '../../composables/useAnchorScroll.js'
 import { areaAnchor, nextEmptyAreaId } from '../../domain/navigation.js'
 
@@ -252,18 +214,16 @@ function commit(area, value, byKeyboard) {
   if (target) nextTick(() => scrollToAnchor(areaAnchor(target)))
 }
 
-// Deux replis par domaine, indépendants l'un de l'autre : les exemples
-// d'artefacts, et la définition du domaine.
+// Les deux replis d’un domaine — la définition et les exemples d’artefacts —
+// vivent désormais dans DomainCard, où ils étaient déjà par domaine. Cet écran
+// n’en a jamais rien fait d’autre que les tenir.
 //
 // La définition vient du modèle et fait deux lignes de vocabulaire de cadre —
 // « la capacité de l'entreprise à définir comment l'IA soutiendra les résultats
 // métier visés… ». Elle est utile une fois, quand le nom du domaine ne suffit
 // pas ; répétée vingt-huit fois entre le titre et les énoncés, elle repousse la
 // réponse d'autant et se saute au bout du troisième domaine. Les énoncés, eux,
-// sont écrits pour être répondables sans elle. Elle reste donc à un clic, et
-// n'occupe plus la page par défaut.
-const open = reactive({})
-const described = reactive({})
+// sont écrits pour être répondables sans elle. Elle reste donc à un clic.
 
 // — le domaine courant suit le défilement —
 //
@@ -288,7 +248,10 @@ const current = ref(null)
 let observer = null
 
 onMounted(() => {
-  const domains = domainRefs.value || []
+  // Les références sont désormais des instances de composant et non des
+  // éléments : la carte a été extraite, l'observateur n'observe pas des
+  // composants. `$el` est l'article racine, celui qui porte l'ancre.
+  const domains = (domainRefs.value || []).map(card => card.$el ?? card)
   if (!domains.length || typeof IntersectionObserver === 'undefined') return
 
   // L'ordre du document, que le tableau de refs ne garantit pas : c'est lui qui
@@ -452,8 +415,12 @@ onBeforeUnmount(() => {
   background: var(--color-neutral-300);
 }
 
-/* Un domaine dans l'empilement. Le filet fort le sépare du précédent : c'est la
-   seule chose qui dise, sur une page très longue, qu'on a changé de question. Il
+/* Un domaine dans l'empilement. La carte elle-même est dans DomainCard ; ce
+   qui reste ici est ce qui n'appartient qu'à la pile — la séparation d'avec la
+   précédente et l'arrêt du défilement, dont la carte n'a pas à connaître.
+
+   Le filet fort sépare une carte de la précédente : c'est la seule chose qui
+   dise, sur une page très longue, qu'on a changé de question. Il
    s'arrête sous les deux barres collées — celle de l'en-tête et celle des
    domaines —, faute de quoi le défilement déposerait son titre dessous. */
 .domain {
@@ -461,131 +428,6 @@ onBeforeUnmount(() => {
   padding-top: 22px;
   border-top: 2px solid var(--color-text);
   scroll-margin-top: calc(var(--header-height) + var(--strip-height));
-}
-
-/* L'espace avant le sélecteur appartient à l'en-tête et non à la définition :
-   celle-ci se replie, et sans cela la question viendrait toucher le titre. */
-.head {
-  margin-bottom: 18px;
-}
-
-.head__band {
-  height: 8px;
-  margin-bottom: 12px;
-}
-
-.head__path {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  justify-content: space-between;
-  margin: 0;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-neutral-700);
-}
-
-/* Le rang attendu tient le bout de la ligne de chemin : il appartient au même
-   registre — ce que le modèle dit du domaine avant qu'on réponde — et explique
-   pourquoi ce domaine pèse sur tel palier et pas sur tel autre. En bas de casse,
-   parce que ce n'est pas un intitulé mais une précision. */
-.head__rank {
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: none;
-}
-
-/* Le « + » se pose au bout du titre, sur la même ligne de base : c'est la
-   définition du domaine qu'il ouvre, pas un bloc de la carte. */
-.head__title {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.head__area {
-  margin: 5px 0 0;
-  font-size: 22px;
-  line-height: 1.2;
-  letter-spacing: normal;
-}
-
-.head__toggle {
-  font-size: 15px;
-  line-height: 1;
-  font-weight: 400;
-  color: var(--color-neutral-600);
-}
-
-.head__toggle:hover {
-  color: var(--color-text);
-}
-
-.head__desc {
-  max-width: 90ch;
-  margin: 8px 0 0;
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--color-neutral-800);
-  text-wrap: pretty;
-}
-
-/* Le rappel vient après la réponse, sur toute la largeur : il n'a plus de
-   voisin à qui disputer la colonne. Un filet le sépare du sélecteur — c'est un
-   appui, pas une suite de la question. */
-.artifacts {
-  min-width: 0;
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--color-divider);
-}
-
-.artifacts__label {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.artifacts__toggle {
-  margin-left: 5px;
-  font-size: 13px;
-  line-height: 1;
-  font-weight: 400;
-  color: var(--color-neutral-600);
-}
-
-.artifacts__toggle:hover {
-  color: var(--color-text);
-}
-
-/* Plus d'ascenseur : la liste ne s'affiche que sur demande, elle se donne alors
-   en entier (14 artefacts au plus dans le modèle) plutôt que par la fenêtre.
-   Sur toute la largeur, elle se met en colonnes plutôt que de tirer une ligne de
-   dix mots sur quatre-vingts caractères de vide. */
-.artifacts__list {
-  margin: 8px 0 0;
-  padding: 0 0 0 16px;
-  columns: 3;
-  column-gap: 32px;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--color-neutral-800);
-}
-
-.artifacts__list li {
-  break-inside: avoid;
-}
-
-.artifacts__list li + li {
-  margin-top: 4px;
-}
-
-@media (max-width: 1200px) {
-  .artifacts__list {
-    columns: 2;
-  }
 }
 
 @media (max-width: 900px) {
@@ -620,8 +462,5 @@ onBeforeUnmount(() => {
     --strip-height: 0px;
   }
 
-  .artifacts__list {
-    columns: 1;
-  }
 }
 </style>
