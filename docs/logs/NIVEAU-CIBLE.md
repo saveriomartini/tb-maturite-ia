@@ -1,41 +1,50 @@
 # Suggestion du niveau cible
 
-Comment l'écran de cadrage 3 déduit un niveau cible recommandé (1 à 5) des attributs de contexte.
+Comment les attributs de contexte, renseignés au cadrage 3, produisent un niveau **suggéré** de 1 à
+5, et ce que l'outil en fait.
 
-Source des données : [`src/data/context-attributes.js`](../src/data/context-attributes.js).
-Calcul : `buildRecommendation()` dans [`src/domain/recommendation.js`](../src/domain/recommendation.js).
+Source des données : [`src/data/context-attributes.js`](../../src/data/context-attributes.js).
+Calcul : `buildRecommendation()` dans [`src/domain/recommendation.js`](../../src/domain/recommendation.js).
 
-La recommandation n'est pas montrée au cadrage et ne se choisit pas : elle **borne** le degré de
-transformation que l'utilisateur déclare viser (§ 0). Le profil visé qui en résulte n'est nommé
-qu'au palier de fin de diagnostic, où il ne se corrige plus.
+> **Les § 1 à 3 décrivent la construction de la *suggestion*, et rien d'autre.** Ils disent comment
+> les treize attributs produisent un rang de 1 à 5. Ce rang ne détermine plus le profil visé : le
+> § 0 dit ce qu'il en advient.
 
-## 0. Profil visé : l'intention, bornée par la capacité
+## 0. Cible et suggestion : deux choses distinctes
 
 ```text
-profil visé = intention == null ? recommandation : min(intention, recommandation)
+cible     = portée déclarée ?? suggestion
+suggestion = buildRecommendation(attributs de contexte).level
 ```
 
-Deux entrées, deux rôles distincts :
+Deux entrées, deux rôles, et l'une ne corrige plus l'autre :
 
-- le **degré de transformation visé** (`state.transformation`), première question du cadrage, à
-  cinq réponses — les cinq profils du modèle. C'est une intention : elle dit jusqu'où l'adoption de
-  l'IA doit transformer l'organisation, là où les attributs décrivent ce qu'elle est. Elle fixe le
-  profil visé, donc les areas que le questionnaire présente ;
-- les **attributs de contexte**, dont la recommandation ne peut que **descendre** ce profil, jamais
-  le remonter.
+- la **portée visée** (`state.transformation`), posée en phase d'ancrage après le diagnostic, à
+  cinq réponses — les cinq profils du modèle. C'est la **cible**, telle qu'elle est déclarée : la
+  suggestion ne la borne ni ne la remplace ;
+- les **attributs de contexte**, qui produisent une **suggestion**. Elle est affichée en regard de
+  la cible, en ancrage, avec les motifs qui l'ont fait descendre (`capNotes`, `level5Missing`).
 
-Les deux écarts possibles restent **silencieux au cadrage** et pendant le diagnostic :
+`Math.min` entre les deux a été retiré : plafonner une intention que l'outil vient de solliciter
+revient à corriger la réponse qu'il a demandée. C'est l'entrée `DECISIONS.md` du 28.08.2026 — « la
+capacité ne borne plus l'intention : l'écart entre les deux est donné à lire, non corrigé » — qui
+n'avait pas encore atteint le calcul, et le point 0.5c du BACKLOG.
 
-| Cas | Ce que fait l'outil | Ce qui sera dit à la restitution |
+Les quatre positions possibles, toutes nommées (`relation` dans `useMaturityTool.js`) et aucune
+laissée à un cas par défaut :
+
+| `relation` | Cas | Ce que l'ancrage affiche |
 |---|---|---|
-| intention < recommandation | parcourt le périmètre demandé, plus étroit | l'organisation a la capacité de viser plus haut |
-| intention > recommandation | parcourt le périmètre soutenable, plus étroit que demandé | la visée dépassait la capacité constatée ; le diagnostic a porté sur ce qui est portable |
+| `undeclared` | aucune portée déclarée | la suggestion sert de repère, et **tout ce qui la nomme dit « profil suggéré »**, à l'écran comme à l'export |
+| `above` | cible > suggestion | la cible, et la suggestion mise en regard — liseré neutre, `role="status"`, aucune couleur d'erreur |
+| `below` | cible < suggestion | la cible, et la suggestion, plus haute |
+| `equal` | cible = suggestion | les deux désignent le même profil |
 
-Sans intention déclarée, la recommandation décide seule : formulaire vide, elle vaut le profil le
-plus haut (§ 3), donc toutes les areas évaluables du modèle.
+Sans portée déclarée, c'est la suggestion qui tient lieu de repère : formulaire vide, elle vaut le
+profil le plus haut (§ 3), donc toutes les areas évaluables du modèle.
 
-Cas particulier au palier : lorsque c'est l'intention, plus basse, qui a fixé le profil, les
-facteurs de plafond ne sont pas affichés — ils motiveraient une limite qui n'a pas joué.
+L'écart n'est plus **silencieux** : il ne l'était que jusqu'à l'ancrage, où il se lit désormais en
+clair sans que rien ne soit rectifié.
 
 ## 1. Deux axes, pas un score
 
@@ -55,8 +64,8 @@ volontairement dans aucun calcul. Elle est destinée à un futur scoping par pra
 cible.
 
 Le **degré de transformation visé** n'apparaît pas dans ce tableau : il n'est pas un attribut de
-contexte et n'entre dans aucune moyenne. Il se croise avec le résultat de tout ce qui suit, selon
-la règle du § 0.
+contexte et n'entre dans aucune moyenne. Il est la cible, et rien de ce qui suit ne le déplace
+(§ 0) ; ce qui suit se lit à côté de lui.
 
 ## 2. Score par attribut
 
@@ -181,15 +190,16 @@ S'il en manque une, le niveau recommandé est ramené à 4 et les conditions man
 
 ## 7. Facteurs affichés
 
-Le calcul ne s'explique qu'au palier de fin de diagnostic, et seulement par ce qui a **retenu** le
-niveau — jamais par les deux axes, qui décrivent la mécanique interne :
+La suggestion ne s'explique qu'en phase d'ancrage, sous le profil, et seulement par ce qui l'a
+**retenue** — jamais par les deux axes, qui décrivent la mécanique interne :
 
 - **Ajustement** — la capacité a ramené le niveau de plus d'un cran (§ 4) ;
 - **Plafond** — un ou plusieurs plafonds durs ont tranché, avec leur motif (§ 5) ;
 - **Profil le plus haut** — les conditions du Level 5 manquantes (§ 6).
 
-Ces facteurs sont tus lorsque c'est l'intention déclarée, plus basse que la recommandation, qui a
-fixé le profil visé (§ 0).
+Les deux derniers sortent de `buildRecommendation` avec leur `why`, et l'ancrage les affiche tels
+quels sous la suggestion (`suggestedReasons`). Ils s'affichent quelle que soit la portée déclarée :
+ils motivent une suggestion, non une limite, et il n'y a donc plus de cas où les taire (§ 0).
 
 ## 8. Ordre d'application, en une ligne
 
@@ -199,9 +209,14 @@ scores  →  moyenne par axe (non renseigné = 1)
         →  arrondi, borné [1, 5]
         →  plafonds durs (le plus bas gagne)
         →  vérification des conditions du Level 5
-        →  niveau recommandé
-        →  min(degré de transformation visé, niveau recommandé)
-        →  profil visé du diagnostic
+        →  niveau suggéré
+```
+
+Et ce qu'il en advient, en une ligne :
+
+```text
+cible  =  portée déclarée en ancrage, telle quelle
+       ou, à défaut, le niveau suggéré — nommé alors « profil suggéré »
 ```
 
 ## Exemples

@@ -1,8 +1,10 @@
 // Ce que la restitution affiche, lu sur les view-models eux-mêmes et non sur le
 // calcul qui les alimente. Deux choses s'y vérifient que les tests de règles ne
-// peuvent pas voir : que les trois démonstrations tombent bien aux trois
-// positions de l'échelle de transformation — c'est leur seule raison d'être —,
-// et qu'aucune valeur affichée ne dépasse son total.
+// peuvent pas voir : où les démonstrations tombent sur l'échelle de
+// transformation — c'était leur raison d'être, et elles n'y couvrent plus que
+// deux positions sur trois depuis que la cible est celle qu'on déclare, voir le
+// commentaire du premier bloc —, et qu'aucune valeur affichée ne dépasse son
+// total.
 //
 // Ce dernier point n'est pas une précaution abstraite : l'experte métier a relevé
 // un « 3,1 / 3 » dans la restitution, un rang moyen rapporté au rang visé au lieu
@@ -17,6 +19,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMaturityTool } from '../src/composables/useMaturityTool.js'
 import { ATTRIBUTION } from '../src/data/attribution.js'
+import { LEVEL5_REQUIREMENTS, LEVEL_CAPS } from '../src/data/context-attributes.js'
 import { DEMO_SESSIONS } from '../src/data/demo-sessions.js'
 import { PASSAGES, REVOLUTIONARY_FROM } from '../src/data/transformation.js'
 import {
@@ -39,6 +42,14 @@ function demo(id) {
   return tool
 }
 
+// Déclarer une portée sans se soucier de celle qui l'était déjà : `selectReach`
+// annule la réponse quand on reclique celle qui est retenue, ce qui rendrait
+// « déclarer le rang 3 » indistinct de « ne rien déclarer » sur une session de
+// démonstration qui vise déjà 3.
+function declareReach(tool, n) {
+  if (tool.state.transformation !== n) tool.actions.selectReach(n)
+}
+
 // Les trois positions, telles que la restitution les nomme. On compare le texte
 // du passage aux quatre du modèle plutôt qu'un rang à un autre : c'est ce texte
 // que le lecteur reçoit, et c'est lui qui doit différer d'un cas à l'autre.
@@ -52,15 +63,31 @@ function positionOf(tool) {
 }
 
 describe('les trois démonstrations', () => {
-  it('tombent à trois positions différentes de l’échelle de transformation', () => {
+  // LES TROIS POSITIONS NE SONT PLUS TENUES, ET C'EST LA DONNÉE QUI DOIT BOUGER.
+  //
+  // La Menuiserie Rochat déclare une portée de rang 3 ; son contexte n'en
+  // suggérait que 2, et l'ancien calcul la ramenait là — c'est ce plafonnement
+  // qui lui donnait sa position « sous la ligne ». La cible étant désormais
+  // celle que l'organisation déclare (entrée DECISIONS du 28.08.2026, point
+  // 0.5c du BACKLOG), Rochat vise 3 comme la Clinique Bel-Air et occupe la même
+  // position qu'elle.
+  //
+  // Le scénario n'a pas été corrigé pour rattraper le test : ce serait ajuster
+  // la donnée à un contrôle, alors que c'est le contrôle qui constate ce que la
+  // décision a produit. Faire retomber les trois cas à trois positions demande
+  // de rebaisser la portée que Rochat déclare — un choix de contenu, qui revient
+  // à Saverio et non à ce commit.
+  it('ne tombent plus qu’à deux positions de l’échelle de transformation', () => {
     const positions = DEMO_SESSIONS.map(scenario => positionOf(demo(scenario.id)))
-    expect(positions).toEqual(['evolutionary', 'crossing', 'reached'])
-    expect(new Set(positions).size).toBe(3)
+    expect(positions).toEqual(['crossing', 'crossing', 'reached'])
   })
 
-  it('sous la ligne : la Menuiserie Rochat vise plus bas que la ligne et n’y est pas', () => {
+  it('la Menuiserie Rochat vise ce qu’elle déclare, plus haut que ce que son contexte suggère', () => {
     const tool = demo('rochat')
-    expect(tool.ancrage.targetLabel).toBe('Intégration opérationnelle')
+    expect(tool.state.transformation).toBe(3)
+    expect(tool.ancrage.targetLabel).toBe('Alignement des processus')
+    expect(tool.ancrage.relation).toBe('above')
+    expect(tool.ancrage.suggestedLabel).toBe('Intégration opérationnelle')
     expect(tool.resti1.acquiredLabel).toBe('Exploration localisée')
     expect(tool.ancrage.gates.length).toBeGreaterThan(0)
     expect(tool.ancrage.gates[0].level).toBe(2)
@@ -101,6 +128,96 @@ describe('les trois démonstrations', () => {
       .map(area => area.id)
     expect(pending.length).toBeGreaterThan(0)
     pending.forEach(id => expect(cited).not.toContain(id))
+  })
+})
+
+describe('la cible appartient à l’organisation', () => {
+  // Le cœur de la décision du 28.08.2026, désormais dans le calcul : ce que le
+  // contexte suggère ne fait plus descendre ce que l'organisation déclare.
+  it('une portée déclarée au-dessus de la suggestion reste la cible', () => {
+    const tool = demo('rochat') // contexte plafonné au rang 2
+    tool.actions.selectReach(5)
+    expect(tool.ancrage.suggestedLevel).toBeLessThan(5)
+    expect(tool.ancrage.targetLabel).toBe(profileName(5))
+    expect(tool.ancrage.relation).toBe('above')
+  })
+
+  // Sur les vingt-cinq paires et non sur les seuls cas de démonstration : c'est
+  // la propriété qui a été renversée, elle se vérifie partout où elle jouait.
+  // Les deux contextes disponibles encadrent les régimes possibles — le
+  // formulaire vide, qui suggère le rang le plus haut, et celui de la Menuiserie
+  // Rochat, que ses plafonds durs ramènent au rang 2.
+  it('la suggestion ne fait jamais descendre une cible déclarée, sur les 25 paires', () => {
+    const contextes = [
+      ['formulaire vide', () => useMaturityTool()],
+      ['contexte plafonné', () => demo('rochat')]
+    ]
+    contextes.forEach(([nom, build]) => {
+      LEVELS.forEach(declared => {
+        const tool = build()
+        declareReach(tool, declared.n)
+        const suggested = tool.ancrage.suggestedLevel
+        expect(tool.ancrage.targetLabel, `${nom} — suggéré ${suggested} × déclaré ${declared.n}`)
+          .toBe(profileName(declared.n))
+      })
+    })
+  })
+
+  it('rend les quatre états de la relation entre cible et suggestion', () => {
+    const tool = demo('rochat')
+    const suggested = tool.ancrage.suggestedLevel
+    expect(suggested).toBeGreaterThan(1)
+    expect(suggested).toBeLessThan(5)
+
+    tool.actions.selectReach(tool.state.transformation) // annule la portée
+    expect(tool.ancrage.relation).toBe('undeclared')
+
+    tool.actions.selectReach(suggested)
+    expect(tool.ancrage.relation).toBe('equal')
+
+    tool.actions.selectReach(suggested + 1)
+    expect(tool.ancrage.relation).toBe('above')
+
+    tool.actions.selectReach(suggested - 1)
+    expect(tool.ancrage.relation).toBe('below')
+  })
+
+  // Sans portée déclarée, un repère subsiste — c'est l'option retenue — mais il
+  // ne se donne jamais pour une cible : ni à l'écran, ni dans la pièce qui
+  // quitte l'outil, où personne n'est là pour le préciser.
+  it('sans portée déclarée, rien ne nomme un « profil visé »', () => {
+    const tool = useMaturityTool()
+    expect(tool.ancrage.declared).toBe(false)
+    expect(tool.ancrage.targetTermCap).toBe('Profil suggéré')
+    expect(tool.exportPreview.targetTermCap).toBe('Profil suggéré')
+    expect(tool.ancrage.intentionGap).toContain('suggèrent')
+    ;[tool.ancrage.emptyLabel, tool.ancrage.unmeasured, tool.exportPreview.emptyLabel]
+      .forEach(label => expect(label).not.toContain('profil visé'))
+  })
+
+  // L'écart se dit, il ne se rectifie pas : aucune des formules écartées le
+  // 28.08.2026 ne doit reparaître dans le texte, quel que soit l'état.
+  it('l’écart ne dit jamais que la cible est corrigée', () => {
+    const proscrits = ['sert de cible', 'ne fait pas viser', 'le plus bas des deux', 'La cible reste']
+    ;[null, 1, 2, 3, 4, 5].forEach(n => {
+      const tool = demo('rochat')
+      if (n === null) tool.actions.selectReach(tool.state.transformation)
+      else declareReach(tool, n)
+      expect(tool.ancrage.intentionGap, `${n}`).toBeTruthy()
+      proscrits.forEach(mot => expect(tool.ancrage.intentionGap, `${n} — ${mot}`).not.toContain(mot))
+    })
+  })
+
+  // Les motifs affichés sous la suggestion viennent du modèle et non d'ici : une
+  // paraphrase écrite dans le view-model dériverait du texte de la source.
+  it('les motifs de la suggestion sont ceux que le modèle écrit', () => {
+    const tool = demo('rochat')
+    expect(tool.ancrage.suggestedReasons.length).toBeGreaterThan(0)
+    const connus = [...LEVEL_CAPS, ...LEVEL5_REQUIREMENTS].map(entry => entry.why)
+    tool.ancrage.suggestedReasons.forEach(reason => {
+      expect(['cap', 'level5']).toContain(reason.kind)
+      expect(connus, reason.text).toContain(reason.text)
+    })
   })
 })
 

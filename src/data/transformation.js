@@ -203,10 +203,10 @@ export const PASSAGES = {
 // de l'échelle dont elle est tirée. Elles sont cumulatives — une portée contient
 // les précédentes —, ce que le `hint` dit plutôt que chaque libellé.
 //
-// `n` est le degré correspondant : c'est lui qui fixe l'intention, à croiser
-// ensuite avec la recommandation issue du contexte (voir docs/NIVEAU-CIBLE.md,
-// § 0). L'écran qui pose la question viendra plus tard ; ce fichier n'en porte
-// que le contenu.
+// `n` est le degré correspondant : c'est lui qui fixe la cible, telle quelle.
+// La suggestion issue du contexte se lit à côté et ne la borne pas (voir
+// docs/logs/NIVEAU-CIBLE.md, § 0). L'écran qui pose la question viendra plus
+// tard ; ce fichier n'en porte que le contenu.
 export const REACH_QUESTION = {
   id: 'reach',
   question: 'Si l’adoption de l’IA réussit chez vous, jusqu’où doit-elle avoir porté ?',

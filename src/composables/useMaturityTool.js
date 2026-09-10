@@ -220,8 +220,9 @@ const OUT_OF_SCOPE_SHORT = 'non applicable'
 // vingt-huit interrupteurs.
 //
 // `transformation` porte le degré déduit de la portée déclarée en phase
-// d'ancrage. À null — c'est-à-dire tant que la question n'a pas été posée —, le
-// profil visé suit la seule recommandation issue du contexte.
+// d'ancrage. C'est la cible, telle quelle. À null — c'est-à-dire tant que la
+// question n'a pas été posée —, la suggestion issue du contexte en tient lieu,
+// sous son propre nom.
 //
 // `wave`, `seen` et `offScope` ont disparu avec les séries ; `diagIdx` a suivi
 // avec l'empilement. Les 28 domaines sont sur la même page, dans l'ordre du
@@ -268,15 +269,20 @@ export function useMaturityTool() {
 
   const recommendation = computed(() => buildRecommendation(state.form))
 
-  // Le profil visé est celui que l'organisation déclare viser — par la portée
-  // qu'elle donne à l'adoption —, borné par ce que son contexte porte : le
-  // formulaire ne peut que le descendre, jamais le remonter. Sans portée
-  // déclarée, la recommandation décide seule ; formulaire vide, elle vaut le
-  // profil le plus haut.
+  // La cible est celle que l'organisation déclare, et rien d'autre : la portée
+  // qu'elle donne à l'adoption se reprend telle quelle. Le contexte ne la borne
+  // plus — c'est l'entrée DECISIONS du 28.08.2026, restée sans effet dans le
+  // calcul jusqu'ici (point 0.5c du BACKLOG) : plafonner une intention qu'on
+  // vient de solliciter revient à corriger la réponse qu'on a demandée.
+  //
+  // Ce que le contexte porte est devenu une *suggestion*, exposée à part
+  // (`suggestedLevel`) et mise en regard de la cible sans jamais la remplacer.
+  // Tant que la portée n'est pas déclarée, c'est cette suggestion qui sert de
+  // repère au reste de la page — et tout ce qui la nomme dit alors « profil
+  // suggéré » et jamais « profil visé », faute de quoi l'outil imposerait sous
+  // un autre mot la cible qu'il vient de renoncer à imposer.
   const target = computed(() =>
-    state.transformation == null
-      ? recommendation.value.level
-      : Math.min(state.transformation, recommendation.value.level)
+    state.transformation == null ? recommendation.value.level : state.transformation
   )
 
   // La cible n'est *nommée* qu'une fois la portée déclarée. Avant l'ancrage,
@@ -285,6 +291,41 @@ export function useMaturityTool() {
   // lui a pas encore posée.
   const targetDeclared = computed(() => state.transformation != null)
   const targetLabel = computed(() => profileName(target.value))
+
+  // Le mot par lequel la page nomme le repère qu'elle affiche. Il n'y a de
+  // « profil visé » que déclaré ; à défaut, ce qui tient sa place est une
+  // suggestion et se dit comme telle, partout où le repère est nommé.
+  // TEXTE PROVISOIRE — à valider par Saverio
+  const targetTerm = computed(() => (targetDeclared.value ? 'profil visé' : 'profil suggéré'))
+  const targetTermCap = computed(() => (targetDeclared.value ? 'Profil visé' : 'Profil suggéré'))
+
+  // Ce que les attributs de cadrage appellent, exposé pour lui-même. Ce n'est
+  // plus une borne : c'est une information mise en regard de la cible déclarée.
+  const suggestedLevel = computed(() => recommendation.value.level)
+  const suggestedLabel = computed(() => profileName(suggestedLevel.value))
+
+  // Ce qui fait descendre la suggestion, dans les termes où le modèle l'écrit
+  // déjà : chaque plafond dur et chaque condition de Level 5 porte son `why`
+  // dans context-attributes.js. Rien n'est reformulé ici — la raison affichée
+  // doit être celle du modèle, et non une paraphrase qui en dériverait.
+  //
+  // Les deux familles ne se lisent pas de la même façon — un plafond énonce un
+  // fait constaté, une condition de Level 5 nomme ce qui manque —, d'où le
+  // `kind` : c'est l'écran qui les introduit, chacune avec sa tournure.
+  const suggestedReasons = computed(() => [
+    ...recommendation.value.capNotes.map(cap => ({ kind: 'cap', text: cap.why })),
+    ...recommendation.value.level5Missing.map(req => ({ kind: 'level5', text: req.why }))
+  ])
+
+  // Où se place la cible déclarée par rapport à la suggestion. Quatre états
+  // nommés, dont l'absence de déclaration : aucun ne tombe dans un cas par
+  // défaut, et aucun n'est une erreur.
+  const relation = computed(() => {
+    if (!targetDeclared.value) return 'undeclared'
+    if (state.transformation > suggestedLevel.value) return 'above'
+    if (state.transformation < suggestedLevel.value) return 'below'
+    return 'equal'
+  })
 
   // Il n'y a plus qu'un compte de domaines dans l'outil, et c'est la couverture
   // de la restitution. Un second vivait ici, pour la bande de verdict de
@@ -442,29 +483,31 @@ export function useMaturityTool() {
     return target.value >= REVOLUTIONARY_FROM ? PASSAGES.crossing : PASSAGES.evolutionary
   })
 
-  // Ce que la portée déclarée et le contexte disent l'un de l'autre. L'écart
-  // reste tu pendant tout le parcours et ne devient un résultat qu'ici : au
-  // cadrage il aurait été une objection, à l'ancrage il est une information.
+  // Ce que la portée déclarée et la suggestion du cadrage disent l'une de
+  // l'autre. L'écart reste tu pendant tout le parcours et ne devient un résultat
+  // qu'ici : au cadrage il aurait été une objection, à l'ancrage il est une
+  // information. Il se donne à lire, il ne rectifie rien — aucun des quatre
+  // états ne dit que la cible est corrigée, bornée ou remplacée, et aucun ne
+  // s'adresse au lecteur à l'impératif.
+  //
+  // TEXTE PROVISOIRE — à valider par Saverio
   const intentionGap = computed(() => {
-    if (!targetDeclared.value) {
-      return 'Faute de portée déclarée, le profil visé retenu est celui que vos attributs de ' +
-        `contexte portent : « ${targetLabel.value} ».`
+    const declaredLabel = targetDeclared.value ? profileName(state.transformation) : ''
+    switch (relation.value) {
+      case 'above':
+        return `Vous déclarez viser « ${declaredLabel} ». Vos attributs de cadrage suggèrent ` +
+          `« ${suggestedLabel.value} », un profil plus bas.`
+      case 'below':
+        return `Vous déclarez viser « ${declaredLabel} ». Vos attributs de cadrage suggèrent ` +
+          `« ${suggestedLabel.value} », un profil plus haut.`
+      case 'equal':
+        return `Vous déclarez viser « ${declaredLabel} », le profil que vos attributs de cadrage ` +
+          'suggèrent également.'
+      default:
+        return 'Aucune portée n’est déclarée. Vos attributs de cadrage suggèrent ' +
+          `« ${suggestedLabel.value} » : c’est ce profil suggéré que la suite de cette page prend ` +
+          'pour repère.'
     }
-    const declared = state.transformation
-    const carried = recommendation.value.level
-    if (declared > carried) {
-      return `La portée que vous déclarez appelle « ${profileName(declared)} ». Vos attributs de ` +
-        `contexte n’en portent que « ${profileName(carried)} » : c’est ce profil, le plus bas des ` +
-        'deux, qui sert de cible — on ne fait pas viser un rang que l’organisation n’a pas les ' +
-        'moyens de tenir.'
-    }
-    if (declared < carried) {
-      return `Vos attributs de contexte porteraient « ${profileName(carried)} », plus haut que la ` +
-        `portée que vous déclarez. La cible reste « ${profileName(declared)} » : viser étroit avec ` +
-        'les moyens de viser large est une décision, pas une limite.'
-    }
-    return `La portée que vous déclarez et ce que votre contexte porte désignent le même profil, ` +
-      `« ${targetLabel.value} ».`
   })
 
   // Les domaines qui séparent de la cible, groupés par palier intermédiaire. Le
@@ -555,7 +598,7 @@ export function useMaturityTool() {
       state.openLevels[n] = !state.openLevels[n]
     },
     // La portée visée, déclarée en phase d'ancrage. Elle fixe le degré de
-    // transformation — le profil visé s'en déduit, borné par la recommandation.
+    // transformation, donc la cible : la recommandation ne la borne plus.
     // Recliquer la réponse retenue l'annule, comme un attribut de contexte.
     selectReach(n) {
       state.transformation = state.transformation === n ? null : n
@@ -1220,6 +1263,16 @@ export function useMaturityTool() {
     reachField: reachField.value,
     declared: targetDeclared.value,
     targetLabel: targetLabel.value,
+    // Le repère n'a pas le même nom selon qu'il est déclaré ou suggéré : c'est
+    // la seule chose qui empêche une suggestion de se lire comme une décision.
+    targetTerm: targetTerm.value,
+    targetTermCap: targetTermCap.value,
+    // La suggestion du cadrage, montrée pour elle-même et à côté de la cible :
+    // l'écran la met en regard, il ne l'y substitue pas.
+    suggestedLabel: suggestedLabel.value,
+    suggestedLevel: suggestedLevel.value,
+    suggestedReasons: suggestedReasons.value,
+    relation: relation.value,
     acquiredLabel: acquiredLabel.value,
     // L'écart se lit en deux temps : sa nature d'abord — ce qu'on s'apprête à
     // entreprendre —, les domaines ensuite. L'ordre inverse ferait lire une
@@ -1237,14 +1290,16 @@ export function useMaturityTool() {
     // et non sur la liste : celle-ci peut être vide alors que la cible n'est pas
     // tenue, quand tout ce qui la retient est resté sans réponse.
     empty: targetReached.value,
+    // TEXTE PROVISOIRE — à valider par Saverio
     emptyLabel: acquired.value > target.value
-      ? 'Le profil visé est en deçà du profil diagnostiqué'
-      : 'Profil visé atteint',
+      ? `Le ${targetTerm.value} est en deçà du profil diagnostiqué`
+      : `${targetTermCap.value} atteint`,
     // Ce cas-là ne se laisse pas deviner : la cible n'est pas tenue, et pourtant
     // il n'y a rien à montrer. Le dire évite qu'on lise l'absence de liste comme
     // une absence d'écart.
+    // TEXTE PROVISOIRE — à valider par Saverio
     unmeasured: !targetReached.value && gates.value.length === 0
-      ? 'Aucun domaine renseigné ne retient le profil visé : ce qui vous en sépare tient ' +
+      ? `Aucun domaine renseigné ne retient le ${targetTerm.value} : ce qui vous en sépare tient ` +
         'entièrement aux domaines restés à évaluer, ci-dessous.'
       : '',
     outOfScope: outOfScopeAreas.value.length
@@ -1304,15 +1359,23 @@ export function useMaturityTool() {
       // Seule sortie numérotée : relue hors de l'outil, elle doit situer le
       // profil dans l'échelle sans supposer qu'on la connaisse par cœur.
       targetLabel: profileExportLabel(target.value),
+      // Relu hors de l'outil, le document n'a personne pour préciser d'où vient
+      // le profil qu'il nomme : sans portée déclarée, ce n'est pas une cible
+      // mais la suggestion du cadrage, et il doit le dire de lui-même.
+      // TEXTE PROVISOIRE — à valider par Saverio
+      targetTerm: targetTerm.value,
+      targetTermCap: targetTermCap.value,
       acquiredLabel: acquiredProfile.value.exportLabel,
       // Le même partage qu'à l'écran : la cible dépassée, la cible tenue, et le
       // cas où rien n'est listé parce que rien n'a été mesuré.
+      // TEXTE PROVISOIRE — à valider par Saverio
       emptyLabel: acquired.value > target.value
-        ? 'Aucun domaine ne sépare du profil visé : le profil diagnostiqué le dépasse.'
+        ? `Aucun domaine ne sépare du ${targetTerm.value} : le profil diagnostiqué le dépasse.`
         : targetReached.value
-          ? 'Aucun domaine ne sépare du profil visé — tous les domaines qu’il met en jeu l’atteignent.'
-          : 'Aucun domaine renseigné ne retient le profil visé : ce qui en sépare tient aux ' +
-            'domaines restés à évaluer, que la couverture ci-dessus dénombre.',
+          ? `Aucun domaine ne sépare du ${targetTerm.value} — tous les domaines qu’il met en jeu ` +
+            'l’atteignent.'
+          : `Aucun domaine renseigné ne retient le ${targetTerm.value} : ce qui en sépare tient ` +
+            'aux domaines restés à évaluer, que la couverture ci-dessus dénombre.',
       pages: pages.map((pageRows, index) => ({
         rows: pageRows,
         empty: pageRows.length === 0,

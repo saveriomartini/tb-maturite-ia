@@ -9,14 +9,14 @@
       <article v-for="page in vm.pages" :key="page.label" class="page">
         <header class="page__head">
           <div>
-            <h1 class="page__title heading">Domaines de capacité qui séparent du profil visé</h1>
+            <h1 class="page__title heading">Domaines de capacité qui séparent du {{ vm.targetTerm }}</h1>
           </div>
           <div class="page__levels">
             <!-- Sur une ligne : entre deux éléments, le compilateur condense en rien
                  un blanc qui contient un retour, et le périmètre se collerait à sa
                  couverture. -->
             <p class="page__level">{{ vm.scope.label }} : <span class="page__level-value">{{ vm.scope.unit }}</span> <span class="page__level-coverage">· {{ vm.scope.coverage }}</span></p>
-            <p class="page__level">Profil visé : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
+            <p class="page__level">{{ vm.targetTermCap }} : <span class="page__level-value">{{ vm.targetLabel }}</span></p>
             <p class="page__level">Profil diagnostiqué : <span class="page__level-value">{{ vm.acquiredLabel }}</span></p>
             <p v-if="vm.scope.note" class="page__coverage">{{ vm.scope.note }}</p>
           </div>

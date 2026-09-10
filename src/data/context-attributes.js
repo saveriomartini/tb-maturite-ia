@@ -2,7 +2,7 @@
 // et Table 1 « Representative Context Attributes » (p. 26-27).
 //
 // Le calcul du niveau cible qui exploite ce fichier est documenté dans
-// docs/NIVEAU-CIBLE.md.
+// docs/logs/NIVEAU-CIBLE.md.
 //
 // Les attributs sont regroupés selon les trois familles du modèle — fonctions
 // organisationnelles, technologiques, IA. À l'écran, les trois groupes ne

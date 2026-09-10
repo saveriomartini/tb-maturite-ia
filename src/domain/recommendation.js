@@ -1,8 +1,13 @@
-// — recommandation du niveau cible —
+// — suggestion du niveau cible —
 // Deux axes : l'ambition affichée par l'organisation et la capacité qu'elle peut
-// soutenir. On ne recommande jamais plus d'un cran au-dessus de la capacité, puis
+// soutenir. On ne suggère jamais plus d'un cran au-dessus de la capacité, puis
 // on applique les plafonds durs (facteurs bloquants qui ne se compensent pas).
-// Le raisonnement complet est documenté dans docs/NIVEAU-CIBLE.md.
+// Le raisonnement complet est documenté dans docs/logs/NIVEAU-CIBLE.md.
+//
+// Ce que ce fichier produit est une *suggestion*, et rien d'autre : depuis
+// l'entrée DECISIONS du 28.08.2026, elle ne borne plus la cible que
+// l'organisation déclare — elle s'affiche à côté d'elle, avec les motifs qui
+// l'ont fait descendre. Le calcul lui-même n'a pas changé ; seul son statut.
 
 import {
   ALL_FIELDS, LEVEL_CAPS, LEVEL5_REQUIREMENTS
@@ -83,8 +88,11 @@ export function buildRecommendation(form) {
   if (blockedFrom5) level = MAX_LEVEL - 1
 
   // Les deux axes ne sortent pas d'ici : ils portent le calcul, pas la
-  // restitution. Seul `cappedByCapacity` en subsiste, parce qu'il explique un
-  // écart entre le profil visé et celui qu'appelaient les réponses.
+  // restitution. Seul `cappedByCapacity` en subsiste, parce qu'il explique
+  // pourquoi la suggestion est descendue sous ce que l'ambition appelait.
+  //
+  // `capNotes` et `level5Missing` sortent avec leur `why` : ce sont eux que
+  // l'ancrage affiche sous la suggestion, dans les termes du modèle.
   return {
     level,
     answered,

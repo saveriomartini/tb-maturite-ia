@@ -20,9 +20,29 @@
       <h2 class="section-head">Le profil visé, et ce qu’il engage</h2>
 
       <div class="verdict">
-        <p class="verdict__eyebrow eyebrow">Profil visé</p>
+        <p class="verdict__eyebrow eyebrow">{{ vm.targetTermCap }}</p>
         <p class="verdict__name heading">{{ vm.targetLabel }}</p>
         <p class="verdict__from">Profil diagnostiqué : {{ vm.acquiredLabel }}</p>
+
+        <!-- TEXTE PROVISOIRE — à valider par Saverio -->
+        <div
+          class="suggested"
+          :class="{ 'suggested--apart': vm.relation === 'above' }"
+          role="status"
+        >
+          <p class="suggested__line">
+            Profil suggéré par votre contexte : {{ vm.suggestedLabel }}
+          </p>
+          <p v-if="vm.relation === 'above'" class="suggested__apart">
+            Votre profil visé est plus haut que ce profil suggéré.
+          </p>
+          <ul v-if="vm.suggestedReasons.length" class="suggested__reasons">
+            <li v-for="reason in vm.suggestedReasons" :key="reason.text">
+              <template v-if="reason.kind === 'cap'">{{ reason.text }}</template>
+              <template v-else>le profil le plus haut suppose {{ reason.text }}</template>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <p class="intention">{{ vm.intentionGap }}</p>
@@ -102,8 +122,20 @@
 //
 // La question vient en premier et non en dernier : tout ce qui suit en dépend,
 // et l'écran serait illisible dans l'autre sens. Elle n'est pas exigée pour
-// autant — sans réponse, le profil visé retombe sur ce que le contexte porte, et
-// le texte le dit.
+// autant — sans réponse, c'est la suggestion du cadrage qui sert de repère, et
+// la page la nomme alors « profil suggéré » partout, jamais « profil visé ».
+//
+// — la suggestion, mise en regard et non substituée —
+// Ce que les attributs de cadrage appellent est montré sous le profil, avec les
+// motifs qui l'ont fait descendre. Il ne borne plus rien : depuis l'entrée
+// DECISIONS du 28.08.2026, la cible est celle que l'organisation déclare, et
+// c'est un test pilote en PME qui a montré ce que l'ancien calcul faisait —
+// l'outil corrigeait une réponse qu'il venait lui-même de solliciter.
+//
+// Quand la cible déclarée est plus haute que la suggestion, l'écart est marqué :
+// un liseré neutre et une phrase, `role="status"` et non `alert`, sans aucune
+// couleur d'erreur. Ce n'est pas un avertissement — il n'y a rien à corriger —,
+// c'est une information mise à côté d'une autre.
 //
 // L'écart se lit en deux temps, et l'ordre compte : la nature du passage
 // d'abord — ce qu'on s'apprête à entreprendre —, les domaines ensuite. L'ordre
@@ -198,6 +230,43 @@ const emit = defineEmits(['select-reach', 'export', 'finish', 'resume', 'back'])
   margin: 7px 0 0;
   font-size: 12px;
   color: var(--color-neutral-700);
+}
+
+/* — la suggestion du cadrage —
+   Sous le profil, au corps du hors-texte : elle éclaire la cible, elle ne la
+   dispute pas. Le liseré du cas `above` reprend le gris des autres hors-textes
+   de la page : marquer un écart n'est pas signaler une faute, et une couleur
+   d'erreur ferait lire une déclaration légitime comme un défaut à réparer. */
+.suggested {
+  max-width: 80ch;
+  margin: 12px 0 0;
+}
+
+.suggested--apart {
+  padding-left: 12px;
+  border-left: 3px solid var(--color-neutral-300);
+}
+
+.suggested__line {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-neutral-800);
+}
+
+.suggested__apart {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--color-neutral-800);
+  text-wrap: pretty;
+}
+
+.suggested__reasons {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-neutral-700);
+  text-wrap: pretty;
 }
 
 .intention {
