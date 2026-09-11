@@ -26,3 +26,10 @@ Avant la restitution
 Six opérations restent à conduire sur le dépôt : verser le brouillon des décisions au journal, corriger la mention de licence dans la donnée d'attribution, porter l'attribution sur la pièce exportée, requalifier le seuil de N dans le document de périmètre, remettre le backlog à jour et poser l'étiquette de version. Deux séances prévues au dernier lot n'ont pas été tenues, la séance de terminologie avec l'experte et la séance test chronométrée.
 
 
+
+-----------------
+
+11092026
+5.3
+Les évolutions déclarées et leur statut
+Sont coupées faute de temps la sauvegarde d'une session en JSON, les pièces manquantes de l'export, le contrôle d'accessibilité, l'analyse de sensibilité de la règle du minimum, la passe de variation des amorces de phrase et le test d'attribution à l'aveugle sur les 3 paires de domaines à recouvrement lexical ; aucune n'appelle de développement nouveau. Sont reportées par décision motivée le portage et la collecte traités ci-dessus, une porte readiness étiquetée comme telle et jamais fusionnée au profil, une variante en fichier unique utilisable hors ligne, la propagation du renommage jusqu'aux identifiants, et le scoping par pratiques que la déclaration de hors-périmètre rend provisoirement inutile. Est exclue par instruction la couche prescriptive. À plus long terme, la limite de l'autodéclaration appelle un dispositif qui demanderait les artefacts attestant chaque domaine et validerait le niveau sur pièces : ce serait changer d'instrument, non corriger celui-ci.
