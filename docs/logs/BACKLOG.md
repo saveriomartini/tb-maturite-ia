@@ -199,9 +199,9 @@ Fonctions pures. Peut démarrer sur des énoncés placeholder.
 | 3.8b | Bloc de clôture d'Ancrage : où l'outil s'arrête, ce qui relève de l'accompagnement, et la génération d'une feuille de route priorisée annoncée comme prochaine itération. **Texte simple encadré, pas de bouton désactivé** — un élément qui paraît cliquable sans l'être frustre. Rédigé comme la suite du produit, non comme une excuse ; sert aussi de pistes futures au rapport. *Le chapô de l'écran dit où la phase s'arrête, et l'écran d'information annonce la feuille de route comme une itération ultérieure. L'encadré de clôture demandé ici, qui nomme ce qui relève de l'accompagnement, n'existe pas* | S (texte) / C (intégration) | ¼j | `ScreenAncrage.vue` | 0.5a | [~] |
 | 3.9 | `ScreenInfo` : adoption / maturité / readiness + tableau d'équivalences | C | ¼j | `ScreenInfo.vue`, `FrameworkTable.vue` | 1.8 | [x] |
 | 3.10 | `ScreenExport`, désormais clôture de la phase Ancrage : unité évaluée, contexte, profil, radar imprimable, domaines bloquants avec énoncé cible, détail des 28 réponses, attribution en pied. **Livré à ce jour** : l'en-tête de périmètre et de profils, les domaines bloquants avec leur énoncé cible, l'attribution et le démenti au pied de chaque page. **Restent** : le récapitulatif de contexte, le radar imprimable, le détail des 28 réponses | C | ½j | `ScreenExport.vue` | 3.6, 1.9 | [ ] |
-| 3.11 | Sauvegarde JSON : copier / restaurer, validé par le même validateur que localStorage ; « Tout effacer » avec confirmation | C | ¼j | `ScreenExport.vue` | 2.8 | [ ] |
+| 3.11 | Sauvegarde JSON : copier / restaurer, validé par le même validateur que localStorage ; « Tout effacer » avec confirmation. **Livré le 11.09.2026**, à une autre place et sous une autre forme que prévu : un bloc « Emporter » sur l'écran d'**ancrage** et non dans l'aperçu d'export, et **deux fichiers** produits par un même bouton — `reprise` (instantané complet) et `partage` (28 réponses, trois attributs descriptifs, les deux profils dérivés). Le « Tout effacer » avec confirmation existait déjà, porté par l'en-tête. Validateurs communs extraits dans `domain/session-state.js` | C | ¼j | `TakeAway.vue`, `ScreenAncrage.vue`, `domain/session-file.js`, `domain/session-state.js` | 2.8 | [x] |
 | 3.12 | Pied de page d'attribution partout ; `@media print` cohérent | C | ¼j | `App.vue`, `ScreenExport.vue` | 1.9 | [x] |
-| 3.13 | `npm run lint`, contrôle à 1200 / 900 px, parcours clavier (`focus-visible` sur énoncés, HP, échelle). *`lint` et `test` tournent en intégration continue avant le `build` ; le contrôle à 1200 / 900 px et le parcours clavier sont des vérifications à l'œil, elles n'ont pas été faites* | C | ¼j | — | 3.1–3.12 | [~] |
+| 3.13 | `npm run lint`, contrôle à 1200 / 900 px, parcours clavier (`focus-visible` sur énoncés, HP, échelle). *`lint` et `test` tournent en intégration continue avant le `build`. Le 11.09.2026, à l'épreuve de l'item 3.11, le contrôle a été fait sur le seul bloc « Emporter » : parcours clavier complet (les trois boutons, le dépliant, la modale et sa fermeture par Échap), `focus-visible` visible partout, rendu à 1200 et 900 px sans débordement — la ligne du bloc lui-même ne passe en colonne qu'à 700 px, c'est l'agencement général de l'écran qui passe en colonne à 900. Restent non vérifiés au clavier et aux points de rupture : les énoncés du questionnaire, l'interrupteur de hors périmètre et l'échelle des cinq situations, sur le reste de l'outil* | C | ¼j | — | 3.1–3.12 | [~] |
 
 ---
 
@@ -251,6 +251,11 @@ Dépendance : 5.4 après 5.3, qui définit le saut qu'elle déclenche. Ordre arr
 
 Couper dans cet ordre : 3.11 (sauvegarde JSON) · 3.6 (radar → barres seules) · 3.7 (contexte en tête
 de Resti1 plutôt qu'en écran propre) · 2.10 (Vitest → test manuel documenté).
+
+**État au 11.09.2026 : aucun de ces quatre items n'a été coupé.** 3.11, qui ouvrait la liste et que
+le rapport a longtemps déclaré coupé, est livré ce jour-là ; le radar, l'écran de cadrage et la
+suite Vitest l'étaient déjà. La liste reste écrite telle qu'elle a été arrêtée le 26.08 : c'est la
+trace de l'ordre décidé d'avance, pas un état d'avancement.
 
 Ne pas couper : 1.3–1.6, 2.2, 4.2.
 

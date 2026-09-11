@@ -29,6 +29,8 @@ import {
   MAX_RANK, OUT_OF_SCOPE, acquiredLevel, areaLevel, blockersByGate, dimAverage,
   dimFloor, firstGateMeasured, gateProgress, inScopeAreas, isOutOfScope, toAssess
 } from '../domain/scoring.js'
+import { RESUME, SHARE, fileName, serialize } from '../domain/session-file.js'
+import { TAKE_AWAY } from '../data/take-away.js'
 import { clearSession, loadSession, newSessionId, persistSession } from './useSessionStorage.js'
 
 const MODEL_VERSION = 'v1'
@@ -662,6 +664,25 @@ export function useMaturityTool() {
     resetSession() {
       clearSession()
       Object.assign(state, defaultState())
+      scrollToTop()
+    },
+    // Reprendre une session lue dans un fichier. L'état arrive déjà validé par
+    // le même filtre que la session du navigateur (`parseFile`, dans le
+    // domaine) : il ne reste ici qu'à l'installer, et à le faire comme une
+    // démonstration s'installe — en repassant par `defaultState`, pour qu'aucune
+    // réponse de la session remplacée ne subsiste sous celles du fichier.
+    //
+    // L'écran est celui du fichier quand il en porte un, et celui d'où l'on
+    // reprend sinon : un fichier de partage n'a pas de position de lecture, et
+    // se retrouver ramené à l'accueil après avoir relu ses propres réponses
+    // serait une perte, pas une garde.
+    importSession(imported) {
+      if (!imported) return
+      const landing = imported.screen || state.screen
+      clearSession()
+      Object.assign(state, defaultState(), imported)
+      state.screen = landing
+      if (landing === 'tool4') activePhase.value = 4
       scrollToTop()
     },
     // Charger une démonstration, c'est repartir d'une session neuve — nouvel
@@ -1348,6 +1369,22 @@ export function useMaturityTool() {
     marks: BAND_MARKS
   }))
 
+  // — ce que la phase laisse emporter —
+  // Les deux fichiers sont recomposés à chaque lecture du view-model plutôt que
+  // produits au clic : c'est le même état qui les écrit et qui remplit l'écran,
+  // et il n'y a donc aucun instant où le fichier proposé décrirait autre chose
+  // que ce que la page montre. Leur contenu et leur nom sont décidés dans le
+  // domaine (`session-file.js`) ; le composant ne fait que les poser sur le
+  // disque.
+  const takeAway = computed(() => ({
+    ...TAKE_AWAY,
+    downloads: [RESUME, SHARE].map(kind => ({
+      kind,
+      name: fileName(kind, state.session),
+      text: serialize(kind, state)
+    }))
+  }))
+
   const ancrage = computed(() => ({
     reachCard: reachCard.value,
     // La bande, à la même place qu'à l'évaluation : ses barres n'ont pas bougé,
@@ -1413,7 +1450,8 @@ export function useMaturityTool() {
         areasLabel: pending.value.map(area => area.name).join(' · '),
         resumeLabel: 'Revenir au questionnaire'
       }
-      : null
+      : null,
+    takeAway: takeAway.value
   }))
 
   const exportPreview = computed(() => {

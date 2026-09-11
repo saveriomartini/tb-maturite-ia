@@ -42,6 +42,7 @@
     :vm="tool.ancrage"
     @select-reach="tool.actions.selectReach"
     @export="tool.nav.exportPreview"
+    @import="tool.actions.importSession"
     @finish="tool.nav.finish"
     @resume="tool.nav.resumeQuestionnaire"
     @back="tool.nav.back"

@@ -98,10 +98,17 @@
         </div>
       </section>
 
+      <section class="section">
+        <TakeAway
+          :vm="vm.takeAway"
+          @preview="emit('export')"
+          @import="emit('import', $event)"
+        />
+      </section>
+
       <AppScreenNav @back="emit('back')">
         <template #actions>
           <div class="actions">
-            <button type="button" class="btn btn-secondary actions__export" @click="emit('export')">Export</button>
             <button type="button" class="btn btn-primary actions__finish" @click="emit('finish')">Fin</button>
           </div>
         </template>
@@ -125,6 +132,13 @@
 // dit l'écart entre l'intention et ce que le contexte porte, nomme les domaines
 // qui séparent de la cible — avec l'énoncé à atteindre pour chacun —, et produit
 // la pièce à emporter.
+//
+// — la sortie de la phase, depuis le 11.09.2026 —
+// Le bouton « Export » de la barre du bas est devenu le bloc « Emporter »
+// (`TakeAway`), en fin de page. Il représentait les trois sorties de la phase
+// par la seule première, et ne disait ni ce qui sort, ni où cela va, ni que
+// rien ne part tout seul — trois choses qu'un utilisateur a le droit de savoir
+// à l'instant où il décide. La barre du bas ne garde que « Fin ».
 //
 // La question vient en premier et non en dernier : tout ce qui suit en dépend,
 // et l'écran serait illisible dans l'autre sens. Elle n'est pas exigée pour
@@ -212,12 +226,13 @@ import AppScreen from '../AppScreen.vue'
 import AppScreenNav from '../AppScreenNav.vue'
 import ProfileBand from '../ProfileBand.vue'
 import DomainCard from '../DomainCard.vue'
+import TakeAway from '../TakeAway.vue'
 
 defineProps({
   vm: { type: Object, required: true }
 })
 
-const emit = defineEmits(['select-reach', 'export', 'finish', 'resume', 'back'])
+const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume', 'back'])
 </script>
 
 <style scoped>
@@ -454,10 +469,6 @@ const emit = defineEmits(['select-reach', 'export', 'finish', 'resume', 'back'])
 .actions {
   display: flex;
   gap: 12px;
-}
-
-.actions__export {
-  min-width: 140px;
 }
 
 .actions__finish {

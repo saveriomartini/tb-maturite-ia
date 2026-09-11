@@ -925,3 +925,49 @@ describe(`la portée se présente comme un domaine, sans en être un`, () => {
     expect(tool.diag.areas).toHaveLength(28)
   })
 })
+
+// Le bloc « Emporter » de l'ancrage (item 3.11) : ce que le vm en donne, et ce
+// que l'import fait réellement à la session. Le contenu des deux fichiers est
+// couvert par `session-file.test.js`, qui n'a pas de composable à sa portée ;
+// ce qui reste à vérifier ici est ce que seul le composable peut montrer.
+describe('emporter et reprendre une session', () => {
+  it('expose deux téléchargements, distincts par leur nom, portant tous deux la session courante', () => {
+    const tool = demo('rochat')
+    const { downloads } = tool.ancrage.takeAway
+    expect(downloads).toHaveLength(2)
+    const [first, second] = downloads
+    expect(first.name).not.toBe(second.name)
+    expect(first.name).toContain(tool.state.session)
+    expect(second.name).toContain(tool.state.session)
+  })
+
+  // Le piège que `loadDemo` traite déjà en repassant par `defaultState` : sans
+  // lui, une réponse de la session remplacée resterait sous celle du fichier
+  // relu, aux domaines que le fichier ne renseigne pas.
+  it('remplace la session : aucune réponse de la session précédente ne subsiste', () => {
+    const tool = demo('rochat')
+    expect(tool.state.answers[EVALUABLE_AREAS[0].id]).toBeDefined()
+    tool.actions.importSession({
+      answers: { [EVALUABLE_AREAS[0].id]: 1 },
+      openLevels: {},
+      form: {}
+    })
+    expect(tool.state.answers).toEqual({ [EVALUABLE_AREAS[0].id]: 1 })
+  })
+
+  // Un fichier de reprise porte un écran, et c'est celui-là qui s'ouvre. Un
+  // fichier de partage n'en porte pas : se retrouver ramené à l'accueil après
+  // avoir relu ses propres réponses serait une perte, pas une garde — l'écran
+  // d'où l'on reprend fait donc l'affaire.
+  it('atterrit sur l’écran du fichier quand il en porte un, sur celui d’où l’on reprend sinon', () => {
+    const versReprise = useMaturityTool()
+    versReprise.state.screen = 'tool4'
+    versReprise.actions.importSession({ answers: {}, openLevels: {}, form: {}, screen: 'tool' })
+    expect(versReprise.state.screen).toBe('tool')
+
+    const versPartage = useMaturityTool()
+    versPartage.state.screen = 'tool4'
+    versPartage.actions.importSession({ answers: {}, openLevels: {}, form: {} })
+    expect(versPartage.state.screen).toBe('tool4')
+  })
+})

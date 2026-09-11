@@ -98,6 +98,15 @@ describe('rendu des écrans', () => {
     // Aucune coordonnée n'a été calculée sur une valeur absente.
     expect(html).not.toContain('NaN')
   })
+
+  // Le bloc « Emporter » (item 3.11) remplace le bouton « Export » de la barre
+  // du bas : sa présence dans le rendu de l'ancrage est ce qui garantit qu'il
+  // n'a pas été retiré au passage.
+  it('rend le bloc « Emporter » sur « tool4 »', async () => {
+    const { html, warnings } = await render('tool4')
+    expect(warnings).toEqual([])
+    expect(html).toContain('Emporter')
+  })
 })
 
 // — la bande des profils, avec et sans marques —
