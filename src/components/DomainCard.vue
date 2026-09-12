@@ -25,8 +25,6 @@
 
     <StatementPicker :vm="vm" @select="(value, event) => emit('select', value, event)" />
 
-    <p v-if="hint" class="hint">{{ hint }}</p>
-
     <aside v-if="artifacts.length" class="artifacts">
       <p class="artifacts__label">
         Exemples d'artefacts
@@ -66,13 +64,11 @@
 // d'autre —, et c'est précisément pourquoi ce partage-là tient.
 //
 // — ce qui est facultatif, et pour qui —
-// Quatre parties ne valent que pour un domaine, et la carte de portée les laisse
-// vides : le rang attendu (`rank`), la définition (`desc`), les exemples
-// d'artefacts (`artifacts`), et le nom (`title`) — la portée n'a pas de nom
-// distinct de son chemin, et l'écrire deux fois de suite ferait un bégaiement.
-// À l'inverse, `hint` ne sert qu'à la portée : les domaines n'en portent aucun,
-// et c'est aussi le signe visible qu'on n'est pas devant un vingt-neuvième
-// domaine.
+// Trois parties peuvent manquer : le rang attendu (`rank`), la définition
+// (`desc`) et les exemples d'artefacts (`artifacts`). La carte de portée porte
+// désormais nom et définition comme les vingt-huit domaines, et `rank` est la
+// seule fente qu'un domaine remplit et qu'elle laisse vide — aucun profil
+// n'exige une portée.
 //
 // Les deux replis sont locaux à la carte. Ils l'étaient déjà par domaine dans
 // ScreenDiag — deux tables indexées par identifiant — et ne décrivent pas
@@ -92,7 +88,6 @@ defineProps({
   rank: { type: String, default: '' },
   title: { type: String, default: '' },
   desc: { type: String, default: '' },
-  hint: { type: String, default: '' },
   artifacts: { type: Array, default: () => [] }
 })
 
@@ -176,19 +171,6 @@ const artifactsId = `artifacts-${uid}`
   font-size: 12.5px;
   line-height: 1.5;
   color: var(--color-neutral-800);
-  text-wrap: pretty;
-}
-
-/* La règle de lecture de la carte, sous le sélecteur : c'est là qu'elle décide,
-   une fois les cinq situations lues. Elle prend le registre du rappel — petit,
-   gris, hors de l'encadré — parce qu'elle n'est pas une sixième chose à
-   répondre. */
-.hint {
-  max-width: 90ch;
-  margin: 10px 0 0;
-  font-size: 10.5px;
-  line-height: 1.5;
-  color: var(--color-neutral-700);
   text-wrap: pretty;
 }
 

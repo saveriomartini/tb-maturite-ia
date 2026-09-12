@@ -199,19 +199,14 @@ describe(`la carte d’un domaine`, () => {
   })
 
   it(`n’en porte aucun sans lui, et rend les énoncés quand même`, async () => {
-    const { html, warnings } = await card({
-      vm: picker,
-      path: 'Portée visée',
-      hint: 'Chaque situation suppose les précédentes.'
-    })
+    const { html, warnings } = await card({ vm: picker, path: 'Portée visée' })
     expect(warnings).toEqual([])
     SWITCH_TRACES.forEach(trace => expect(html, trace).not.toContain(trace))
-    // Ce qui reste : les cinq énoncés, la question, et la règle de lecture sous
-    // la carte. Une carte muette passerait le test précédent tout aussi bien.
+    // Ce qui reste : les énoncés et la question. Une carte muette passerait le
+    // test précédent tout aussi bien.
     expect(html).toContain('Premier énoncé')
     expect(html).toContain('Deuxième énoncé')
     expect(html).toContain(picker.question)
-    expect(html).toContain('Chaque situation suppose les précédentes.')
   })
 
   it(`laisse vides le rang, la définition et les artefacts quand rien ne les donne`, async () => {

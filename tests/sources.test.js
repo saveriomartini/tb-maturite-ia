@@ -122,7 +122,8 @@ describe(`la portée ne nomme jamais la cible qu’elle fixe`, () => {
   // que les situations se décrivent.
   const TEXTS = [
     REACH_QUESTION.question,
-    REACH_QUESTION.hint,
+    REACH_QUESTION.title,
+    REACH_QUESTION.desc,
     REACH_QUESTION.path,
     ...REACH_QUESTION.options.map(option => option.text)
   ]

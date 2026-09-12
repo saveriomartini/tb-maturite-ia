@@ -235,21 +235,51 @@ export const PASSAGES = {
 // domaines parce qu'il redisait ce que la navigation affiche déjà, et
 // « Ancrage » est dans le même cas — le titre de l'écran le dit, la barre des
 // phases le marque.
+//
+// — nom et définition, comme les vingt-huit autres —
+//
+// La carte se présente désormais exactement comme celle d'un domaine de
+// capacité, `title` et `desc` compris : plus rien dans sa forme ne la met à
+// part, seule la fente du rang attendu reste vide.
+//
+// La définition est le seul endroit du parcours où trois choses se lisent
+// **avant** le choix, alors qu'elles décident de la réponse :
+//   — la cumulativité : retenir le quatrième énoncé engage à vouloir aussi le
+//     deuxième. La carte la montre — les rangs sous l'énoncé retenu se marquent
+//     —, mais ne l'explique nulle part ailleurs ;
+//   — la nature de l'effort : l'échelle de transformation, dont le coût change
+//     de nature dès qu'il faut refaire les routines, et non pas seulement s'y
+//     poser. Elle s'écrit sans nommer sa source ni aucun rang ;
+//   — la position d'Ozkaya et al. (2026, section 3, p. 15) : la cible se
+//     détermine délibérément d'après la valeur attendue, le modèle n'est pas une
+//     échelle de conformité, et la cible la plus efficace n'est pas la plus
+//     haute. Sans cela, le dernier énoncé se lirait comme le but.
+//
+// La règle du BACKLOG 1.11 est inchangée et couvre maintenant aussi `title` et
+// `desc` : ni nom de profil, ni nom de degré, ni rang.
 export const REACH_QUESTION = {
   id: 'reach',
   path: 'Portée visée',
+  // La question reprend mot pour mot l'attaque de `PICKER_QUESTION`
+  // (useMaturityTool.js) et ne s'en écarte que sur les deux points qui doivent
+  // l'être : le futur, qui porte le « pas aujourd'hui », et la subordonnée
+  // finale, qui porte l'intention que les cinq énoncés ne portent pas.
+  // L'ancienne formulation — « Le jour où l'adoption de l'IA aura réussi chez
+  // vous » — qualifiait le résultat, ce que l'outil déclare ne pas faire, et
+  // faisait du dernier énoncé la réussite.
   question:
-    'Le jour où l’adoption de l’IA aura réussi chez vous, laquelle de ces situations décrira ' +
-    'votre organisation ?',
-  // Ce que le titre ne dit pas : la cumulativité, qui décide de la réponse —
-  // retenir le quatrième énoncé engage à vouloir aussi le deuxième. Elle se
-  // voit sur la carte, où les rangs sous l'énoncé retenu se marquent, mais elle
-  // ne s'y explique pas. La phrase qui disait « non celle d'aujourd'hui » a
-  // disparu : la question la porte désormais dans sa grammaire, et la redire
-  // dessous laisserait croire qu'elle n'a pas suffi.
-  hint:
-    'Chaque situation suppose les précédentes : la dernière retenue vaut pour toutes ' +
-    'celles qui la précèdent.',
+    'Laquelle de ces situations décrira le mieux votre organisation quand l’adoption de l’IA ' +
+    'aura donné ce que vous en attendez ?',
+  title: 'Compréhension des impacts et arbitrage de l’ambition',
+  desc:
+    'Qu’est-ce que l’adoption de l’IA doit avoir changé dans votre organisation pour valoir ' +
+    'l’effort qu’elle demande, et êtes-vous prêt à refaire vos façons de travailler pour ' +
+    'cela ? Chaque situation suppose les précédentes : la dernière retenue vaut pour toutes ' +
+    'celles qui la précèdent. Tant que l’IA se pose sur des routines inchangées, l’effort ' +
+    'reste modeste et le bénéfice borné par ces routines ; dès qu’il faut refaire ces ' +
+    'routines, l’effort change de nature. Retenir une situation est une décision, pas un ' +
+    'classement : la dernière n’est pas le but, et s’arrêter avant se décide d’après ce que ' +
+    'l’IA doit vous rapporter.',
   options: [
     {
       n: 1,

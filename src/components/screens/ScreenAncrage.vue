@@ -14,7 +14,8 @@
           :vm="vm.reachCard.picker"
           :color="vm.reachCard.color"
           :path="vm.reachCard.path"
-          :hint="vm.reachCard.hint"
+          :title="vm.reachCard.title"
+          :desc="vm.reachCard.desc"
           @select="emit('select-reach', $event)"
         />
       </section>
@@ -218,10 +219,10 @@
 // ensemble, un seul retenu — et le geste appris au questionnaire vaut ici.
 //
 // Ce qui la distingue reste visible : elle n'a ni interrupteur de hors
-// périmètre, ni rang attendu, ni définition à déplier, et elle porte sous elle
-// une règle de lecture qu'aucun domaine ne porte. La ressemblance visée est
-// celle du composant, pas celle du statut : la portée n'est pas un
-// vingt-neuvième domaine et n'entre dans aucun calcul de la mesure.
+// périmètre, ni rang attendu. Pour le reste — nom, définition à déplier, cinq
+// énoncés — c'est une carte de domaine. La ressemblance visée est celle du
+// composant, pas celle du statut : la portée n'est pas un vingt-neuvième
+// domaine et n'entre dans aucun calcul de la mesure.
 import AppScreen from '../AppScreen.vue'
 import AppScreenNav from '../AppScreenNav.vue'
 import ProfileBand from '../ProfileBand.vue'

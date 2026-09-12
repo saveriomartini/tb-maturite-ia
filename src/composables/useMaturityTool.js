@@ -1298,27 +1298,25 @@ export function useMaturityTool() {
   // pilote a montré que le contrôle précédent faisait choisir sur des intitulés
   // ce qui ne se départage que sur des situations.
   //
-  // Trois choses la distinguent d’un domaine, et chacune se voit :
-  //   — pas de sortie « hors périmètre » : on ne retire pas la portée de la
-  //     mesure, elle est ce qui la fixe ;
-  //   — pas de rang attendu : aucun profil n’exige une portée ;
-  //   — un `hint` sous la carte, qu'aucun des vingt-huit ne porte, et qui dit la
-  //     seule règle de lecture que la carte ne montre pas d’elle-même.
-  //
-  // Ce qu’elle ne devient pas pour autant : un vingt-neuvième domaine. La réponse
-  // vit dans `state.transformation` et nulle part ailleurs — ni dans
-  // `state.answers`, ni dans le compte des domaines, ni dans la couverture, le
-  // radar ou le palier acquis.
+  // Nom, définition, chemin, énoncés : la carte est celle d’un domaine. Une
+  // seule chose l’en distingue à l’œil — l’absence de rang attendu, parce
+  // qu’aucun profil n’exige une portée — et une autre ne se voit pas du tout :
+  // la réponse vit dans `state.transformation` et nulle part ailleurs. Elle
+  // n’entre ni dans `state.answers`, ni dans le compte des domaines, ni dans la
+  // couverture, le radar ou le palier acquis. Ressemblance de composant, pas de
+  // statut : ce n’est pas un vingt-neuvième domaine. (Pas de sortie « hors
+  // périmètre » non plus : on ne retire pas de la mesure ce qui la fixe.)
   //
   // `reached` marque les rangs sous l’énoncé retenu, exactement comme pour un
   // domaine : les portées sont cumulatives, et la carte doit le montrer autant
-  // que le `hint` le dit.
+  // que la définition le dit.
   const reachCard = computed(() => {
     const color = dimensionColor(REACH_DIMENSION)
     return {
       id: REACH_QUESTION.id,
       path: REACH_QUESTION.path,
-      hint: REACH_QUESTION.hint,
+      title: REACH_QUESTION.title,
+      desc: REACH_QUESTION.desc,
       color,
       picker: {
         question: REACH_QUESTION.question,
