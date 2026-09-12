@@ -303,14 +303,10 @@ function goTo(part) {
    est au gabarit plein : le bloc « M.A.IA » et le premier mot de la page ne
    tombaient pas sur la même verticale, et passer de l'information à l'outil
    décalait tout le contenu. Sans borne propre, la page hérite du gabarit commun
-   et s'aligne sur l'en-tête comme le font les pages de l'outil.
-
-   Le chapô du titre garde sa largeur de lecture : c'est un texte
-   d'introduction, pas un bloc à aligner sur les tableaux. */
-.page-head {
-  max-width: 780px;
-}
-
+   et s'aligne sur l'en-tête comme le font les pages de l'outil. Le chapô et les
+   chapôs de partie ne gardent plus de largeur de lecture propre : bornés plus
+   court que la page, ils cassaient leurs lignes bien avant la marge et
+   laissaient à leur droite un vide que rien ne venait occuper. */
 .page-head__title {
   margin: 6px 0 0;
   font-size: 30px;
@@ -430,7 +426,6 @@ function goTo(part) {
 }
 
 .part__lead {
-  max-width: 780px;
   margin: 10px 0 0;
   font-size: 13px;
   line-height: 1.55;

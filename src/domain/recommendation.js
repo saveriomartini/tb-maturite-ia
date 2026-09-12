@@ -104,3 +104,84 @@ export function buildRecommendation(form) {
     level5Missing: blockedFrom5 ? level5Missing : []
   }
 }
+
+// — ce que la cible déclarée suppose du contexte —
+//
+// Quand la portée déclarée passe au-dessus de la suggestion, l'ancrage ne se
+// contente pas de le dire : il montre, attribut par attribut, les conditions que
+// cette cible suppose et que le cadrage ne décrit pas. Ce n'est pas une liste de
+// réponses à corriger — l'outil ne corrige pas une réponse qu'il a sollicitée
+// (DECISIONS du 28.08.2026) —, c'est la lecture en regard de ce que
+// l'organisation a déclaré et de ce que la cible demande.
+//
+// Le bloc ne couvre que les deux mécanismes exactement inversibles : les
+// plafonds durs (`LEVEL_CAPS`) et les conditions du profil le plus haut
+// (`LEVEL5_REQUIREMENTS`). Chacun porte, par construction, une valeur attendue
+// par attribut, donc une ligne se lit sans rien inventer.
+//
+// Les deux axes ambition et capacité en sont exclus, et c'est la décision qu'il
+// faut pouvoir défendre : leur rang sort d'une *moyenne* de scores. Aucun
+// attribut n'y a de valeur attendue — plusieurs combinaisons donnent le même
+// rang —, et la seule chose qu'on pourrait afficher serait la moyenne
+// elle-même : le nombre agrégé que l'outil refuse de montrer partout ailleurs.
+//
+// Elle ne réutilise pas `capNotes` : celui-ci ne retient que les plafonds les
+// plus bas, parce qu'eux seuls décident de la suggestion. Ici, chaque plafond
+// dont le `max` est sous la cible déclarée sépare pour son propre compte, et
+// tous se disent.
+export function targetConditions(form, target) {
+  const caps = LEVEL_CAPS
+    .filter(cap => cap.values.includes(form[cap.field]) && cap.max < target)
+    .map(cap => condition(cap.field, form[cap.field], lowestOutside(cap.field, cap.values)))
+
+  // Un champ vide ne contredit rien : même règle permissive que
+  // `UNANSWERED_SCORE`, il part dans `unanswered` et non dans les lignes.
+  const level5 = target !== MAX_LEVEL ? [] : LEVEL5_REQUIREMENTS
+    .filter(req => form[req.field] != null && !req.values.includes(form[req.field]))
+    .map(req => condition(req.field, form[req.field], req.values[0]))
+
+  // Seuls les attributs qui portent un plafond ou une condition sont cités : les
+  // quatre autres ne pouvaient rien séparer, et les nommer ferait croire qu'ils
+  // manquent à la démonstration.
+  const conditioned = new Set([
+    ...LEVEL_CAPS.map(cap => cap.field),
+    ...LEVEL5_REQUIREMENTS.map(req => req.field)
+  ])
+  const unanswered = ALL_FIELDS
+    .filter(field => conditioned.has(field.id) && form[field.id] == null)
+    .map(field => field.id)
+
+  return { caps: inFieldOrder(caps), level5: inFieldOrder(level5), unanswered }
+}
+
+function condition(field, declared, supposed) {
+  const option = optionOf(field, supposed)
+  return { field, declared, supposed, criterion: (option && option[3]) || '' }
+}
+
+// La valeur supposée se dérive des `opts` du champ et ne s'écrit jamais en dur :
+// l'option de plus bas score hors de celles qui déclenchent le plafond est le
+// minimum que la cible demande, et elle suit le champ s'il change d'options.
+function lowestOutside(field, values) {
+  const option = optionsOf(field)
+    .filter(opt => !values.includes(opt[0]))
+    .reduce((lowest, opt) => (lowest == null || opt[2] < lowest[2] ? opt : lowest), null)
+  return option ? option[0] : null
+}
+
+function optionsOf(field) {
+  const found = ALL_FIELDS.find(entry => entry.id === field)
+  return found ? found.opts : []
+}
+
+function optionOf(field, value) {
+  return optionsOf(field).find(opt => opt[0] === value) || null
+}
+
+// L'ordre des lignes est celui du questionnaire, et rien d'autre. Trier au
+// manque serait une priorisation — ce que la section voisine se refuse déjà pour
+// les domaines.
+function inFieldOrder(rows) {
+  const order = ALL_FIELDS.map(field => field.id)
+  return [...rows].sort((a, b) => order.indexOf(a.field) - order.indexOf(b.field))
+}

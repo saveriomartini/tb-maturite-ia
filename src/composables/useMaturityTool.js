@@ -7,7 +7,9 @@
 
 import { computed, reactive, ref } from 'vue'
 import { ATTRIBUTION } from '../data/attribution.js'
-import { ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS } from '../data/context-attributes.js'
+import {
+  ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS, fieldById, optionLabel
+} from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
 import { INFO } from '../data/info.js'
 import { IN_PROGRESS, NOT_ENGAGED } from '../data/in-progress.js'
@@ -23,7 +25,7 @@ import {
   NEXT_OF, PHASE_ANCHORS, PHASE_OF, PHASE_TARGETS, SCREENS, areaAnchor, isToolScreen, previousScreen
 } from '../domain/navigation.js'
 import { buildDemoSession, demoScenarios } from '../domain/demo-session.js'
-import { buildRecommendation } from '../domain/recommendation.js'
+import { buildRecommendation, targetConditions } from '../domain/recommendation.js'
 import { evaluationUnit } from '../domain/scope.js'
 import {
   MAX_RANK, OUT_OF_SCOPE, acquiredLevel, areaLevel, blockersByGate, dimAverage,
@@ -356,6 +358,55 @@ export function useMaturityTool() {
     if (state.transformation < suggestedLevel.value) return 'below'
     return 'equal'
   })
+
+  // — ce que la cible suppose du contexte, quand elle passe au-dessus —
+  //
+  // Le bloc n'existe que dans le cas `above` : ailleurs, la cible ne demande
+  // rien que le cadrage ne décrive déjà, et une liste de conditions tenues
+  // n'apprendrait rien. Il énonce des conditions portant sur l'organisation, et
+  // jamais des réponses à corriger : ni impératif, ni renvoi vers le cadrage —
+  // l'outil ne corrige pas une réponse qu'il a sollicitée (28.08.2026).
+  //
+  // Tout est assemblé ici, libellés compris : la vue n'a rien à calculer, pas
+  // même le mot « au minimum » qui distingue un plancher d'une valeur exacte.
+  const contextGap = computed(() => {
+    if (relation.value !== 'above') return null
+    const { caps, level5, unanswered } = targetConditions(state.form, target.value)
+    return {
+      // TEXTE PROVISOIRE — à valider par Saverio
+      lead:
+        'Le profil que vous visez suppose des conditions que votre cadrage ne décrit pas ' +
+        'aujourd’hui. Elles portent sur votre organisation, pas sur vos réponses.',
+      // Les plafonds d'abord, les conditions du profil le plus haut ensuite,
+      // chaque famille dans l'ordre du questionnaire : à plat, parce que les
+      // deux se lisent de la même façon — déclaré d'un côté, supposé de l'autre.
+      rows: [
+        ...caps.map(row => gapRow(row, true)),
+        ...level5.map(row => gapRow(row, false))
+      ],
+      unanswered: unanswered.length ? {
+        label: unanswered.map(id => fieldById(id).short).join(' · '),
+        note: `${unanswered.length === 1 ? 'Un attribut de cadrage n’est pas renseigné' : `${unanswered.length} attributs de cadrage ne sont pas renseignés`}. `
+          + 'Un attribut non renseigné ne restreint rien : ceux-ci ont compté comme '
+          + 'favorables, et le bloc ne peut rien en dire.'
+      } : null
+    }
+  })
+
+  // Le `label` du champ et non son `short` : la ligne se lit hors du
+  // questionnaire, sans la colonne qui donnait au raccourci son contexte. Un
+  // plafond ne nomme pas une valeur exacte mais un plancher — l'option de plus
+  // bas score qui ne plafonne plus —, d'où le « au minimum » ; une condition du
+  // profil le plus haut, elle, désigne la valeur même.
+  function gapRow(row, isFloor) {
+    const supposed = optionLabel(row.field, row.supposed)
+    return {
+      label: fieldById(row.field).label,
+      declared: optionLabel(row.field, row.declared),
+      supposed: isFloor ? `au minimum « ${supposed} »` : supposed,
+      criterion: row.criterion
+    }
+  }
 
   // Il n'y a plus qu'un compte de domaines dans l'outil, et c'est la couverture
   // de la restitution. Un second vivait ici, pour la bande de verdict de
@@ -1399,6 +1450,11 @@ export function useMaturityTool() {
     suggestedLabel: suggestedLabel.value,
     suggestedLevel: suggestedLevel.value,
     suggestedReasons: suggestedReasons.value,
+    // Les mêmes motifs se diraient deux fois si le bloc de contexte les reprend
+    // avec leurs valeurs en regard : nus sous la suggestion, détaillés en
+    // dessous. Le drapeau se pose ici et non dans la vue, qui ne décide rien.
+    showSuggestedReasons: suggestedReasons.value.length > 0 && contextGap.value == null,
+    contextGap: contextGap.value,
     relation: relation.value,
     acquiredLabel: acquiredLabel.value,
     // L'écart se lit en deux temps : sa nature d'abord — ce qu'on s'apprête à

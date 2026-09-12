@@ -19,7 +19,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMaturityTool } from '../src/composables/useMaturityTool.js'
 import { ATTRIBUTION } from '../src/data/attribution.js'
-import { LEVEL5_REQUIREMENTS, LEVEL_CAPS } from '../src/data/context-attributes.js'
+import {
+  ALL_FIELDS, LEVEL5_REQUIREMENTS, LEVEL_CAPS, fieldById
+} from '../src/data/context-attributes.js'
 import { DEMO_SESSIONS } from '../src/data/demo-sessions.js'
 import { PASSAGES, REACH_QUESTION, REVOLUTIONARY_FROM } from '../src/data/transformation.js'
 import {
@@ -218,6 +220,88 @@ describe('la cible appartient à l’organisation', () => {
       expect(['cap', 'level5']).toContain(reason.kind)
       expect(connus, reason.text).toContain(reason.text)
     })
+  })
+})
+
+describe('ce que la cible suppose du contexte', () => {
+  // Le bloc met en regard la cible déclarée et les attributs de cadrage, mais
+  // seulement sur les mécanismes exactement inversibles : les plafonds durs et
+  // les conditions du profil le plus haut. Les deux axes en sont exclus — leur
+  // rang vient d'une moyenne, aucun attribut n'y porte de valeur attendue —, et
+  // c'est ce que ces cas vérifient en creux : rien n'y cite un attribut qui ne
+  // conditionne rien.
+  //
+  // Chaque cas part d'un cadrage vide, où la suggestion vaut le profil le plus
+  // haut, et n'y pose que les attributs dont il a besoin : un formulaire de
+  // démonstration ferait dépendre le résultat de réponses qui ne regardent pas
+  // le cas.
+  function scoped(form, reach) {
+    const tool = useMaturityTool()
+    Object.entries(form).forEach(([id, value]) => tool.actions.selectOption(id, value))
+    if (reach != null) declareReach(tool, reach)
+    return tool
+  }
+
+  it('n’existe pas quand la cible est égale, en dessous, ou non déclarée', () => {
+    // Périmètre limité à une équipe : la suggestion tombe au rang 3.
+    const form = { scope: 'team' }
+    expect(scoped(form).ancrage.contextGap).toBeNull()
+    expect(scoped(form, 3).ancrage.relation).toBe('equal')
+    expect(scoped(form, 3).ancrage.contextGap).toBeNull()
+    expect(scoped(form, 2).ancrage.relation).toBe('below')
+    expect(scoped(form, 2).ancrage.contextGap).toBeNull()
+  })
+
+  it('un plafond sous la cible donne une ligne, avec la valeur minimale supposée', () => {
+    const tool = scoped({ scope: 'team' }, 4)
+    expect(tool.ancrage.relation).toBe('above')
+    const rows = tool.ancrage.contextGap.rows
+    expect(rows).toHaveLength(1)
+    expect(rows[0].label).toBe('Périmètre de l’évaluation')
+    expect(rows[0].declared).toBe('Une équipe')
+    // Dérivé des `opts` : l'option de plus bas score qui ne plafonne plus.
+    expect(rows[0].supposed).toBe('au minimum « Un département »')
+  })
+
+  it('un plafond dont le maximum atteint la cible ne donne aucune ligne', () => {
+    // Deux plafonds : les ressources ramènent la suggestion à 2, le périmètre
+    // s'arrête à 3. Visant 3, seul le premier sépare encore.
+    const tool = scoped({ scope: 'team', staffing: 'none' }, 3)
+    expect(tool.ancrage.relation).toBe('above')
+    const labels = tool.ancrage.contextGap.rows.map(row => row.label)
+    expect(labels).toEqual(['Ressources affectées à l’IA'])
+  })
+
+  it('cible au plus haut : une condition contredite se dit, un champ vide part à part', () => {
+    const tool = scoped({ governance: 'coordinated' }, 5)
+    expect(tool.ancrage.relation).toBe('above')
+    const gap = tool.ancrage.contextGap
+    expect(gap.rows).toHaveLength(1)
+    expect(gap.rows[0].label).toBe('Pilotage de l’adoption')
+    expect(gap.rows[0].declared).toBe('Coordination légère')
+    expect(gap.rows[0].supposed).toBe('Instance transverse (commission IA)')
+    // Les autres conditions du profil le plus haut sont restées vides : elles ne
+    // contredisent rien — règle permissive — et se disent hors des lignes.
+    expect(gap.unanswered.label).toContain('Ressources')
+    expect(gap.unanswered.note).toContain('ne restreint rien')
+    LEVEL5_REQUIREMENTS
+      .filter(req => req.field !== 'governance')
+      .forEach(req => expect(gap.rows.map(row => row.label)).not.toContain(fieldById(req.field).label))
+  })
+
+  it('un attribut vide qui ne conditionne rien n’apparaît nulle part', () => {
+    const gap = scoped({ governance: 'coordinated' }, 5).ancrage.contextGap
+    const conditioned = new Set([...LEVEL_CAPS, ...LEVEL5_REQUIREMENTS].map(entry => entry.field))
+    ALL_FIELDS
+      .filter(field => !conditioned.has(field.id))
+      .forEach(field => expect(gap.unanswered.label, field.id).not.toContain(field.short))
+  })
+
+  it('les motifs nus de la suggestion s’effacent quand le bloc les reprend', () => {
+    const tool = demo('rochat')
+    expect(tool.ancrage.contextGap).not.toBeNull()
+    expect(tool.ancrage.suggestedReasons.length).toBeGreaterThan(0)
+    expect(tool.ancrage.showSuggestedReasons).toBe(false)
   })
 })
 

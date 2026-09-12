@@ -4,8 +4,9 @@
       <div class="lead">
         <h1 class="lead__title heading">Préparer l’ancrage</h1>
         <p class="lead__text">
-          C’est de la portée déclarée ci-dessous que se déduit le profil visé, et donc l’écart. La
-          phase s’arrête là : elle prépare la mise en œuvre, elle ne la conduit pas.
+          Situer votre organisation était le premier temps, celui du diagnostic.
+          Restent la comparaison à ce que vous visez, qui se déduit de la portée
+          déclarée ci-dessous, et l'énoncé de l'écart.
         </p>
       </div>
 
@@ -26,7 +27,9 @@
         <div class="verdict">
           <p class="verdict__eyebrow eyebrow">{{ vm.targetTermCap }}</p>
           <p class="verdict__name heading">{{ vm.targetLabel }}</p>
-          <p class="verdict__from">Profil diagnostiqué : {{ vm.acquiredLabel }}</p>
+          <p class="verdict__from">
+            Profil diagnostiqué : {{ vm.acquiredLabel }}
+          </p>
 
           <!-- TEXTE PROVISOIRE — à valider par Saverio -->
           <div
@@ -40,10 +43,14 @@
             <p v-if="vm.relation === 'above'" class="suggested__apart">
               Votre profil visé est plus haut que ce profil suggéré.
             </p>
-            <ul v-if="vm.suggestedReasons.length" class="suggested__reasons">
+            <ul v-if="vm.showSuggestedReasons" class="suggested__reasons">
               <li v-for="reason in vm.suggestedReasons" :key="reason.text">
-                <template v-if="reason.kind === 'cap'">{{ reason.text }}</template>
-                <template v-else>le profil le plus haut suppose {{ reason.text }}</template>
+                <template v-if="reason.kind === 'cap'">{{
+                  reason.text
+                }}</template>
+                <template v-else
+                  >le profil le plus haut suppose {{ reason.text }}</template
+                >
               </li>
             </ul>
           </div>
@@ -51,6 +58,41 @@
 
         <p class="intention">{{ vm.intentionGap }}</p>
         <p class="passage">{{ vm.passage }}</p>
+      </section>
+
+      <section v-if="vm.contextGap" class="section">
+        <h2 class="section-head">
+          Ce que votre cible suppose de votre contexte
+        </h2>
+
+        <p class="conditions__lead">{{ vm.contextGap.lead }}</p>
+
+        <div v-if="vm.contextGap.rows.length" class="panel">
+          <div
+            v-for="row in vm.contextGap.rows"
+            :key="row.label"
+            class="domain domain--flat"
+          >
+            <div class="domain__head">
+              <span class="domain__area heading">{{ row.label }}</span>
+              <span class="domain__ranks"
+                >déclaré : {{ row.declared }} · supposé :
+                {{ row.supposed }}</span
+              >
+            </div>
+            <p v-if="row.criterion" class="domain__statement">
+              {{ row.criterion }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-if="vm.contextGap.unanswered"
+          class="aside conditions__unanswered"
+        >
+          <p class="aside__note">{{ vm.contextGap.unanswered.note }}</p>
+          <p class="aside__list">{{ vm.contextGap.unanswered.label }}</p>
+        </div>
       </section>
 
       <section class="section">
@@ -61,7 +103,9 @@
 
         <div v-if="vm.gates.length" class="panel">
           <article v-for="group in vm.gates" :key="group.level" class="gate">
-            <h3 class="panel-head gate__label">Pour atteindre « {{ group.label }} »</h3>
+            <h3 class="panel-head gate__label">
+              Pour atteindre « {{ group.label }} »
+            </h3>
             <div
               v-for="area in group.areas"
               :key="area.id"
@@ -71,7 +115,10 @@
               <div class="domain__head">
                 <span class="domain__dimension">{{ area.dim }}</span>
                 <span class="domain__area heading">{{ area.name }}</span>
-                <span class="domain__ranks">attendu au rang {{ area.required }} · situé au {{ area.level || '—' }}</span>
+                <span class="domain__ranks"
+                  >attendu au rang {{ area.required }} · situé au
+                  {{ area.level || "—" }}</span
+                >
               </div>
               <p class="domain__statement">{{ area.statement }}</p>
             </div>
@@ -92,7 +139,11 @@
             <p class="aside__eyebrow eyebrow">{{ vm.pending.summary }}</p>
             <p class="aside__note">{{ vm.pending.note }}</p>
             <p class="aside__list">{{ vm.pending.areasLabel }}</p>
-            <button type="button" class="btn btn-secondary aside__resume" @click="emit('resume')">
+            <button
+              type="button"
+              class="btn btn-secondary aside__resume"
+              @click="emit('resume')"
+            >
               {{ vm.pending.resumeLabel }}
             </button>
           </div>
@@ -110,7 +161,13 @@
       <AppScreenNav @back="emit('back')">
         <template #actions>
           <div class="actions">
-            <button type="button" class="btn btn-primary actions__finish" @click="emit('finish')">Fin</button>
+            <button
+              type="button"
+              class="btn btn-primary actions__finish"
+              @click="emit('finish')"
+            >
+              Fin
+            </button>
           </div>
         </template>
       </AppScreenNav>
@@ -223,17 +280,24 @@
 // énoncés — c'est une carte de domaine. La ressemblance visée est celle du
 // composant, pas celle du statut : la portée n'est pas un vingt-neuvième
 // domaine et n'entre dans aucun calcul de la mesure.
-import AppScreen from '../AppScreen.vue'
-import AppScreenNav from '../AppScreenNav.vue'
-import ProfileBand from '../ProfileBand.vue'
-import DomainCard from '../DomainCard.vue'
-import TakeAway from '../TakeAway.vue'
+import AppScreen from "../AppScreen.vue";
+import AppScreenNav from "../AppScreenNav.vue";
+import ProfileBand from "../ProfileBand.vue";
+import DomainCard from "../DomainCard.vue";
+import TakeAway from "../TakeAway.vue";
 
 defineProps({
-  vm: { type: Object, required: true }
-})
+  vm: { type: Object, required: true },
+});
 
-const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume', 'back'])
+const emit = defineEmits([
+  "select-reach",
+  "export",
+  "import",
+  "finish",
+  "resume",
+  "back",
+]);
 </script>
 
 <style scoped>
@@ -244,7 +308,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
 }
 
 .lead__text {
-  max-width: 720px;
   margin: 12px 0 0;
   font-size: 13px;
   line-height: 1.5;
@@ -265,7 +328,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
    déduire. Le profil diagnostiqué est rappelé sous lui, au corps du hors-texte :
    c'est de la distance entre les deux que dépend tout ce qui suit. */
 .verdict {
-  max-width: 80ch;
 }
 
 .verdict__eyebrow {
@@ -292,7 +354,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
    de la page : marquer un écart n'est pas signaler une faute, et une couleur
    d'erreur ferait lire une déclaration légitime comme un défaut à réparer. */
 .suggested {
-  max-width: 80ch;
   margin: 12px 0 0;
 }
 
@@ -324,7 +385,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
 }
 
 .intention {
-  max-width: 80ch;
   margin: 16px 0 0;
   font-size: 13px;
   line-height: 1.5;
@@ -335,7 +395,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
    tient : même corps, même couleur — c'est le texte de la page qui peut modifier
    une décision d'investissement. */
 .passage {
-  max-width: 80ch;
   margin: 14px 0 0;
   padding-left: 12px;
   border-left: 2px solid var(--color-text);
@@ -347,7 +406,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
 /* Aucun écart : la cible est tenue, ou dépassée. C'est une conclusion, et elle
    se lit comme telle — elle occupait la barre du panneau, en 10px. */
 .closed {
-  max-width: 80ch;
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 800;
@@ -359,7 +417,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
 /* La liste est vide alors que la cible n'est pas tenue : c'est le seul cas où
    l'absence d'écart affiché ne veut pas dire absence d'écart. */
 .unmeasured {
-  max-width: 80ch;
   margin: 12px 0 0;
   font-size: 12.5px;
   line-height: 1.5;
@@ -381,6 +438,30 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
   padding: 10px 12px;
   border-left: 6px solid var(--dimension-color);
   border-bottom: 1px solid var(--color-divider);
+}
+
+/* Les attributs de cadrage empruntent la ligne des domaines, jamais leur bande
+   de couleur : ce ne sont pas des domaines du modèle, et l'absence de bande est
+   ce qui distingue à l'œil un écart déclaratif d'un écart mesuré. */
+.domain--flat {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.domain--flat:last-child {
+  border-bottom: 0;
+}
+
+.conditions__lead {
+  margin: 12px 0 16px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-neutral-800);
+  text-wrap: pretty;
+}
+
+.conditions__unanswered {
+  margin-top: 16px;
 }
 
 .gate:last-child .domain:last-child {
@@ -414,7 +495,6 @@ const emit = defineEmits(['select-reach', 'export', 'import', 'finish', 'resume'
 /* L'énoncé à atteindre est la seule chose de ce bloc sur laquelle on puisse
    agir : il porte le corps de lecture, le reste l'annonce. */
 .domain__statement {
-  max-width: 90ch;
   margin: 6px 0 0;
   font-size: 12px;
   line-height: 1.5;

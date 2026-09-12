@@ -110,7 +110,6 @@ function answer(action) {
 }
 
 .page-head__lead {
-  max-width: 680px;
   margin: 12px 0 0;
   font-size: 13px;
   line-height: 1.5;
