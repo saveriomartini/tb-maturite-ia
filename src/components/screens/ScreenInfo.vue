@@ -128,13 +128,20 @@
                 </thead>
                 <tbody>
                   <tr v-for="row in info.scaleMap.rows" :key="row.n">
-                    <td class="cell scales__rank heading">{{ row.n }}</td>
-                    <td class="cell scales__retained">{{ row.retained }}</td>
-                    <td class="cell">{{ row.ozkaya }}</td>
-                    <td class="cell">{{ row.venkatraman }}</td>
-                    <td class="cell scales__pending">{{ row.gartner }}</td>
-                    <td class="cell scales__pending">{{ row.altimeter }}</td>
-                    <td class="cell scales__pending">{{ row.elementAI }}</td>
+                    <td
+                      v-for="column in info.scaleMap.columns"
+                      :key="column.id"
+                      class="cell"
+                      :class="[
+                        `scales__${column.id}`,
+                        {
+                          heading: column.id === 'n',
+                          'scales__none': isNoEquivalent(row[column.id])
+                        }
+                      ]"
+                    >
+                      {{ row[column.id] }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -148,6 +155,14 @@
             <p class="zone__lead">{{ info.provenance.lead }}</p>
             <ol class="sources">
               <li v-for="source in info.provenance.sources" :key="source.ref" class="source">
+                <p class="source__ref">{{ source.ref }}</p>
+                <p class="source__role">{{ source.role }}</p>
+              </li>
+            </ol>
+            <h4 class="zone__subtitle heading">{{ info.provenance.comparedTitle }}</h4>
+            <p class="zone__lead">{{ info.provenance.comparedLead }}</p>
+            <ol class="sources">
+              <li v-for="source in info.provenance.compared" :key="source.ref" class="source">
                 <p class="source__ref">{{ source.ref }}</p>
                 <p class="source__role">{{ source.role }}</p>
               </li>
@@ -230,6 +245,7 @@ import JourneyMap from "../JourneyMap.vue";
 import ScreenCadrage1 from "./ScreenCadrage1.vue";
 import ScreenDiagStart from "./ScreenDiagStart.vue";
 import { scrollToAnchor } from "../../composables/useAnchorScroll.js";
+import { NO_EQUIVALENT } from "../../data/info.js";
 
 defineProps({
   journey: { type: Object, required: true },
@@ -245,6 +261,14 @@ const emit = defineEmits(["toggle-level", "start", "back"]);
 // non par cet état, ce qui rend impossible de fermer par mégarde la seule partie
 // que tout le monde doit lire.
 const open = reactive({});
+
+// Le corps du tableau d'équivalences se rend par une boucle sur `columns`, si
+// bien qu'aucune cellule ne sait plus d'avance ce qu'elle porte : c'est son
+// contenu qui le dit. Le tiret d'une échelle qui n'a pas cinq étages se lit en
+// gris — non pour l'effacer, mais pour qu'il ne se lise pas comme un nom.
+function isNoEquivalent(value) {
+  return value === NO_EQUIVALENT;
+}
 
 function anchorOf(part) {
   return `partie-${part.n}`;
@@ -450,6 +474,17 @@ function goTo(part) {
   text-wrap: pretty;
 }
 
+/* Un cran sous le titre de section : les échelles comparées sont une seconde
+   liste dans la même section, et non une section de plus — les hisser au même
+   niveau que « D'où vient le modèle » leur prêterait le poids qu'on vient
+   précisément de leur retirer. */
+.zone__subtitle {
+  margin: 26px 0 12px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 .zone__note {
   margin: 14px 0 0;
   font-size: 12.5px;
@@ -519,8 +554,11 @@ function goTo(part) {
   line-height: 1.45;
 }
 
+/* La classe suit l'`id` de la colonne, parce que le corps du tableau la dérive
+   de `columns` : `scales__n` et non `scales__rank`, faute de quoi la règle ne
+   s'appliquerait plus à rien. */
 .grid__rank,
-.scales__rank {
+.scales__n {
   width: 62px;
   text-align: center;
 }
@@ -538,10 +576,11 @@ function goTo(part) {
   font-weight: 700;
 }
 
-/* Une cellule en attente de vérification se signale sans se cacher : elle est
-   la seule information de sa colonne, et la lire comme une valeur serait le
-   contresens que le marqueur existe pour empêcher. */
-.scales__pending {
+/* Le tiret d'une case sans équivalent, en gris : toutes les colonnes portent
+   désormais de vrais noms d'étages, et la nuance est ce qui empêche de lire ce
+   tiret comme une valeur. Le style va à la cellule et non à la colonne — une
+   seule case d'Altimeter est concernée. */
+.scales__none {
   color: var(--color-neutral-600);
   font-size: 11px;
   letter-spacing: 0.08em;

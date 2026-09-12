@@ -153,14 +153,36 @@ export const LEVEL_BUILD = {
 //     de la source dans ce dépôt ;
 //   — « Venkatraman (1994) » vient de transformation.js (`name` du degré).
 //
-// Trois colonnes restent vides, et c'est délibéré : Gartner, Altimeter et
-// Element AI ne sont présents dans ce dépôt ni en texte, ni en tableau, ni en
-// note de lecture. Écrire de mémoire le nom d'un étage d'une échelle publiée
-// produirait un tableau de correspondances faux et invérifiable à la relecture —
-// la faute est d'autant plus grave qu'elle passe inaperçue. Les cellules portent
-// donc un marqueur explicite et attendent la vérification contre les sources
-// primaires ; elles ne se remplissent qu'après.
-export const TO_VERIFY = 'À VÉRIFIER'
+// Les trois autres colonnes attendaient une vérification contre les sources
+// primaires. Elle a eu lieu le 12.09.2026, et son résultat est inégal :
+//   — « Altimeter » vient de The AI Maturity Playbook (Etlinger, 2018), relevé
+//     dans l'aperçu du rapport publié par Altimeter lui-même. L'échelle n'a que
+//     quatre phases pour cinq paliers : une case reste donc sans équivalent, cas
+//     que la note sous le tableau prévoit expressément ;
+//   — « Element AI » vient de The AI Maturity Framework (2020), dont le
+//     whitepaper n'est plus accessible en ligne depuis le rachat par ServiceNow.
+//     Les cinq paliers sont relevés dans Hansen et al. (2024), article open
+//     access à comité de lecture qui cite le document avec sa référence
+//     complète. C'est une reprise de seconde main, assumée comme telle : la
+//     source citée dans la provenance est celle qui a réellement été lue ;
+//   — « Gartner » vient de la page publique du AI Maturity Model and AI Roadmap
+//     Toolkit, section « What are the stages of AI maturity? », consultée le
+//     12.09.2026. C'est une page Gartner, et les cinq étages y sont nommés et
+//     définis : la colonne est fondée sur l'éditeur lui-même, non sur une
+//     reprise. La précaution garde son objet — trois nommages incompatibles de
+//     cette échelle circulent de seconde main, dont deux ne figurent nulle part
+//     chez Gartner — et c'est bien pourquoi rien n'a été écrit avant d'avoir la
+//     page sous les yeux.
+//
+// Aucune cellule ne porte donc plus de marqueur d'attente, et les constantes qui
+// en tenaient lieu ont disparu avec leur objet : un marqueur exporté que rien
+// n'emploie est une invitation à remplir une case sans source, exactement ce que
+// le dispositif servait à empêcher. Seul subsiste le tiret des cases sans
+// équivalent, qui n'est pas un aveu de recherche mais un constat d'échelle.
+
+// Une case vide n'est pas un manque quand l'échelle comparée n'a pas cinq
+// étages : le tiret dit qu'il n'y a rien à mettre, non qu'on ne l'a pas trouvé.
+export const NO_EQUIVALENT = '—'
 
 export const SCALE_MAP = {
   title: 'Équivalences entre échelles',
@@ -181,9 +203,12 @@ export const SCALE_MAP = {
     retained: level.name,
     ozkaya: ['Exploratory AI', 'Implemented AI', 'Aligned AI', 'Scaled AI', 'Future Ready AI'][index],
     venkatraman: TRANSFORMATION_DEGREES.find(degree => degree.n === level.n).name,
-    gartner: TO_VERIFY,
-    altimeter: TO_VERIFY,
-    elementAI: TO_VERIFY
+    gartner: ['Foundational', 'Emerging', 'Operational', 'Scaled', 'Transformational'][index],
+    // Quatre phases pour cinq paliers. « Integrating » — « AI is part of the
+    // fabric of the company » — décrit le palier 5 et non le 4 : la case sans
+    // équivalent tombe donc au rang 4, et non en fin d'échelle.
+    altimeter: ['Exploring', 'Experimenting', 'Formalizing', NO_EQUIVALENT, 'Integrating'][index],
+    elementAI: ['Exploring', 'Experimenting', 'Formalizing', 'Optimizing', 'Transforming'][index]
   })),
   notes: [
     'Ce rapprochement est indicatif : il aide à se repérer d’une échelle à l’autre, il n’est ' +
@@ -194,10 +219,13 @@ export const SCALE_MAP = {
       'paliers est une lecture propre à ce travail : la source ne cite pas Venkatraman, et ne ' +
       'revendique aucun rapprochement avec son échelle de transformation.'
   ],
+  // Ce qu'il reste à dire du relevé lui-même, une fois toutes les colonnes
+  // renseignées : non plus ce qui manque, mais sur quoi chaque nom repose.
   pending:
-    'Les colonnes marquées « ' + TO_VERIFY + ' » attendent d’être renseignées contre les ' +
-    'sources primaires. Aucun nom d’étage n’y est écrit tant qu’il n’a pas été relevé dans ' +
-    'la publication elle-même.'
+    'Chaque nom d’étage a été relevé dans sa source, jamais reconstitué : Gartner et Altimeter ' +
+    'sur une page de l’éditeur, Element AI dans une reprise académique du whitepaper ' +
+    'd’origine, devenu introuvable en ligne depuis le rachat de la société. Les sources lues ' +
+    'figurent ci-dessous.'
 }
 
 // — d. Le découpage de la page en trois parties —
@@ -259,10 +287,56 @@ export const PARTS = [
 // part à l'écran. Rien n'est réécrit ici — une source recopiée à la main dérive
 // au premier remaniement, et c'est la page qui n'a pas le droit de mentir sur
 // la provenance.
+//
+// Les échelles simplement comparées font liste à part, et ce n'est pas une
+// question de rang. `SOURCES` répond à « ce que la source fonde ici » : les
+// dimensions viennent d'Ozkaya, les blocs d'Elia, un domaine de Bettoni. Une
+// échelle que le tableau d'équivalences met en regard ne fonde rien — elle sert
+// de repère. Les inscrire dans la même liste reviendrait à leur prêter une part
+// dans le modèle qu'elles n'ont pas, ce qui est exactement le malentendu que
+// l'attribution existe pour lever.
+//
+// La référence d'Element AI est celle de la reprise, non celle du whitepaper :
+// c'est ce document-là qui a été lu, et un lecteur qui voudrait remonter à
+// l'original n'irait pas loin — il n'est plus en ligne.
+export const COMPARED = [
+  {
+    ref:
+      'Gartner. AI Maturity Model and AI Roadmap Toolkit, section « What are the stages of ' +
+      'AI maturity? ». Page consultée le 12.09.2026.',
+    role:
+      'Colonne « Gartner » du tableau d’équivalences. Cinq étages, nommés et définis sur une ' +
+      'page de l’éditeur. Ne fonde rien dans le modèle : l’échelle sert de repère de lecture.'
+  },
+  {
+    ref: 'Etlinger, S. (2018). The AI Maturity Playbook: Five Pillars of Enterprise Success. ' +
+      'Altimeter, a Prophet Company.',
+    role:
+      'Colonne « Altimeter » du tableau d’équivalences. Quatre phases, relevées dans ' +
+      'l’aperçu du rapport publié par Altimeter. Ne fonde rien dans le modèle : l’échelle ' +
+      'sert de repère de lecture.'
+  },
+  {
+    ref:
+      'Hansen, H. F., Lillesund, E., Mikalef, P. & Altwaijry, N. (2024). Understanding ' +
+      'Artificial Intelligence Diffusion through an AI Capability Maturity Model. ' +
+      'Information Systems Frontiers, 26, 2147-2163.',
+    role:
+      'Colonne « Element AI » du tableau d’équivalences. Les cinq paliers d’Element AI ' +
+      '(2020), The AI Maturity Framework, sont relevés dans cet article : le whitepaper ' +
+      'd’origine n’est plus accessible depuis le rachat d’Element AI par ServiceNow.'
+  }
+]
+
 export const PROVENANCE = {
   title: 'D’où vient le modèle',
   lead: 'Quatre sources, et ce que chacune fonde dans cet outil.',
-  sources: SOURCES
+  sources: SOURCES,
+  comparedTitle: 'Échelles comparées, qui ne fondent rien ici',
+  comparedLead:
+    'Citées par le tableau d’équivalences pour situer les paliers, sans part dans la ' +
+    'construction du modèle.',
+  compared: COMPARED
 }
 
 export const INFO = {

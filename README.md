@@ -362,8 +362,10 @@ frontière évolutif / révolutionnaire tombe exactement entre *Implemented* et 
 
 Ce rapprochement est une **lecture propre à ce travail** : la source ne cite Venkatraman nulle part.
 Sa contrepartie de traçabilité est le tableau d'équivalences de l'écran d'information, qui compare en
-outre les échelles de Gartner, d'Altimeter et d'Element AI — colonnes marquées « à vérifier » tant
-qu'aucun nom d'étage n'y a été relevé dans la publication elle-même. Le nom de Venkatraman n'est
+outre les échelles de Gartner, d'Altimeter et d'Element AI, toutes vérifiées contre leurs sources le
+12.09.2026. Gartner et Altimeter sont relevés sur une page de l'éditeur ; les paliers d'Element AI le
+sont dans une reprise académique, le whitepaper d'origine n'étant plus en ligne depuis le rachat de la
+société. Altimeter n'ayant que quatre phases pour cinq paliers, une case reste sans équivalent. Le nom de Venkatraman n'est
 prononcé qu'à trois endroits : cet écran, l'attribution, et la légende de crédit du diagramme des
 paliers, où il crédite une figure que le lecteur voit reproduite sous ses yeux. La prose du parcours
 dit « l'échelle de transformation », qui se comprend sans référence.
