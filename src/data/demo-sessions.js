@@ -57,7 +57,7 @@ export const DEMO_SESSIONS = [
       scope: 'org', horizon: 'h3a',
       digital: 'low', data: 'none', devApproach: 'buy',
       literacy: 'mid', risk: 'moderate', staffing: 'contracted',
-      governance: 'coordinated', deployment: 'project', roi: 'qualitative',
+      governance: 'coordinated', deployment: 'project', roi: 'qualitative', aiVisibility: 'hearsay',
       ambition: 'sector',
       domain: 'industry', size: 'xs', footprint: 'regional'
     },
@@ -101,7 +101,7 @@ export const DEMO_SESSIONS = [
       scope: 'org', horizon: 'h3a',
       digital: 'mid', data: 'partial', devApproach: 'customize',
       literacy: 'mid', risk: 'moderate', staffing: 'shared',
-      governance: 'coordinated', deployment: 'waves', roi: 'qualitative',
+      governance: 'coordinated', deployment: 'waves', roi: 'qualitative', aiVisibility: 'hearsay',
       ambition: 'sector',
       domain: 'health', size: 'm', footprint: 'national'
     },
@@ -134,7 +134,7 @@ export const DEMO_SESSIONS = [
       scope: 'org', horizon: 'h3a',
       digital: 'high', data: 'ready', devApproach: 'build',
       literacy: 'mid', risk: 'moderate', staffing: 'shared',
-      governance: 'crossfunctional', deployment: 'waves', roi: 'qualitative',
+      governance: 'crossfunctional', deployment: 'waves', roi: 'qualitative', aiVisibility: 'inventory',
       ambition: 'sector',
       domain: 'other', size: 'l', footprint: 'national'
     },

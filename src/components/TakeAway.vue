@@ -106,7 +106,7 @@
 // où il est choisi, et le refus, s'il y a lieu, est rendu avec son motif sans
 // que rien n'ait été touché. La modale ne s'ouvre que sur un fichier valide, et
 // dit alors ce qu'il va remplacer — y compris, pour un fichier de partage, les
-// douze attributs de cadrage qu'il ne porte pas.
+// treize attributs de cadrage qu'il ne porte pas.
 import { computed, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import AppDialog from './AppDialog.vue'
 import { SCREENS } from '../domain/navigation.js'

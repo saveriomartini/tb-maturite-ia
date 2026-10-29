@@ -117,9 +117,9 @@ export const STATEMENTS = {
   ],
 
   // A7 — Adéquation et proportionnalité de la solution (right-sizing) (exigé au palier 2)
-  // registre : Ressources · niveau 4 rendu par « la même grille de filtrage d’un cas d’usage au suivant »
+  // registre : Ressources, sauf le rang 1 en Planification depuis le 07.10.2026 (DECISIONS 29.10.2026) · niveau 4 rendu par « la même grille de filtrage d’un cas d’usage au suivant »
   A7: [
-    { n: 1, text: 'Nous retenons les outils d’IA qu’on nous propose, sans avoir mesuré ce que leur exploitation demanderait chez nous.' },
+    { n: 1, text: 'Nous retenons les outils d’IA qu’on nous propose, sans avoir examiné si une solution plus simple, sans IA, suffirait.' },
     { n: 2, text: 'Avant de retenir une solution d’IA, nous vérifions les compétences qu’elle exige et nous désignons qui l’exploitera une fois en service.' },
     { n: 3, text: 'Après quelques mois, nous constatons la charge réelle d’exploitation de nos solutions et nous abandonnons celles qui coûtent plus qu’elles ne rapportent.' },
     { n: 4, text: 'Nous passons toute solution que nous envisageons par la même grille — compétences, charge, réversibilité, hébergement des données — d’un cas d’usage au suivant.' },

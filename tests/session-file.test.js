@@ -5,7 +5,7 @@
 // fichier de partage emporte, et ce qu'un fichier relu a le droit de réinjecter.
 //
 // La première est une promesse faite à l'utilisateur sur l'écran d'ancrage, et
-// le seul endroit où elle peut être tenue est ici : douze attributs de cadrage
+// le seul endroit où elle peut être tenue est ici : treize attributs de cadrage
 // laissés dehors, aucune trace d'usage, aucune chaîne qui ne vienne d'un
 // vocabulaire fermé. La seconde est la garde de la reprise : le fichier passe le
 // validateur de la session persistée, pas un second qui divergerait.

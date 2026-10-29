@@ -15,6 +15,7 @@
       <div class="verdict__box">
         <p class="verdict__desc">{{ vm.acquiredDesc }}</p>
         <p v-if="vm.acquiredPosition" class="verdict__position">{{ vm.acquiredPosition }}</p>
+        <p v-if="vm.visibilityNote" class="verdict__position verdict__visibility">{{ vm.visibilityNote }}</p>
       </div>
     </header>
 
@@ -211,6 +212,13 @@ defineProps({
   line-height: 1.65;
   text-align: justify;
   hyphens: auto;
+}
+
+/* La note sur les usages non relevés : même gabarit que la position, en retrait
+   d'un cran, puisqu'elle qualifie la lecture sans rien changer au profil. */
+.verdict__visibility {
+  font-style: italic;
+  opacity: 0.85;
 }
 
 .verdict__desc {

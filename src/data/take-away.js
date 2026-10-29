@@ -45,7 +45,7 @@ export const TAKE_AWAY = {
         title: 'Fichier de reprise',
         lines: [
           'Les énoncés retenus pour chacun des 28 domaines de capacité, et les domaines déclarés hors périmètre.',
-          'Les 15 attributs de cadrage et la portée visée.',
+          'Les 16 attributs de cadrage et la portée visée.',
           'L’état de votre parcours dans l’outil : la phase ouverte, les niveaux dépliés, les avertissements déjà lus.',
           'Un identifiant de session tiré au hasard, qui ne désigne personne.'
         ]
@@ -57,7 +57,7 @@ export const TAKE_AWAY = {
           'Les énoncés retenus pour chacun des 28 domaines de capacité, et les domaines déclarés hors périmètre.',
           'Trois attributs seulement : secteur d’activité, taille, territoire.',
           'La portée visée et le profil diagnostiqué qui se déduit de vos réponses.',
-          'Ni les douze autres attributs de cadrage, qui décrivent le fonctionnement de votre organisation, ni ce que vous avez fait dans l’outil.'
+          'Ni les treize autres attributs de cadrage, qui décrivent le fonctionnement de votre organisation, ni ce que vous avez fait dans l’outil.'
         ]
       }
     ],
@@ -80,8 +80,8 @@ export const TAKE_AWAY = {
     text: 'Les attributs de cadrage, la portée visée et les énoncés retenus pour chaque domaine ' +
       'de capacité seront ceux du fichier.',
     // Un fichier de partage ne porte pas le cadrage : le dire avant de
-    // remplacer, et non après, quand douze attributs se seront vidés.
-    shareText: 'Ce fichier de partage ne porte pas les douze attributs de cadrage : ils ' +
+    // remplacer, et non après, quand treize attributs se seront vidés.
+    shareText: 'Ce fichier de partage ne porte pas les treize attributs de cadrage : ils ' +
       'resteront vides, et la suggestion de profil qui s’en déduit avec.',
     actions: [
       { id: 'cancel', label: 'Annuler' },

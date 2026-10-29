@@ -194,7 +194,7 @@ function select(event) {
 }
 
 /* L'attribut répondu se distingue de celui resté vide par son trait et sa
-   graisse, jamais par une bordure doublée : sur une grille de quinze champs,
+   graisse, jamais par une bordure doublée : sur une grille de seize champs,
    un pixel de plus à chaque réponse ferait danser la colonne voisine. */
 .field__select.is-set {
   border-color: var(--color-text);

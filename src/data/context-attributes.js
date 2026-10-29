@@ -171,6 +171,27 @@ export const CONTEXT_GROUPS = [
         ]
       },
       {
+        // Ajouté le 29.10.2026 (DECISIONS) : ce que la direction sait des outils
+        // d'IA que ses collaborateurs utilisent. Toutes les réponses viennent de
+        // la direction et supposent qu'elle voit ce qui se passe ; les usages
+        // informels — outils grand public employés sans cadre — échappent par
+        // définition à ce regard. L'attribut n'entre dans aucun calcul (`axis:
+        // null`, aucun plafond) : il ne corrige pas la mesure, il dit à côté du
+        // profil quelles réponses dépendent de ce que la direction voit
+        // (VISIBILITY_DEPENDENT_AREAS). Il ne sort pas dans le fichier de partage,
+        // comme les autres attributs qui décrivent le fonctionnement interne.
+        id: 'aiVisibility', short: 'Usages', label: 'Connaissance des usages de l’IA', aimm: '', axis: null,
+        hint: 'Comment savez-vous quels outils d’IA vos collaborateurs utilisent ?',
+        opts: [
+          ['unasked', 'Jamais posé la question', 0,
+            'Nous ne nous sommes jamais demandé quels outils d’IA nos collaborateurs utilisent dans leur travail.'],
+          ['hearsay', 'Par ce qu’on nous en dit', 0.5,
+            'Nous le savons par ce que les collaborateurs nous en disent, sans relevé.'],
+          ['inventory', 'Relevé tenu', 1,
+            'Un relevé des outils d’IA utilisés dans l’organisation est tenu et mis à jour.']
+        ]
+      },
+      {
         id: 'deployment', short: 'Déploiement', label: 'Approche de déploiement', aimm: '', axis: 'ambition',
         hint: '',
         opts: [
@@ -235,6 +256,15 @@ export const DESCRIPTIVE_FIELDS = [
     opts: [['national', 'Nationale', 0], ['regional', 'Régionale', 0], ['global', 'Mondiale', 0]]
   }
 ]
+
+// Domaines dont la réponse suppose que la direction voie les usages de l'IA
+// dans l'organisation : règles d'usage (A11), essais (A13), accès des outils
+// aux informations (A24), fournisseurs dont dépendent les usages (A27). Quand
+// `aiVisibility` vaut l'une des deux premières options, la restitution les
+// nomme à côté du profil, sans rien changer au calcul.
+export const VISIBILITY_FIELD = 'aiVisibility'
+export const VISIBILITY_BLIND = ['unasked', 'hearsay']
+export const VISIBILITY_DEPENDENT_AREAS = ['A11', 'A13', 'A24', 'A27']
 
 // Plafonds durs : facteurs bloquants qui ne se compensent pas par une moyenne.
 export const LEVEL_CAPS = [

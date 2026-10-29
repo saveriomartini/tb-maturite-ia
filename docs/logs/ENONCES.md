@@ -190,8 +190,10 @@ rang 1 doit dire :
   les cent quarante énoncés de rang 1 de la ligne 1 de la grille, et que cet écart devrait alors être
   déclaré et défendu comme tel.
 
-Tant que la question n'est pas tranchée, les énoncés de rang 1 suivent la grille et décrivent
-l'absence.
+La question est tranchée le 08.09.2026 (`DECISIONS.md`) : les énoncés de rang 1 suivent la grille
+et décrivent l'absence, le niveau 1 ne crédite aucun palier, et le premier palier exige le niveau 2.
+Aucune des trois pistes ci-dessus n'est retenue. Une organisation sans palier lit « Diagnostic en
+cours » ou « Encore en préparation », deux textes de restitution qui ne sont pas des profils.
 
 ## 6. Le contrôle de relecture
 
@@ -263,34 +265,34 @@ par l'auteur au moment du deuxième geste, et vaut trace de la décision.
 
 | Domaine | Nom | Palier d'exigence | Bloc | Registre retenu |
 |---|---|---|---|---|
-| A1 | Élaboration de la stratégie IA | 2 | B1 · Strategy |  |
-| A2 | Développement des partenariats IA | 3 | B1 · Strategy |  |
-| A3 | Ajustement de la structure organisationnelle | 3 | B1 · Strategy |  |
-| A4 | Planification prospective | 5 | B1 · Strategy |  |
-| A5 | Gestion du budget et des investissements IA | 2 | B1 · Strategy |  |
-| A6 | Pressions et motivations externes | 1 | B1 · Strategy |  |
-| A7 | Adéquation et proportionnalité de la solution (right-sizing) | 2 | B1 · Strategy |  |
-| A8 | Développement des compétences IA des collaborateurs | 1 | B2 · Stakeholders |  |
-| A9 | Évolution de la culture d'entreprise | 3 | B2 · Stakeholders |  |
-| A10 | Gestion des risques | 2 | B2 · Stakeholders |  |
-| A11 | Politiques et conformité | 2 | B2 · Stakeholders |  |
-| A12 | IA responsable | 2 | B2 · Stakeholders |  |
-| A13 | Expérimentation | 1 | B3 · Business |  |
-| A14 | Innovation des processus métier | 3 | B3 · Business |  |
-| A15 | Automatisation à supervision humaine | 3 | B3 · Business |  |
-| A16 | Mesure et analyse | 3 | B3 · Business |  |
-| A17 | Gestion du cycle de vie des données | 2 | B3 · Business |  |
-| A18 | Assurance qualité des données | 2 | B3 · Business |  |
-| A19 | Architecture IA | 2 | B4 · Technology |  |
-| A20 | Tests et évaluation | 2 | B4 · Technology |  |
-| A21 | Intégration aux systèmes existants | 3 | B4 · Technology |  |
-| A22 | Transparence et explicabilité | 3 | B4 · Technology |  |
-| A23 | Gestion des modèles IA | 2 | B4 · Technology |  |
-| A24 | Sécurité des modèles et agents IA | 2 | B4 · Technology |  |
-| A25 | Suivi | 3 | B4 · Technology |  |
-| A26 | Infrastructure technologique | 2 | B4 · Technology |  |
-| A27 | Gestion de la chaîne d'approvisionnement | 3 | B4 · Technology |  |
-| A28 | Déploiement à l'échelle | 4 | B4 · Technology |  |
+| A1 | Élaboration de la stratégie IA | 2 | B1 · Strategy | Responsabilité |
+| A2 | Développement des partenariats IA | 3 | B1 · Strategy | Responsabilité |
+| A3 | Ajustement de la structure organisationnelle | 3 | B1 · Strategy | Planification |
+| A4 | Planification prospective | 5 | B1 · Strategy | Planification |
+| A5 | Gestion du budget et des investissements IA | 2 | B1 · Strategy | Ressources |
+| A6 | Pressions et motivations externes | 1 | B1 · Strategy | Responsabilité |
+| A7 | Adéquation et proportionnalité de la solution (right-sizing) | 2 | B1 · Strategy | Ressources ; rang 1 en Planification depuis le 07.10.2026 |
+| A8 | Développement des compétences IA des collaborateurs | 1 | B2 · Stakeholders | Ressources |
+| A9 | Évolution de la culture d'entreprise | 3 | B2 · Stakeholders | Planification |
+| A10 | Gestion des risques | 2 | B2 · Stakeholders | Planification |
+| A11 | Politiques et conformité | 2 | B2 · Stakeholders | Responsabilité |
+| A12 | IA responsable | 2 | B2 · Stakeholders | Responsabilité |
+| A13 | Expérimentation | 1 | B3 · Business | Ressources |
+| A14 | Innovation des processus métier | 3 | B3 · Business | Planification |
+| A15 | Automatisation à supervision humaine | 3 | B3 · Business | Responsabilité |
+| A16 | Mesure et analyse | 3 | B3 · Business | Planification |
+| A17 | Gestion du cycle de vie des données | 2 | B3 · Business | Responsabilité, contre l'heuristique (Planification) : le rang 1 porte sur qui répond de l'origine des données, et la traçabilité se constate par la personne qui en répond |
+| A18 | Assurance qualité des données | 2 | B3 · Business | Planification |
+| A19 | Architecture IA | 2 | B4 · Technology | Ressources |
+| A20 | Tests et évaluation | 2 | B4 · Technology | Planification |
+| A21 | Intégration aux systèmes existants | 3 | B4 · Technology | Ressources |
+| A22 | Transparence et explicabilité | 3 | B4 · Technology | Responsabilité |
+| A23 | Gestion des modèles IA | 2 | B4 · Technology | Planification |
+| A24 | Sécurité des modèles et agents IA | 2 | B4 · Technology | Responsabilité |
+| A25 | Suivi | 3 | B4 · Technology | Planification |
+| A26 | Infrastructure technologique | 2 | B4 · Technology | Ressources |
+| A27 | Gestion de la chaîne d'approvisionnement | 3 | B4 · Technology | Planification |
+| A28 | Déploiement à l'échelle | 4 | B4 · Technology | Ressources |
 
 Les quatre blocs se rédigent dans cet ordre, et la relecture du §6 se fait à la fin de chacun plutôt
 qu'une fois les cent quarante énoncés écrits : les défauts d'échelle repérés sur Strategy évitent

@@ -8,12 +8,12 @@
 //     écrit dans le navigateur. Il sert à rouvrir l'évaluation ailleurs, ou plus
 //     tard, ou sur un autre poste. Il est pour son auteur.
 //   — `partage`, le même état réduit à ce qui a un sens pour un tiers : les
-//     énoncés retenus, trois des quinze attributs de cadrage — secteur, taille,
+//     énoncés retenus, trois des seize attributs de cadrage — secteur, taille,
 //     territoire —, la portée visée et le profil diagnostiqué qui s'en déduit.
 //
 // — ce que le fichier de partage n'emporte pas, et pourquoi —
 //
-// Les douze autres attributs de cadrage décrivent le fonctionnement interne de
+// Les treize autres attributs de cadrage décrivent le fonctionnement interne de
 // l'organisation : horizon de planification, gouvernance de l'adoption, état des
 // données, ressources affectées, appétit au risque. Croisés avec un secteur et
 // une taille, dans un tissu économique de la dimension de l'arc jurassien, ils
@@ -38,7 +38,7 @@
 //
 // Ni nom, ni adresse, ni aucun texte saisi : l'outil n'a aucun champ libre. Les
 // vingt-huit réponses sont des entiers ou la déclaration de hors périmètre, les
-// quinze attributs sont des vocabulaires fermés. La propriété ne tient pas à une
+// seize attributs sont des vocabulaires fermés. La propriété ne tient pas à une
 // précaution d'écriture, elle tient à la forme du questionnaire, et elle se
 // vérifie en lisant `context-attributes.js`.
 //
@@ -77,14 +77,14 @@ const NO_FREE_TEXT =
 const NOTICE = {
   [RESUME]:
     'Fichier produit par M.A.IA. Il porte votre session d’auto-évaluation : les énoncés ' +
-    'retenus pour chacun des 28 domaines de capacité, les 15 attributs de cadrage et la portée ' +
+    'retenus pour chacun des 28 domaines de capacité, les 16 attributs de cadrage et la portée ' +
     'visée. Rouvrez-le depuis le bloc « Emporter » de la phase d’ancrage pour reprendre où vous ' +
     'en étiez. ' + NO_FREE_TEXT,
   [SHARE]:
     'Fichier produit par M.A.IA, destiné à être transmis si vous le décidez. Il porte les ' +
-    'énoncés retenus pour chacun des 28 domaines de capacité, trois des 15 attributs de cadrage ' +
+    'énoncés retenus pour chacun des 28 domaines de capacité, trois des 16 attributs de cadrage ' +
     '— secteur, taille, territoire —, la portée visée et le profil diagnostiqué qui s’en déduit. ' +
-    'Il ne porte pas les douze autres attributs, qui décrivent le fonctionnement de votre ' +
+    'Il ne porte pas les treize autres attributs, qui décrivent le fonctionnement de votre ' +
     'organisation, ni ce que vous avez fait dans l’outil. ' + NO_FREE_TEXT + ' L’outil n’envoie ' +
     'rien et ne connaît aucun destinataire : le fichier reste sur votre poste jusqu’à ce que ' +
     'vous en disposiez.'

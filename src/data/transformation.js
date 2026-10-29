@@ -2,11 +2,15 @@
 //
 // Ozkaya et al. (2026) nomment cinq niveaux de maturité d'adoption ; ils ne
 // disent pas ce qui sépare *qualitativement* un niveau du suivant. Venkatraman
-// le dit, sur une autre échelle et pour une autre technologie : ses cinq degrés
-// de transformation induite par les systèmes d'information se recouvrent terme
-// à terme avec ceux d'Ozkaya, et leur frontière évolutif / révolutionnaire tombe
-// exactement entre Implemented et Aligned — c'est la fusion sur laquelle repose
-// le nommage français des profils (docs/DECISIONS.md, entrée du 15.08.2026).
+// le dit, sur une autre échelle et pour une autre technologie. Le rapprochement
+// ne vaut qu'en un point : la frontière évolutif / révolutionnaire de
+// Venkatraman, qui tombe entre son deuxième et son troisième degré, correspond au
+// passage d'Implemented à Aligned, que la source ne franchit que par la
+// réingénierie des workflows. Au-delà, la correspondance n'est que de nom : le
+// quatrième degré de Venkatraman est inter-organisationnel, alors que Scaled AI
+// décrit la reproduction à l'échelle dans l'unité évaluée. Les profils 4 et 5
+// empruntent donc ses noms sans en revendiquer le contenu (docs/DECISIONS.md,
+// entrées du 15.08.2026 et du 29.10.2026).
 //
 // Ce que Venkatraman apporte et qui manque au modèle seul : les deux premiers
 // degrés posent la technologie sur des routines qui ne changent pas, et le
@@ -107,22 +111,24 @@ export const TRANSFORMATION_DEGREES = [
   {
     n: 4,
     name: 'Réingénierie du réseau d’affaires',
-    reach: 'le réseau de partenaires, de fournisseurs et de clients',
+    reach: 'l’ensemble de l’organisation évaluée, d’un cas d’usage au suivant',
     position:
-      'Sur l’échelle de transformation, ce profil correspond à la réingénierie du réseau ' +
-      'd’affaires : la transformation ne s’arrête plus aux murs de l’entreprise, elle ' +
-      'porte sur ses relations avec ses partenaires, ses fournisseurs et ses clients. Le ' +
-      'degré de transformation est engagé ; ce qui augmente désormais, c’est sa portée.'
+      'Sur l’échelle de transformation, ce profil porte le nom du quatrième degré, la ' +
+      'réingénierie du réseau d’affaires. Le modèle y mesure la reproductibilité au-delà du ' +
+      'premier cas, dans l’entreprise, et non la transformation de ses relations avec ses ' +
+      'partenaires : l’IA est utilisée à l’échelle, avec des résultats dignes de confiance, ' +
+      'et ce qui augmente désormais, c’est sa portée.'
   },
   {
     n: 5,
     name: 'Redéfinition du périmètre d’activité',
-    reach: 'le périmètre d’activité lui-même',
+    reach: 'la culture même de l’organisation',
     position:
-      'Sur l’échelle de transformation, ce profil correspond à la redéfinition du périmètre ' +
-      'd’activité, son degré le plus haut : ce n’est plus la façon de faire qui change, ' +
-      'c’est ce que l’entreprise fait. À ce point, revenir aux anciennes façons de ' +
-      'travailler ne serait plus un renoncement mais un risque d’existence.'
+      'Sur l’échelle de transformation, ce profil porte le nom du degré le plus haut, la ' +
+      'redéfinition du périmètre d’activité. Le modèle y mesure un historique de réussites ' +
+      'portées par l’IA et la capacité d’en anticiper les évolutions, et non un changement ' +
+      'de ce que l’entreprise fait. À ce point, revenir aux anciennes façons de travailler ' +
+      'ne serait plus un renoncement mais un risque d’existence.'
   }
 ]
 

@@ -45,6 +45,9 @@ Ce que l'outil ne fait pas, et pour quel motif :
 - **aucune feuille de route priorisée.** La couche prescriptive est hors périmètre par instruction
   de la direction de travail. Le tri des écarts suit le rang exigé du modèle puis l'ordre du
   questionnaire, jamais le retard constaté — trier au retard reviendrait à dire par quoi commencer.
+  La liste des domaines qui séparent de la cible n'est pas neutre pour autant : la règle du minimum
+  impose un ordre de franchissement, et l'énoncé visé décrit l'état à atteindre. C'est la part de
+  prescription que le modèle porte de lui-même ; l'outil n'y ajoute aucune pondération propre.
   Le dernier bloc de l'Ancrage annonce cette génération comme prochaine itération, en texte simple ;
 - **aucune comparaison inter-PME.** Elle suppose une collecte, que l'architecture exclut. L'exigence
   retenue à la place est l'extensibilité : contrat de session versionné et couture de persistance
@@ -77,17 +80,19 @@ répondrait en passant.
 | `home` | — | Les trois portes, et le pied d'attribution présent partout |
 | `info` | — | La carte du parcours ; adoption / maturité d'adoption / readiness ; la grille 5 × 3 dont les énoncés sont dérivés ; le tableau d'équivalences entre échelles ; le modèle et les cinq profils dépliables ; la carte du diagnostic |
 | `demo` | — | Trois PME fictives — Menuiserie Rochat, Clinique Bel-Air, Groupe Terravia — dont on charge la session complète |
-| `tool` | 1 · 2 · 3 | **Cadrage** : 15 attributs de contexte. **Évaluation** : les 28 domaines empilés dans l'ordre du modèle. **Résultats** : profil, périmètre, échelle des paliers, radar des 9 dimensions, détail par domaine |
+| `tool` | 1 · 2 · 3 | **Cadrage** : 16 attributs de contexte. **Évaluation** : les 28 domaines empilés dans l'ordre du modèle. **Résultats** : profil, périmètre, échelle des paliers, radar des 9 dimensions, détail par domaine |
 | `tool4` | 4 | **Ancrage** : la question de portée, le profil visé qui s'en déduit, la nature du passage, les domaines qui en séparent, le hors périmètre, ce qui reste à évaluer, le bloc de clôture |
 | `export` | 4 | L'aperçu imprimable de la pièce à emporter |
 
-**Le cadrage** pose quinze attributs : douze au formulaire, répartis en trois groupes — Organisation
-(2), Technologie (3), IA (7) —, plus trois purement descriptifs, qui documentent l'évaluation sans
+**Le cadrage** pose seize attributs : treize au formulaire, répartis en trois groupes — Organisation
+(2), Technologie (3), IA (8) —, plus trois purement descriptifs, qui documentent l'évaluation sans
 peser sur elle. Aucun n'est exigé : un formulaire vide place la recommandation au profil le plus
 haut, et chaque réponse ne peut alors que la réduire — « on vous propose tout, vos réponses retirent
-ce qui ne vous concerne pas ». Des douze, dix scorent sur les deux axes de l'ambition et de la
+ce qui ne vous concerne pas ». Des treize, dix scorent sur les deux axes de l'ambition et de la
 capacité ; `scope` ne score pas mais plafonne et nomme l'unité évaluée en tête de la restitution ;
-`devApproach` est collecté et volontairement inerte (§ 8). Huit options plafonnent durement le
+`devApproach` est collecté et volontairement inerte (§ 8) ; `aiVisibility` (connaissance des
+usages de l'IA, ajouté le 29.10.2026) n'entre dans aucun calcul et, faute de relevé des outils
+utilisés, nomme à côté du profil les domaines dont la réponse dépend de ce que la direction voit. Huit options plafonnent durement le
 niveau recommandé et treize portent un critère d'acceptation, affiché sous l'option retenue : un
 plafond dur décide seul du niveau cible, la réponse ne peut donc pas reposer sur une appréciation.
 
@@ -117,7 +122,7 @@ suivants repliés, total en tête —, groupement qui n'est pas une mise en form
 la règle du maillon faible, laquelle impose de franchir les paliers dans l'ordre.
 
 **La démonstration** ne lève pas une simple commodité : la restitution ne se laisse pas juger avant
-d'avoir répondu à quinze attributs et situé vingt-huit domaines. Les scénarios n'écrivent que des
+d'avoir répondu à seize attributs et situé vingt-huit domaines. Les scénarios n'écrivent que des
 entrées — contexte, niveau par domaine, portée déclarée — et jamais un résultat : le profil, l'écart
 et la synthèse sont recalculés par le même moteur que pour une vraie session, faute de quoi la
 démonstration montrerait autre chose que l'outil. Il y en a trois parce que la restitution ne tient
@@ -163,9 +168,10 @@ arrêter.
 | `npm run dev` | Serveur de développement, rechargement à chaud |
 | `npm run lint` | ESLint (Style Guide officiel de Vue) **puis** `check-model` |
 | `npm run lint:fix` | Corrige ce qui est corrigeable automatiquement |
-| `npm run test` | Vitest — 94 cas répartis en 5 fichiers |
+| `npm run test` | Vitest — 180 cas répartis en 8 fichiers |
 | `npm run check:model` | 28 domaines × 5 énoncés numérotés, sans rang manquant ni doublon |
 | `npm run check:model:strict` | Idem, plus l'échec sur tout énoncé vide — le mode de la livraison |
+| `npm run sensitivity` | Décale chaque réponse d'un niveau et compte celles qui déplacent le palier, sur les démonstrations et sur les fichiers de session passés après `--` ; `--json` pour la sortie brute |
 | `npm run build` | Build de production dans `dist/` |
 | `npm run preview` | Sert le contenu réellement publié, sur le port 4173 |
 
@@ -229,11 +235,16 @@ tb-maturite-ia/
 ├── .vscode/                       extensions recommandées et réglages d'éditeur
 ├── docs/                          voir § 7
 ├── scripts/check-model.js         28 domaines × 5 énoncés, branché sur npm run lint
-├── tests/                         94 cas, exécutés par la CI avant le build
+├── scripts/sensitivity.js         sensibilité de la règle du maillon faible, hors CI
+├── tests/                         180 cas, exécutés par la CI avant le build
 │   ├── scoring.test.js            les règles : maillon faible, hors périmètre, tri, dimensions
+│   ├── edge-cases.test.js         cinq organisations typées sur le modèle livré, et la limite
+│   │                              que chacune révèle de la règle d'agrégation
 │   ├── restitution.test.js        les view-models : les 3 démos aux 3 positions de l'échelle,
 │   │                              et aucune valeur affichée ne dépasse son total
 │   ├── session-storage.test.js    la garde du contrat de session
+│   ├── session-file.test.js       les fichiers de reprise et de partage : ce qui sort, ce qui est relu
+│   ├── navigation.test.js         où une réponse dépose l'utilisateur dans le questionnaire
 │   ├── sources.test.js            ce que src/ ne contient plus (imports morts, retours interdits)
 │   └── render.test.js             un rendu SSR de chaque écran, sans avertissement Vue
 ├── src/
@@ -241,7 +252,7 @@ tb-maturite-ia/
 │   │   ├── model-data.json        SOURCE DE VÉRITÉ — report littéral d'Ozkaya et al. (2026)
 │   │   ├── model-data.js          export ES module de model-data.json
 │   │   ├── statements.js          les 140 énoncés descriptifs, dérivés et non extraits (§ 5.2)
-│   │   ├── context-attributes.js  15 attributs, plafonds durs, exigences du dernier profil
+│   │   ├── context-attributes.js  16 attributs, plafonds durs, exigences du dernier profil
 │   │   ├── maturity-indicators.js grille des 3 indicateurs transversaux (§ 5 de la source)
 │   │   ├── transformation.js      échelle de transformation, question de portée, lecture de l'écart
 │   │   ├── in-progress.js         ce que dit la restitution tant qu'aucun palier n'est nommable
@@ -349,8 +360,9 @@ Les noms des 4 blocs sont volontairement laissés en anglais : ce sont des étiq
 pas du texte à lire. Les cinq niveaux font exception, parce qu'ils sont le résultat rendu à
 l'utilisateur — la seule phrase qu'il retiendra de l'évaluation. Leur `name` est un **profil de
 maturité d'adoption** en français, qui fusionne le terme d'Ozkaya et al. avec le stade correspondant
-de l'échelle de transformation de Venkatraman (1994) ; les deux échelles se recouvrent, et leur
-frontière évolutif / révolutionnaire tombe exactement entre *Implemented* et *Aligned* :
+de l'échelle de transformation de Venkatraman (1994). Le rapprochement n'est revendiqué qu'en un
+point : la frontière évolutif / révolutionnaire, qui tombe entre *Implemented* et *Aligned*. Pour
+les profils 4 et 5, la correspondance n'est que de nom (DECISIONS, 29.10.2026) :
 
 | # | AIMM | Venkatraman | Profil retenu |
 |---|---|---|---|
@@ -433,6 +445,17 @@ disposent d'équipes dédiées, et rien d'autre n'y interroge les moyens engagé
 de la solution, ni la légitimité de ne pas y aller. La critique de la progression linéaire y cesse
 d'être une réserve théorique pour devenir une pratique évaluable : l'arrêt, le report et l'adoption
 partielle se consignent au même titre que la poursuite.
+
+La dimension se mesure avec la même grille que les huit autres : les énoncés de A5, A6 et A7
+instancient les cinq lignes du § 5 de la source, exactement comme ceux des 25 domaines repris. La
+grille s'y étend sans adaptation parce que la source la pose une seule fois, sans la rattacher à un
+domaine : elle décrit un dispositif — qui en répond, comment c'est réglé, avec quels moyens — et non
+l'objet sur lequel il porte. A6 ne gradue donc pas une motivation, mais la façon dont l'organisation
+recense les pressions qu'elle subit et en tire ses propres raisons. L'extension est aussi une
+condition de la règle du minimum : une échelle propre à la neuvième dimension l'aurait rendue
+incomparable aux huit autres, et le minimum aurait comparé des unités différentes. Elle n'a qu'une
+caution interne — l'audit de traçabilité juge les quinze rangs fidèles à la grille —, la source ne
+l'ayant pas éprouvée sur ces domaines.
 
 La dépendance au donneur d'ordre — trait structurant du tissu sous-traitant horloger et
 microtechnique de l'arc jurassien — est recensée en A6 et opposable au choix de solution en A7, par

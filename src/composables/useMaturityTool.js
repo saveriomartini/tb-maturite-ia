@@ -8,7 +8,8 @@
 import { computed, reactive, ref } from 'vue'
 import { ATTRIBUTION } from '../data/attribution.js'
 import {
-  ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS, fieldById, optionLabel
+  ALL_FIELDS, CONTEXT_GROUPS, DESCRIPTIVE_FIELDS, fieldById, optionLabel,
+  VISIBILITY_BLIND, VISIBILITY_DEPENDENT_AREAS, VISIBILITY_FIELD
 } from '../data/context-attributes.js'
 import { JOURNEY } from '../data/journey.js'
 import { INFO } from '../data/info.js'
@@ -539,6 +540,22 @@ export function useMaturityTool() {
   //
   // Tant qu'aucun palier n'est acquis, il n'y a pas de degré à nommer : on ne
   // situe pas ce qui n'est pas encore un profil.
+  // Ce que la direction voit des usages de l'IA (attribut `aiVisibility`). La
+  // phrase ne paraît que si la direction a dit ne pas tenir de relevé : elle
+  // nomme les domaines dont la réponse dépend de ce regard, sans toucher au
+  // palier. Non renseigné, l'attribut ne dit rien et la restitution non plus.
+  const visibilityNote = computed(() => {
+    if (!VISIBILITY_BLIND.includes(state.form[VISIBILITY_FIELD])) return null
+    const names = VISIBILITY_DEPENDENT_AREAS
+      .map(id => EVALUABLE_AREAS.find(area => area.id === id))
+      .filter(Boolean)
+      .map(area => area.name)
+    return 'Vous ne tenez pas de relevé des outils d’IA que vos collaborateurs utilisent. ' +
+      'Les réponses de ' + names.slice(0, -1).join(', ') + ' et ' + names[names.length - 1] +
+      ' reposent donc sur ce que la direction voit des usages : des usages informels ' +
+      'peuvent y échapper. Le profil n’en est pas modifié.'
+  })
+
   const acquiredPosition = computed(() => {
     const degree = transformationDegree(acquired.value)
     return degree ? degree.position : null
@@ -1244,6 +1261,7 @@ export function useMaturityTool() {
     acquiredLabel: acquiredLabel.value,
     acquiredDesc: acquiredProfile.value.desc,
     acquiredPosition: acquiredPosition.value,
+    visibilityNote: visibilityNote.value,
     // Les deux listes sont assemblées ici plutôt que dans le template : la vue
     // ne calcule rien, pas même une jointure.
     outOfScopeLabel: outOfScopeAreas.value.map(area => area.name).join(' · '),

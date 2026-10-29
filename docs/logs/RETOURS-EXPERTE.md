@@ -1,8 +1,13 @@
 # Retours de l'experte métier — tableau d'arbitrage
 
-Ce fichier tient, série par série, ce que l'experte qui a conduit les évaluations terrain a demandé,
-ce qui en a été fait, et pourquoi lorsque la demande n'a pas été suivie. Il est la matière de
-l'annexe 12 et du chapitre d'évaluation du rapport.
+Ce fichier tient, série par série, ce que l'experte métier a demandé au fil des revues formatives
+de l'outil, ce qui en a été fait, et pourquoi lorsque la demande n'a pas été suivie. Il est la
+matière de l'annexe 12 et du chapitre d'évaluation du rapport.
+
+**Source.** Le relevé de référence est tenu hors du dépôt : notes, courriels et transcriptions
+d'appels Teams échangés avec l'experte, sur quatre itérations de revue entre le 15.07.2026 et le
+09.09.2026. Ce fichier s'y réfère ; en cas d'écart, c'est ce relevé qui fait foi. Ces revues
+formatives sont la seule campagne d'évaluation conduite avec l'experte.
 
 Une demande écartée y figure au même titre qu'une demande retenue : c'est la trace du fait qu'elle a
 été entendue et instruite. Une évaluation dont on ne garderait que les suites favorables ne mesure
@@ -56,7 +61,7 @@ tâches 3.5 à 3.8 du backlog.
 
 ## Série 2 — retour du 10.09.2026
 
-Reçu après la seconde campagne d'évaluations terrain, sur une version jugée « beaucoup plus claire »
+Reçu après une nouvelle itération de revue, sur une version jugée « beaucoup plus claire »
 que celle de la première série.
 
 | # | Demande | Objet visé | Décision | Motif |
@@ -95,3 +100,6 @@ Trois points à connaître avant de citer ce tableau dans le rapport.
    la date et l'argument (1.1, 1.3, 1.5, 1.10, 1.14, 1.15) ; il est déduit ailleurs.
 3. **Aucune de ces suites n'a été renvoyée à l'experte pour confirmation.** Le tableau dit ce que le
    travail a fait des demandes, pas ce que l'experte pense de ce qui en a été fait.
+4. **Les dates des séries 1 et 2** seront recalées sur les quatre itérations de revue lorsque la
+   liste des retours, avec date, source et suite donnée, aura été établie depuis le relevé de
+   référence.
